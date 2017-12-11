@@ -1,0 +1,47 @@
+#!/bin/sh -eux
+
+THIS_SCRIPT=$0
+REPO_DIR=$(dirname ${THIS_SCRIPT})/..
+
+setup_django_environment() {
+  export DJANGO_SETTINGS_MODULE=expirybot.settings.production
+}
+
+load_secrets_environment_variables() {
+  . ${REPO_DIR}/secrets.sh
+}
+
+
+activate_virtualenv() {
+  . ${REPO_DIR}/../venv/bin/activate
+}
+
+install_requirements() {
+  pip install -r ${REPO_DIR}/requirements.txt
+}
+
+build_css() {
+  cd ${REPO_DIR}
+  make css
+  cd -
+}
+
+collect_static_files() {
+  ${REPO_DIR}/manage.py collectstatic --no-input --clear
+}
+
+migrate_database() {
+  ${REPO_DIR}/manage.py migrate --no-input
+}
+
+
+setup_django_environment
+load_secrets_environment_variables
+activate_virtualenv
+install_requirements
+build_css
+collect_static_files
+migrate_database
+
+# Replace current script with gunicorn
+exec gunicorn expirybot.wsgi -b 127.0.0.1:8011

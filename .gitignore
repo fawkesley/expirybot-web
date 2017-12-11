@@ -1,0 +1,12 @@
+.vagrant/cache/apt/*
+.vagrant/cache/tmp-download/*
+
+.vagrant/*
+collected_static/*
+
+secrets.sh
+expirybot/static/css/site.css*
+
+*__pycache__*
+*.log
+.sass-cache/*

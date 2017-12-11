@@ -1,0 +1,22 @@
+{% load staticfiles %}
+
+<!doctype html>
+<html>
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>{% block title_inner %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static "css/site.css" %}" />
+    {% block head_inner %}
+    {% endblock %}
+
+  </head>
+
+  <body class="{% block body_class %}{% endblock %}">
+    {% block body_inner %}
+    {% endblock %}
+  </body>
+</html>

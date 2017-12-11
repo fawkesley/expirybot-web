@@ -1,0 +1,24 @@
+# This file is part of the Vagrant config, and gets overwritten on each
+# `vagrant provision`.
+
+. ~/venv/bin/activate
+cd ~/app
+
+export DJANGO_SETTINGS_MODULE="expirybot.settings.development"
+export USE_FILESYSTEM_STORAGE=true
+
+if [ -f "/home/vagrant/secrets.sh" ]; then
+    . /home/vagrant/secrets.sh
+fi
+
+# For testing out production, use these settings instead:
+#
+# export DJANGO_SETTINGS_MODULE="expirybot.settings.production"
+# export USE_FILESYSTEM_STORAGE=false
+# export SECRET_KEY="foo"
+# export AWS_S3_BUCKET_NAME_STATIC="vault-inbox-api-static-dev"
+# export AWS_S3_BUCKET_NAME_UPLOADS="vault-inbox-api-uploads-dev"
+# export DATABASE_URL="postgres:///vagrant"
+#
+# export AWS_ACCESS_KEY_ID="..."
+# export AWS_SECRET_ACCESS_KEY="..."

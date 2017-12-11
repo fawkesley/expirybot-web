@@ -1,0 +1,19 @@
+server {
+  listen 80;
+  server_name www.expirybot.com;
+
+  location / {
+
+    location /.well-known/acme-challenge/ {
+      # For the letsencrypt "webroot" plugin
+      # http://letsencrypt.readthedocs.org/en/latest/using.html#webroot
+      #
+      # sudo certbot certonly --webroot -w /etc/letsencrypt/fake-webroot -d <DOMAIN>
+
+      root /etc/letsencrypt/fake-webroot;
+    }
+
+    # Redirect (almost) anything on HTTP to HTTPS
+    return 301 https://$host$request_uri;
+  }
+}

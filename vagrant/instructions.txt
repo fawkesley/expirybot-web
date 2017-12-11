@@ -1,0 +1,7 @@
+You're now inside the Virtual Machine which is configured by Vagrant.
+
+To run the Django app, so you can visit the website at http://localhost:8011
+$ make run
+
+To automatically build our CSS from our SASS files when they change:
+$ make watch
