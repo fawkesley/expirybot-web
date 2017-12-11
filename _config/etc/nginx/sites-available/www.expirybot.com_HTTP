@@ -8,7 +8,7 @@ server {
       # For the letsencrypt "webroot" plugin
       # http://letsencrypt.readthedocs.org/en/latest/using.html#webroot
       #
-      # sudo certbot certonly --webroot -w /etc/letsencrypt/fake-webroot -d <DOMAIN>
+      # sudo certbot certonly --webroot -w /etc/letsencrypt/fake-webroot -d www.expirybot.com --deploy-hook 'service nginx reload'
 
       root /etc/letsencrypt/fake-webroot;
     }
