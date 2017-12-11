@@ -5,7 +5,6 @@
 collected_static/*
 
 secrets.sh
-expirybot/static/css/site.css*
 
 *__pycache__*
 *.log
