@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-# from .views import ExampleModelDetailView
+from .views import UnsubscribeEmailView
 #
 # UUID_PATTERN = (
 #     '[0-9a-fA-F]{8}-'
@@ -10,11 +10,14 @@ from django.conf.urls import url
 #     '[0-9a-fA-F]{12}'
 # )
 #
+
+JWT_PATTERN = "[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*"
+
 urlpatterns = [
-#     url(
-#         r'^example_model/(?P<pk>' + UUID_PATTERN + ')/$',
-#         ExampleModelDetailView.as_view(),
-#         name='example-model-detail'
-#     ),
-#
+    url(
+        r'^unsubscribe/(?P<json_web_token>' + JWT_PATTERN + ')/$',
+        UnsubscribeEmailView.as_view(),
+        name='unsubscribe-email'
+    ),
+
 ]

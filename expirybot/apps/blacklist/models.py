@@ -1,4 +1,8 @@
+import jwt
+
+from django.conf import settings
 from django.db import models
+from django.urls import reverse
 
 
 class BlacklistedEmailAddress(models.Model):
@@ -16,6 +20,20 @@ class BlacklistedEmailAddress(models.Model):
 
     def __str__(self):
         return self.email_address
+
+    def make_json_web_token(self):
+        data = {
+            'email_address': str(self.email_address),
+        }
+
+        result = jwt.encode(data, settings.SECRET_KEY)
+        return result
+
+    def make_authenticated_unsubscribe_url(self):
+        return reverse(
+            'unsubscribe-email',
+            kwargs={'json_web_token': self.make_json_web_token()}
+        )
 
 
 class BlacklistedDomain(models.Model):
