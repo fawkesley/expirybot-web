@@ -12,8 +12,18 @@ load_secrets_environment_variables() {
 }
 
 
-activate_virtualenv() {
-  . ${REPO_DIR}/../venv/bin/activate
+setup_virtualenv() {
+  REQUIREMENTS_HASH=$(sha1sum ${REPO_DIR}/requirements.txt | cut '-d ' -f1)
+
+  VENV_DIR="${REPO_DIR}/venv/${REQUIREMENTS_HASH}"
+
+  virtualenv -p $(which python3) "${VENV_DIR}"
+
+  set +u
+  . "${VENV_DIR}/bin/activate"
+  set -u
+
+  pip install -r "${REPO_DIR}/requirements.txt"
 }
 
 install_requirements() {
@@ -37,7 +47,7 @@ migrate_database() {
 
 setup_django_environment
 load_secrets_environment_variables
-activate_virtualenv
+setup_virtualenv
 install_requirements
 build_css
 collect_static_files
