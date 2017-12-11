@@ -37,8 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'expirybot.apps.blacklist',
+    'expirybot.apps.apiv1',
 
     'django_extensions',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -120,3 +123,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static', 'static')
 # https://github.com/stefanfoulis/django-phonenumber-field
 PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
 PHONENUMBER_DEFAULT_REGION = 'gb'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}

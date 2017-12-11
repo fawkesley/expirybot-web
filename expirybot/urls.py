@@ -23,6 +23,8 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     url(r'^', include('expirybot.apps.blacklist.urls')),
+
+    url(r'^apiv1', include('expirybot.apps.apiv1.urls')),
 ]
 
 if settings.SERVE_STATIC_FILES:
