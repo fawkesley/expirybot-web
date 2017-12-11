@@ -1,39 +1,42 @@
-import jwt
-
-from django.conf import settings
 from django.db import models
-from django.urls import reverse
 
 
-class BlacklistedEmailAddress(models.Model):
+class EmailAddress(models.Model):
+    class Meta:
+        permissions = (
+            ("make_unsubscribe_links",
+             "Can create unsubscribe links for email addresses."),
+        )
     email_address = models.EmailField(primary_key=True)
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     updated_at = models.DateTimeField(auto_now=True)
 
-    unsubscribed = models.BooleanField(default=False)
+    unsubscribe_datetime = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None
+    )
 
-    bounced = models.BooleanField(default=False)
+    complain_datetime = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None
+    )
 
-    comment = models.TextField(blank=True, null=True)
+    last_bounce_datetime = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None
+    )
 
     def __str__(self):
         return self.email_address
 
-    def make_json_web_token(self):
-        data = {
-            'email_address': str(self.email_address),
-        }
-
-        result = jwt.encode(data, settings.SECRET_KEY)
-        return result
-
     def make_authenticated_unsubscribe_url(self):
-        return reverse(
-            'unsubscribe-email',
-            kwargs={'json_web_token': self.make_json_web_token()}
-        )
+        from .utils import make_authenticated_unsubscribe_url
+        return make_authenticated_unsubscribe_url(self.email_address)
 
 
 class BlacklistedDomain(models.Model):

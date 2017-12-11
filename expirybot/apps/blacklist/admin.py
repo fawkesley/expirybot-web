@@ -1,21 +1,28 @@
 from django.contrib import admin
 
-from .models import BlacklistedEmailAddress, BlacklistedDomain
+from .models import EmailAddress, BlacklistedDomain
 
 
-@admin.register(BlacklistedEmailAddress)
-class BlacklistedEmailAddressAdmin(admin.ModelAdmin):
+@admin.register(EmailAddress)
+class EmailAddressAdmin(admin.ModelAdmin):
 
     list_display = (
         '__str__',
-        'unsubscribed',
-        'bounced',
+        'unsubscribe_datetime',
+        'complain_datetime',
+        'last_bounce_datetime',
         'unsubscribe_url',
     )
 
     list_filter = (
-        'unsubscribed',
-        'bounced',
+        'unsubscribe_datetime',
+        'complain_datetime',
+        'last_bounce_datetime',
+    )
+
+    readonly_fields = (
+        'created_at',
+        'updated_at',
     )
 
     def unsubscribe_url(self, instance):
