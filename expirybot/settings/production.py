@@ -17,7 +17,10 @@ assert len(SECRET_KEY) > 20, "Bad (short) secret key: {}".format(SECRET_KEY)
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['www.expirybot.com']
+ALLOWED_HOSTS = [
+    'www.expirybot.com',
+    'rwsjgwuykifsy6jh.onion',
+]
 
 SERVE_STATIC_FILES = False
 
