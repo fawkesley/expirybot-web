@@ -12,6 +12,8 @@ from expirybot.apps.blacklist.models import EmailAddress
 
 LOG = logging.getLogger(__name__)
 
+mailgun_domain = 'keyserver.paulfurley.com'
+
 
 class Command(BaseCommand):
     help = ('Updates keys from the keyserver')
@@ -28,7 +30,8 @@ def sync_mailgun_suppressions():
         record_complaint(email, complain_datetime)
 
     for (email, bounce_datetime) in get_bounces():
-        record_bounce(email, bounce_datetime)
+        if record_bounce(email, bounce_datetime):
+            delete_bounce_from_mailgun(email)
 
 
 def get_unsubscribes():
@@ -44,26 +47,31 @@ def get_bounces():
 
 
 def get_suppression(type_):
-    mailgun_domain = 'keyserver.paulfurley.com'
-
     api_key = settings.MAILGUN_API_KEY
     if not api_key:
         raise RuntimeError('Bad Mailgun API key: {}'.format(api_key))
 
-    response = requests.get(
-        'https://api.mailgun.net/v3/{domain}/{type_}?limit=10000'.format(
-            domain=mailgun_domain, type_=type_
-        ),
-        auth=('api', api_key),
+    url = 'https://api.mailgun.net/v3/{domain}/{type_}?limit=1000'.format(
+        domain=mailgun_domain, type_=type_
     )
 
-    response.raise_for_status()
+    urls_processed = set()
 
-    for item in response.json()['items']:
-        email = item['address']
-        created_at = parse_mailgun_date(item['created_at'])
+    for _ in range(50):  # don't rely only on `break`
+        response = requests.get(url, auth=('api', api_key))
+        response.raise_for_status()
 
-        yield email, created_at
+        for item in response.json()['items']:
+            email = item['address']
+            created_at = parse_mailgun_date(item['created_at'])
+
+            yield email, created_at
+
+        urls_processed.add(url)
+
+        url = response.json()['paging']['next']  # Mailgun 'next' loop round :(
+        if url in urls_processed:
+            break
 
 
 def parse_mailgun_date(string):
@@ -115,3 +123,15 @@ def record_bounce(email, bounce_datetime):
         obj.last_bounce_datetime = bounce_datetime
 
     obj.save()
+    return True
+
+
+def delete_bounce_from_mailgun(email):
+    LOG.warn("Not deleting bounce for {} yet...")
+    return
+    url = 'https://api.mailgun.net/v3/{domain}/bounces/{email}'.format(
+        domain=mailgun_domain, email=email
+    )
+
+    response = requests.delete(url, auth=('api', settings.MAILGUN_API_KEY))
+    response.raise_for_status()
