@@ -129,3 +129,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     )
 }
+
+MAILGUN_API_KEY = os.environ.get('MAILGUN_API_KEY')
