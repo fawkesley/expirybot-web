@@ -25,6 +25,10 @@ class EmailAddressAdmin(admin.ModelAdmin):
         'updated_at',
     )
 
+    search_fields = (
+        'email_address',
+    )
+
     def unsubscribe_url(self, instance):
         return '<a href="{}">[unsubscribe]</a>'.format(
             instance.make_authenticated_unsubscribe_url()
