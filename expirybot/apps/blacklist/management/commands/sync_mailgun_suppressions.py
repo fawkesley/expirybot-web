@@ -51,7 +51,7 @@ def get_suppression(type_):
         raise RuntimeError('Bad Mailgun API key: {}'.format(api_key))
 
     response = requests.get(
-        'https://api.mailgun.net/v3/{domain}/{type_}'.format(
+        'https://api.mailgun.net/v3/{domain}/{type_}?limit=10000'.format(
             domain=mailgun_domain, type_=type_
         ),
         auth=('api', api_key),
