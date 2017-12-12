@@ -9,6 +9,8 @@ upstream expirybot_gunicorn {
 
 server {
     listen 443;
+    listen [::]:443;
+
     server_name www.expirybot.com;
 
     ssl_certificate           /etc/letsencrypt/live/www.expirybot.com/fullchain.pem;
