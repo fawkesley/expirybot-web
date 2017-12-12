@@ -109,7 +109,7 @@ def record_bounce(email, bounce_datetime):
 
     if obj.last_bounce_datetime:
         obj.last_bounce_datetime = max(
-            bounce_datetime, obj.bounce_datetime
+            bounce_datetime, obj.last_bounce_datetime
         )
     else:
         obj.last_bounce_datetime = bounce_datetime
