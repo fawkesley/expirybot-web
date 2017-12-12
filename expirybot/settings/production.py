@@ -22,6 +22,14 @@ ALLOWED_HOSTS = [
     'rwsjgwuykifsy6jh.onion',
 ]
 
+# To use SECURE_PROXY_SSL_HEADER you *must* make sure
+#
+# 1. this app is reverse proxied behind an SSL-terminating proxy
+# 2. the proxy strips HTTP_X_FORWARDED_PROTO from any requests it receives
+# 3. the proxy passes HTTP_X_FORWARDED_PROTO: https only for its SSL config
+
+SECURE_PROXY_SSL_HEADER = ('X-Forwarded-Proto', 'https')
+
 SERVE_STATIC_FILES = False
 
 db_from_env = dj_database_url.config(conn_max_age=500)
