@@ -17,7 +17,9 @@ setup_virtualenv() {
 
   VENV_DIR="${REPO_DIR}/venv/${REQUIREMENTS_HASH}"
 
-  virtualenv -p $(which python3) "${VENV_DIR}"
+  if [ ! -f "${VENV_DIR}/bin/python" ]; then
+    virtualenv -p $(which python3) "${VENV_DIR}"
+  fi
 
   set +u
   . "${VENV_DIR}/bin/activate"
