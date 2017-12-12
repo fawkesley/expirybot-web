@@ -44,8 +44,8 @@ server {
     ##
     ssl_dhparam /etc/ssl/certs/dhparam.pem;  # LOGJAM and various others
 
-    access_log            /var/log/nginx/access.log;
-    error_log             /var/log/nginx/error.log;
+    access_log            /var/log/nginx/www.expirybot.com/access.log;
+    error_log             /var/log/nginx/www.expirybot.com/error.log;
 
     # TODO
     # location ~* ^.+\.(css|js|png|jpg)$ {
