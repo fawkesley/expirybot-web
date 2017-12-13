@@ -42,6 +42,13 @@ install_custom_bashrc() {
   cp /home/vagrant/app/vagrant/bashrc /home/vagrant/.bashrc
 }
 
+create_secrets_sh() {
+  if [ ! -f '/vagrant/secrets.sh' ]; then
+    cp /home/vagrant/app/secrets.sh.example /home/vagrant/app/vagrant/secrets.sh
+    ln -s /home/vagrant/app/vagrant/secrets.sh /home/vagrant/app/secrets.sh
+  fi
+}
+
 setup_app_virtualenv() {
   run_as_vagrant "virtualenv -p /usr/bin/python3 ~/venv"
 
@@ -82,6 +89,7 @@ update_apt
 install_postgresql
 install_system_dependencies
 install_custom_bashrc
+create_secrets_sh
 setup_app_virtualenv
 create_postgresql_database_and_user
 migrate_database_and_add_admin

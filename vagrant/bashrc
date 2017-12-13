@@ -7,8 +7,8 @@ cd ~/app
 export DJANGO_SETTINGS_MODULE="expirybot.settings.development"
 export USE_FILESYSTEM_STORAGE=true
 
-if [ -f "/home/vagrant/secrets.sh" ]; then
-    . /home/vagrant/secrets.sh
+if [ -f "/home/vagrant/app/secrets.sh" ]; then
+    . /home/vagrant/app/secrets.sh
 fi
 
 # For testing out production, use these settings instead:
