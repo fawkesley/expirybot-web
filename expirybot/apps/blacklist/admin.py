@@ -41,4 +41,10 @@ class EmailAddressAdmin(admin.ModelAdmin):
 class BlacklistedDomainAdmin(admin.ModelAdmin):
     list_display = (
         '__str__',
+        'comment',
+    )
+
+    search_fields = (
+        'domain',
+        'comment',
     )
