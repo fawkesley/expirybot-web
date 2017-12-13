@@ -22,3 +22,5 @@ MAILTO="paul@paulfurley.com"
 @hourly crontab < ~/crontab.txt
 
 @hourly ~/app/script/sync_mailgun_suppressions
+
+@daily ~/app/script/sync_mailgun_no_mx_domains
