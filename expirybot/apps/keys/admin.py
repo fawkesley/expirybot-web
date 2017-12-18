@@ -18,6 +18,20 @@ class ReadonlyFieldsOnChangeMixin():
 class UIDInline(admin.TabularInline):
     model = UID
 
+    fields = (
+        'uid_string',
+    )
+
+    readonly_fields = (
+        'uid_string',
+    )
+
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
 
 @admin.register(PGPKey)
 class PGPKeyAdmin(admin.ModelAdmin):
@@ -31,9 +45,14 @@ class PGPKeyAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
+        'last_synced',
         'key_algorithm',
         'key_length_bits',
-        'last_synced',
+    )
+
+    search_fields = (
+        'fingerprint',
+        'uids__uid_string',
     )
 
     inlines = (UIDInline,)
@@ -43,7 +62,7 @@ class PGPKeyAdmin(admin.ModelAdmin):
         return (
             '<a href="https://keyserver.paulfurley.com'
             '/pks/lookup?op=vindex&search={}">[keyserver]</a>').format(
-                    instance.key_id
+                    instance.zero_x_fingerprint
         )
 
     keyserver.allow_tags = True

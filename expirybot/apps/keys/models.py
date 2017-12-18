@@ -36,7 +36,8 @@ class PGPKey(models.Model):
 
     expiry_datetime = models.DateTimeField(null=True, blank=True)
 
-    def __str__(self):
+    @property
+    def human_fingerprint(self):
         return '{} {} {} {} {}  {} {} {} {} {}'.format(
             self.fingerprint[0:4],
             self.fingerprint[4:8],
@@ -49,6 +50,13 @@ class PGPKey(models.Model):
             self.fingerprint[32:36],
             self.fingerprint[36:40]
         )
+
+    def __str__(self):
+        return self.zero_x_fingerprint
+
+    @property
+    def zero_x_fingerprint(self):
+        return '0x{}'.format(self.fingerprint)
 
     @property
     def key_id(self):
@@ -72,7 +80,7 @@ class UID(models.Model):
         default=uuid.uuid4
     )
 
-    uid_string = models.CharField(max_length=500)
+    uid_string = models.CharField(max_length=500, db_index=True)
 
     key = models.ForeignKey(PGPKey, related_name='uids')
 
