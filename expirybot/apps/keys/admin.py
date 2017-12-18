@@ -34,17 +34,20 @@ class UIDInline(admin.TabularInline):
 
 
 @admin.register(PGPKey)
-class PGPKeyAdmin(admin.ModelAdmin):
+class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
     list_display = (
         '__str__',
         'key_algorithm',
         'key_length_bits',
+        'expiry_datetime',
         'uids_string',
         'last_synced',
         'keyserver',
     )
 
     list_filter = (
+        'creation_datetime',
+        'expiry_datetime',
         'last_synced',
         'key_algorithm',
         'key_length_bits',
