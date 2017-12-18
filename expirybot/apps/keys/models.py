@@ -1,5 +1,3 @@
-import uuid
-
 from django.db import models
 
 from expirybot.apps.blacklist.models import EmailAddress
@@ -75,10 +73,7 @@ class PGPKey(models.Model):
 
 
 class UID(models.Model):
-    uuid = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4
-    )
+    id = models.AutoField(primary_key=True)
 
     uid_string = models.CharField(max_length=500, db_index=True)
 

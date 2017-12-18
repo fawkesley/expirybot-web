@@ -1,0 +1,23 @@
+#!/bin/sh -eu
+
+
+THIS_SCRIPT=$0
+THIS_DIR=$(dirname ${THIS_SCRIPT})
+
+GPG=/usr/bin/gpg2
+FIREJAIL=/usr/bin/firejail
+
+FAKE_HOME='/tmp/gpg-fake-home'
+
+export GNUPGHOME="${FAKE_HOME}/.gnupg"
+mkdir -p "${GNUPGHOME}"
+chmod 700 "${GNUPGHOME}"
+
+cp "${THIS_DIR}/gpg.conf" "${GNUPGHOME}/gpg.conf"
+
+
+exec $GPG \
+  --batch \
+  --no-tty \
+  "$@"
+
