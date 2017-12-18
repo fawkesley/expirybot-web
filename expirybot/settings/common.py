@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'expirybot.apps.blacklist',
+    'expirybot.apps.keys',
     'expirybot.apps.apiv1',
 
     'django_extensions',
