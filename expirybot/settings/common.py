@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -98,6 +99,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+# https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
+
+LOGIN_URL = '/u/login/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

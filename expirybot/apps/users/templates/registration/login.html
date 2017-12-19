@@ -1,0 +1,32 @@
+{% extends 'expirybot/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+
+  <div class="container">
+    <h1>Login</h1>
+
+    <form class="form" method="post">
+      {% csrf_token %}
+
+      {{ form.non_field_errors }}
+
+      {% for field in form %}
+
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field|add_class:"form-control" }}
+        {{ field.errors }}
+        <p class="help-block">{{ field.help_text }}</p>
+      </div>
+
+      {% endfor %}
+
+      <button class="btn btn-default btn-lg" type="submit">Login</button>
+
+    </form>
+
+  </div>
+{% endblock %}
