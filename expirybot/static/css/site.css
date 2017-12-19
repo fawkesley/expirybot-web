@@ -5947,10 +5947,6 @@ button.close {
 .panel-primary .panel-title {
   color: #fff; }
 
-footer {
-  padding: 50px 0 50px 0;
-  background-color: gray; }
-
 #monitor-email-address .lead {
   padding: 30px 0 30px 0; }
 @media (min-width: 1200px) {
@@ -5958,5 +5954,14 @@ footer {
     width: 400px; } }
 #monitor-email-address section {
   padding-top: 50px; }
+
+footer {
+  background-color: #bbbbbb;
+  padding: 50px 0 50px 0;
+  color: #474747; }
+  footer a {
+    color: #474747; }
+  footer a:hover {
+    color: #474747; }
 
 /*# sourceMappingURL=site.css.map */
