@@ -1,0 +1,47 @@
+#!/bin/sh -eux
+
+USER="expirybot-web"
+
+THIS_SCRIPT=$0
+REPO_DIR="$(dirname ${THIS_SCRIPT})/.."
+
+if [ "$(whoami)" != "root" ]; then
+  echo "Must be root"
+  exit 1
+fi
+
+
+pull_master() {
+  cd "${REPO_DIR}"
+  su "${USER}" -c "git fetch && git checkout master && git pull"
+  cd -
+}
+
+rebuild_css_etc() {
+  cd "${REPO_DIR}"
+  su "${USER}" -c "make"
+  cd -
+}
+
+rebuild_virtualenv() {
+  . ${REPO_DIR}/script/_setup_environment
+}
+
+chown_everything() {
+  /bin/chown -R "${USER}:${USER}" "$REPO_DIR"
+}
+
+restart_expirybot() {
+  supervisorctl restart expirybot
+}
+
+follow_log() {
+  exec tail -f /var/log/supervisor/expirybot*
+}
+
+pull_master
+rebuild_css_etc
+rebuild_virtualenv
+chown_everything
+restart_expirybot
+follow_log
