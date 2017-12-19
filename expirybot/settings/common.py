@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'expirybot.apps.blacklist',
     'expirybot.apps.keys',
     'expirybot.apps.apiv1',
+    'expirybot.apps.users',
 
     'django_extensions',
     'rest_framework',
