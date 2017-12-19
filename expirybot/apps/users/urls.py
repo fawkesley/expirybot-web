@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from .views import MonitorEmailAddressView, TestView
+from .views import MonitorEmailAddressView
 
 
 urlpatterns = [
