@@ -27,6 +27,8 @@ urlpatterns = [
     url(r'^apiv1', include('expirybot.apps.apiv1.urls')),
 
     url(r'^', include('expirybot.apps.users.urls')),
+
+    url('^u/', include('django.contrib.auth.urls'))
 ]
 
 if settings.SERVE_STATIC_FILES:
