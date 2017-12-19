@@ -1,185 +1,30 @@
-@import 'normalize';
-
-$error-light: #fcdad6;
-$error-dark: #e43;
-$warning-light: #ffdbbd;
-$warning-dark: #f82;
-
-html {
-  font-family: 'Source Sans Pro', sans-serif;
-}
-
-body {
-  background-color: #f9f9f9;
-}
-
-.unsubscribe-page {
-
-  .signoff > p > a {
-    color: gray;
-    text-decoration: none;
-  }
-}
-
-
-header {
-  padding: 0;
-
-  h1 {
-    .small {
-      font-size: 66%;
-      color: gray;
-    }
-  }
-
-  h2 {
-    font-size: 20px;
-    font-weight: normal;
-  }
-
-  .brand {
-    font-weight: bold;
-  }
-}
-
-.center {
-  max-width: 980px;
-  margin: 0 auto;
-}
-
-#warning {
-  background-color: $error-dark;
-  color: white;
-  font-size: 48px;
-  font-weight: bold;
-  padding: 30px 0 20px 0;
-
-}
-
-
-#key-list ul.keys {
-  background-color: white;
-  box-shadow: 0 1px 0.2em rgba(0,0,0,0.2);
-  list-style-type: none;
-  padding: 0;
-
-
-  > li {
-    display: flex;
-    flex-direction: row;
-
-    border: 1px solid #eeeeee;
-    padding: 15px;
-  }
-
-  ul.uids {
-    list-style-type: none;
-    padding: 0;
-    margin-bottom: 20px;
-
-    > li {
-
-      h3 {
-        margin-top: 0;
-      }
-      // padding: 10px 0 10px 0;
-    }
-  }
-
-  ul.key-ids {
-    list-style-type: none;
-    padding: 0;
-  }
-
-  .email::before {
-    content: "<";
-  }
-
-  .email::after {
-    content: ">";
-  }
-
-  div.key-description {
-    flex-grow: 2;
-
-    .fingerprint {
-      margin-bottom: 20px;
-    }
-  }
-
-
-  .hex {
-    font-family: monospace;
-  }
-
-  .icon-fingerprint {
-    background: url(/static/img/icon-fingerprint.svg) no-repeat;
-    background-size: cover;
-    width: 30px;
-    height: 30px;
-    display: block;
-    float: left;
-  }
-
-  .icon-key {
-    background: url(/static/img/icon-key.svg) no-repeat;
-    background-size: cover;
-    width: 50px;
-    height: 50px;
-    display: block;
-    float: left;
-    margin-right: 20px;
-  }
-}
-
-div.expiry-info {
-  .message {
-    font-weight: bold;
-    padding: 0.5em;
-  }
-}
-
-.ok {
-  background-color: #e6f7e3;
-  color: #5c4;
-}
-
-.error {
-  background-color: $error-light;
-  color: $error-dark;
-}
-
-.warning {
-  background-color: $warning-light;
-  color: $warning-dark;
-}
-
+@import 'bootstrap';
+@import 'bootswatch';
 
 footer {
-  background-color: rgb(187, 187, 187);
   padding: 50px 0 50px 0;
+  background-color: gray;
+}
 
-  .links {
-    color: rgb(71, 71, 71);
+#monitor-email-address {
 
-    a {
-      color: rgb(71, 71, 71);
-      padding-right: 0.5em;
-    }
-    margin-bottom: 0.5em;
-
-  }
-  .copy {
-    color: rgb(128, 128, 128);
-    margin-bottom: 0.5em;
+  .lead {
+    padding: 30px 0 30px 0;
   }
 
-  .madein {
-
-    color: rgb(71, 71, 71);
-
-    a {
-      color: rgb(71, 71, 71);
+  input[type="email"] {
+    @media(min-width: $screen-lg-min) {
+      width: 400px;
     }
   }
+
+  form {
+
+  }
+
+  section {
+    padding-top: 50px;
+
+  }
+
 }
