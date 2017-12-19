@@ -1,0 +1,39 @@
+{% extends 'expirybot/base.html' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+
+  <div id="user-settings" class="container">
+
+    <div class="row">
+      <div class="col-lg-6">
+
+
+        <section class="email-addresses">
+          <h1>Email addresses</h1>
+
+          <input id="notify-email" type="checkbox">
+            <label for="notify-email">
+	      Notify me when a PGP key is uploaded with one of my email addresses.
+            </label>
+          </input>
+
+          {% for email_address in user.profile.claimed_email_addresses %}
+            <h2>{{ email_address }}</h2>
+            <p>No active PGP keys found</p>
+
+          {% empty %}
+
+            <p>You haven't claimed any email addresses yet.</p>
+
+          {% endfor %}
+
+
+        </section>
+      </div>
+    </div>
+
+
+  </div>
+{% endblock %}

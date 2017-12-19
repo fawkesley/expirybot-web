@@ -17,16 +17,6 @@
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" type="text/css" href="{% static "css/site.css" %}" />
 
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="jumbotron-narrow.css" rel="stylesheet">
-
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
-
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -35,6 +25,8 @@
   </head>
 
   <body class="{% block body_class %}{% endblock %}">
+    <script src="{% static "javascripts/jquery-3.2.1.min.js" %}"></script>
+    <script src="{% static "javascripts/bootstrap.min.js" %}"></script>
     {% block body_inner %}
 
       <nav class="navbar navbar-default">
@@ -53,8 +45,20 @@
             <ul class="nav navbar-nav">
             </ul>
             <ul class="nav navbar-nav navbar-right">
-              <li><a href="https://www.paulfurley.com/expirybot">About<span class="sr-only">(current)</span></a></li>
-              <li><a href="#">Login</a></li>
+              <li><a href="https://www.paulfurley.com/expirybot">about<span class="sr-only">(current)</span></a></li>
+              {% if request.user.is_anonymous %}
+              <li><a href="#">login</a></li>
+              {% else %}
+              <li role="presentation" class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                  logged in as {{request.user.username}} <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a href="{% url 'logout' %}">logout</a></li>
+                  <li><a href="{% url 'users.settings' %}">settings</a></li>
+                </ul>
+              </li>
+              {% endif %}
             </ul>
           </div>
         </div>

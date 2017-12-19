@@ -1,4 +1,5 @@
 from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class MonitorEmailAddressView(TemplateView):
@@ -6,3 +7,8 @@ class MonitorEmailAddressView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         raise RuntimeError('{} {}'.format(args, kwargs))
+
+
+class UserSettingsView(LoginRequiredMixin, TemplateView):
+    template_name = 'users/settings.html'
+    redirect_field_name = 'redirect_to'

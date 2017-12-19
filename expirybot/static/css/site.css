@@ -5955,6 +5955,11 @@ button.close {
 #monitor-email-address section {
   padding-top: 50px; }
 
+#user-settings {
+  padding-bottom: 50px; }
+  #user-settings .email-addresses h2 {
+    font-size: 20px; }
+
 footer {
   background-color: #bbbbbb;
   padding: 50px 0 50px 0;
