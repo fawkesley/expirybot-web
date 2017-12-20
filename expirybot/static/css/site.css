@@ -5947,6 +5947,11 @@ button.close {
 .panel-primary .panel-title {
   color: #fff; }
 
+.help-block ul.errorlist {
+  list-style-type: none;
+  padding-left: 0;
+  padding-top: 10px; }
+
 #monitor-email-address .lead {
   padding: 30px 0 30px 0; }
 @media (min-width: 1200px) {
