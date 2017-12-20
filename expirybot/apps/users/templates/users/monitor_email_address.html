@@ -1,4 +1,5 @@
 {% extends 'expirybot/base.html' %}
+{% load widget_tweaks %}
 
 {% block content %}
 
@@ -14,10 +15,22 @@
 
         <form class="form-inline" method="post">
           {% csrf_token %}
-          <div class="form-group form-group-lg">
-	      <input class="form-control" id="email" name="email" type="email" placeholder="e.g. your.name@example.com" />
+
+	  {{ form.non_field_errors }}
+
+          {% with form.email_address as field %}
+            <div class="form-group form-group-lg {% if field.errors %}has-error{% endif %}">
+              <!--<input class="form-control" id="email" name="email" type="email" placeholder="e.g. your.name@example.com" autofocus />-->
+              {{ field|add_class:"form-control"|attr:"placeholder:e.g. your.name@example.com"|attr:"autofocus" }}
+
 	      <input class="btn btn-default btn-lg" type="submit" value="Notify me" />
-          </div>
+
+              <span class="help-block text-left">
+		{{ field.errors }}
+              </span>
+
+            </div>
+          {% endwith %}
         </form>
 
       </div>

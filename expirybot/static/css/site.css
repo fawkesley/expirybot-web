@@ -5947,6 +5947,13 @@ button.close {
 .panel-primary .panel-title {
   color: #fff; }
 
+.help-block ul.errorlist {
+  list-style-type: none;
+  padding-left: 0;
+  padding-top: 10px; }
+  .help-block ul.errorlist li {
+    font-weight: bold; }
+
 #monitor-email-address .lead {
   padding: 30px 0 30px 0; }
 @media (min-width: 1200px) {
@@ -5961,6 +5968,7 @@ button.close {
     font-size: 20px; }
 
 footer {
+  margin-top: 30px;
   background-color: #bbbbbb;
   padding: 50px 0 50px 0;
   color: #474747; }

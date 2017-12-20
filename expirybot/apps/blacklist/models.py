@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class EmailAddress(models.Model):
@@ -37,6 +38,17 @@ class EmailAddress(models.Model):
     def make_authenticated_unsubscribe_url(self):
         from .utils import make_authenticated_unsubscribe_url
         return make_authenticated_unsubscribe_url(self.email_address)
+
+    @property
+    def owner_profile(self):
+        try:
+            owner_proof = self.owner_proof
+
+        except ObjectDoesNotExist:
+            return None
+
+        else:
+            return owner_proof.profile
 
 
 class BlacklistedDomain(models.Model):

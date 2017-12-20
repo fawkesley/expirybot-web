@@ -1,6 +1,16 @@
 @import 'bootstrap';
 @import 'bootswatch';
 
+.help-block ul.errorlist {
+  list-style-type: none;
+  padding-left: 0;
+  padding-top: 10px;
+
+  li {
+    font-weight: bold;
+  }
+}
+
 #monitor-email-address {
 
   .lead {
@@ -39,6 +49,7 @@
 
 
 footer {
+  margin-top: 30px;
   background-color: rgb(187, 187, 187);
   padding: 50px 0 50px 0;
   color: rgb(71, 71, 71);

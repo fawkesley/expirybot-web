@@ -19,15 +19,16 @@
             </label>
           </input>
 
-          {% for email_address in user.profile.claimed_email_addresses %}
+          {% for email_address in user.profile.owned_email_addresses %}
             <h2>{{ email_address }}</h2>
-            <p>No active PGP keys found</p>
 
           {% empty %}
 
-            <p>You haven't claimed any email addresses yet.</p>
+            <p>You haven't added any email addresses yet.</p>
 
           {% endfor %}
+
+          <p><a href="{% url 'users.monitor-email-address' %}">Add an email address</a></p>
 
 
         </section>
