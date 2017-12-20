@@ -19,8 +19,11 @@ from django.conf.urls.static import static
 from django.conf.urls import url, include
 from django.contrib import admin
 
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+
+    # url('^u/', include('django.contrib.auth.urls')),
 
     url(r'^', include('expirybot.apps.blacklist.urls')),
 
@@ -28,7 +31,6 @@ urlpatterns = [
 
     url(r'^', include('expirybot.apps.users.urls')),
 
-    url('^u/', include('django.contrib.auth.urls'))
 ]
 
 if settings.SERVE_STATIC_FILES:

@@ -1,0 +1,29 @@
+{% extends 'expirybot/base.html' %}
+
+{% block content %}
+
+  <div id="email-sent">
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 col-lg-offset-3">
+
+
+          <h1>Please check your email <small>{{ email_address }}</small></h1>
+
+          <p class="lead">
+          To confirm this address belongs to you, please click the link in the email we've just sent you.
+          </p>
+
+          <p>
+            <a href="{% url 'users.monitor-email-address' %}">Monitor another email address</a>
+          <p>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+{% endblock %}
