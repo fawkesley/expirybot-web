@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -15,6 +17,13 @@ class UserProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     updated_at = models.DateTimeField(auto_now=True)
+
+    uuid = models.UUIDField(
+        unique=True,
+        null=False,
+        default=uuid.uuid4,
+        editable=False,
+    )
 
     notify_email_addresses = models.BooleanField(default=True)
 
