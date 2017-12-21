@@ -25,7 +25,14 @@ class UserProfile(models.Model):
         editable=False,
     )
 
+    notify_product_updates = models.BooleanField(default=True)
+
     notify_email_addresses = models.BooleanField(default=True)
+
+    notify_expiry = models.BooleanField(default=True)
+    notify_cipher_preferences = models.BooleanField(default=True)
+    notify_short_id_usage = models.BooleanField(default=True)
+    enable_ical = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.username
