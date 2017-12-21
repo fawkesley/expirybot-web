@@ -1,4 +1,5 @@
 {% extends 'expirybot/base.html' %}
+{% load widget_tweaks %}
 
 {% block title %}Settings{% endblock %}
 
@@ -7,31 +8,97 @@
   <div id="user-settings" class="container">
 
     <div class="row">
-      <div class="col-lg-6">
+      <div class="col-sm-12">
+
+        <h1>Settings for {{ request.user }}</h1>
+        <section>
+          <form class="form form-horizontal" method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <section class="product-updates">
+              {% with form.notify_product_updates as field %}
+                {% include 'partials/settings_checkbox.html' %}
+              {% endwith %}
+            </section>
 
 
-        <section class="email-addresses">
-          <h1>Email addresses</h1>
+            <section class="email-addresses">
 
-          <input id="notify-email" type="checkbox">
-            <label for="notify-email">
-	      Notify me when a PGP key is uploaded with one of my email addresses.
-            </label>
-          </input>
+              {% with form.notify_email_addresses as field %}
+                {% include 'partials/settings_checkbox.html' %}
+              {% endwith %}
 
-          {% for email_address in user.profile.owned_email_addresses %}
-            <h2>{{ email_address }}</h2>
+              <div class="settings-content">
+                <ul>
+                  {% for email_address in user.profile.owned_email_addresses %}
+                    <li>{{ email_address }}</li>
+                  {% empty %}
+                    <p>You haven't added any email addresses yet.</p>
+                  {% endfor %}
+                </ul>
+                <p><a href="{% url 'users.monitor-email-address' %}">Add an email address</a></p>
+              </div>
 
-          {% empty %}
+            </section>
 
-            <p>You haven't added any email addresses yet.</p>
+            <h2>Future features</h2>
+            <p class="lead">
+              These features are in active development but aren't available yet.
+            </p>
 
-          {% endfor %}
+            <section class="expiry">
+              {% with form.notify_expiry as field %}
+                {% include 'partials/settings_checkbox.html' %}
+              {% endwith %}
+            </section>
 
-          <p><a href="{% url 'users.monitor-email-address' %}">Add an email address</a></p>
+            <section class="cipher-preferences">
+              {% with form.notify_cipher_preferences as field %}
+                {% include 'partials/settings_checkbox.html' %}
+              {% endwith %}
+            </section>
+
+            <section class="short-id-usage">
+              {% with form.notify_short_id_usage as field %}
+                {% include 'partials/settings_checkbox.html' %}
+              {% endwith %}
+            </section>
+
+            <section class="ical">
+              {% with form.enable_ical as field %}
+                {% include 'partials/settings_checkbox.html' %}
+              {% endwith %}
+            </section>
 
 
+            <button class="btn btn-default btn-lg" type="submit">Save</button>
+
+          </form>
+
+          <!--
+            <form>
+
+            {% for field in form %}
+
+            <div class="form-group {% if field.errors %}has-error{% endif %}">
+              <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+
+              {{ field|add_class:"form-control" }}
+
+              {% if field.errors %}
+              <span class="help-block">
+                {{ field.errors }}
+                {{ field.help_text|safe }}
+              </span>
+              {% endif %}
+            </div>
+
+            {% endfor %}
+          </form>
+          -->
         </section>
+
       </div>
     </div>
 

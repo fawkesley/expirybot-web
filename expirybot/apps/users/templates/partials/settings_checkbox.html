@@ -1,0 +1,19 @@
+{% load widget_tweaks %}
+<div class="container">
+  <div class="row">
+
+<div class="checkbox {% if field.errors %}has-error{% endif %}">
+  <label for="{{ field.id_for_label }}">
+    {{ field|add_class:"col-sm-1" }}
+
+    <span>{{ field.label }}</span>
+
+  </label>
+
+  {% if field.errors %}
+  <span class="help-block">
+    {{ field.errors }}
+    {{ field.help_text|safe }}
+  </span>
+  {% endif %}
+</div>
