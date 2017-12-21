@@ -21,11 +21,11 @@ from django.utils import timezone
 from django.utils.http import is_safe_url
 
 from django.views.generic import TemplateView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, UpdateView
 
 from expirybot.apps.blacklist.models import EmailAddress
 
-from .forms import MonitorEmailAddressForm
+from .forms import MonitorEmailAddressForm, UserSettingsForm
 from .email_helpers import send_validation_email
 from .models import EmailAddressOwnershipProof, UserProfile
 
@@ -206,8 +206,25 @@ class AddEmailAddressView(TemplateView):
             user.save()
 
 
-class UserSettingsView(LoginRequiredMixin, TemplateView):
+class UserSettingsView(LoginRequiredMixin, UpdateView):
     template_name = 'users/settings.html'
+    form_class = UserSettingsForm
+    model = UserProfile
+
+    def get_object(self, *args, **kwargs):
+        return self.request.user.profile
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+
+        # Do any custom stuff here
+
+        self.object.save()
+        return super().form_valid(form)
+        # render_to_response(self.template_name, self.get_context_data())
+
+    def get_success_url(self, *args, **kwargs):
+        return reverse('users.settings')
 
 
 class LoginView(AuthLoginView):
