@@ -5,8 +5,30 @@ from django.contrib.auth.models import User
 from .models import UserProfile, EmailAddressOwnershipProof
 
 
-class ProofsInline(admin.StackedInline):
+@admin.register(EmailAddressOwnershipProof)
+class EmailAddressOwnershipProofAdmin(admin.ModelAdmin):
+    list_display = (
+        'profile',
+        'email_address',
+    )
+
+    list_filter = (
+        'profile',
+    )
+
+
+#class EmailAddressOwnershipProofInline(admin.ModelAdmin):
+#    readonly_fields = ('profile', 'email_address')
+
+class EmailAddressOwnershipProofInline(admin.StackedInline):
     model = EmailAddressOwnershipProof
+    # readonly_fields = ('profile', 'email_address')
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('__str__',)
+    inlines = (EmailAddressOwnershipProofInline,)
 
 
 class UserProfileInline(admin.StackedInline):
@@ -18,7 +40,7 @@ class UserProfileInline(admin.StackedInline):
 
     readonly_fields = ('created_at', 'updated_at')
 
-    inlines = (ProofsInline,)
+    inlines = (EmailAddressOwnershipProofInline,)
 
 
 class UserAdmin(BaseUserAdmin):
