@@ -27,7 +27,7 @@ from expirybot.apps.blacklist.models import EmailAddress
 
 from .forms import MonitorEmailAddressForm
 from .email_helpers import send_validation_email
-from .models import EmailAddressOwnershipProof
+from .models import EmailAddressOwnershipProof, UserProfile
 
 LOG = logging.getLogger(__name__)
 
@@ -75,7 +75,17 @@ class AddEmailConfirmSendView(LoginRequiredMixin,
                               TemplateView):
     template_name = 'users/add_email_confirm_send.html'
 
+    def post(self, request, *args, **kwargs):
+        self._send_validation_email(self.get_email_address())
 
+        return redirect(
+            reverse(
+                'users.email-sent',
+                kwargs={
+                    'b64_email_address': self.kwargs['b64_email_address']
+                }
+            )
+        )
 
     def get_login_url(self):
         return reverse(
@@ -87,6 +97,7 @@ class AddEmailConfirmSendView(LoginRequiredMixin,
             'exp': timezone.now() + datetime.timedelta(minutes=30),
             'a': 'add-email',
             'e': email_address,
+            'u': str(self.request.user.profile.uuid),
         }
 
         validation_url = self.request.build_absolute_uri(
@@ -105,30 +116,25 @@ class EmailSentView(EmailAddressContextFromURLMixin, TemplateView):
     template_name = 'users/email_sent.html'
 
 
-class AddEmailAddressView(LoginRequiredMixin, EmailAddressContextFromURLMixin,
-                          TemplateView):
+class AddEmailAddressView(TemplateView):
     template_name = 'users/add_email_address.html'
     form_class = MonitorEmailAddressForm
 
+    class AddEmailError(ValueError):
+        pass
+
     def get(self, request, *args, **kwargs):
-        if not self._validate_jwt(self.kwargs['json_web_token']):
-            return redirect(reverse('users.monitor-email-address'))
-
-        return super(AddEmailAddressView, self).get(request, args, kwargs)
-
-    def post(self, request, *args, **kwargs):
-        email_address = self._validate_jwt(self.kwargs['json_web_token'])
-
-        if email_address is None:
-            return redirect(reverse('users.monitor-email-address'))
-
-        self._add_email_address_to_user(email_address, self.request.user)
-
-        return redirect(
-            reverse(
-                'users.settings',
+        try:
+            (email, profile) = self._validate_jwt(
+                self.kwargs['json_web_token']
             )
-        )
+
+        except self.AddEmailError as e:
+            return self.render_to_response({'error_message': str(e)})
+
+        else:
+            self._add_email_address_to_profile(email, profile)
+            return super().get(request, *args, **kwargs)
 
     def _validate_jwt(self, json_web_token):
         try:
@@ -137,12 +143,12 @@ class AddEmailAddressView(LoginRequiredMixin, EmailAddressContextFromURLMixin,
         except jwt.ExpiredSignatureError:
             LOG.info("Got expired JSON web token for user {}".format(
                 self.request.user.username))
-            return None
+            raise self.AddEmailError('The link has expired')
 
         except jwt.DecodeError:
-            LOG.error("Got expired JSON web token for user {}".format(
+            LOG.error("Got invalid JSON web token for user {}".format(
                 self.request.user.username))
-            return None
+            raise self.AddEmailError('The link appears to be invalid')
 
         else:
             if data['a'] != 'add-email':
@@ -151,12 +157,19 @@ class AddEmailAddressView(LoginRequiredMixin, EmailAddressContextFromURLMixin,
                     "user {}: {}".format(self.request.user.username, data)
                 )
 
-                return None
+                raise self.AddEmailError('The link appears to be invalid')
 
-        return data['e']
+        email = data['e']
+        try:
+            profile = UserProfile.objects.get(uuid=data['u'])
+        except UserProfile.DoesNotExist:
+            raise self.AddEmailError(
+                'The user was not found')
 
-    def _add_email_address_to_user(self, email_address, user):
-        profile = user.profile
+        return (email, profile)
+
+    def _add_email_address_to_profile(self, email_address, profile):
+        user = profile.user
 
         (email_model, _) = EmailAddress.objects.get_or_create(
             email_address=email_address

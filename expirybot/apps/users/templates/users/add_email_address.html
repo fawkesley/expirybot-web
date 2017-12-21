@@ -7,28 +7,26 @@
     <div class="row">
       <div class="col-lg-6 col-lg-offset-3">
 
-        <h1>Add email address to your account?</h1>
+        {% if error_message %}
 
-        <p class="lead">
-          You are logged in as <b>{{ user.username }}</b>.<br>
-          <small>
-            <a href="{% url 'users.login' %}?next={{ request.path }}">Log in with a different account.</a>
-          </small>
-        </p>
+          <h1>{{ error_message }}</h1>
 
-        <p>
-        </p>
+          <p class="lead">
+            Failed to add email address to your account<br>
 
-        <form class="form" method="post">
-          {% csrf_token %}
+            <a href="{% url 'users.monitor-email-address' %}">Start again</a>
+          </p>
 
-          <div class="form-group form-group-lg">
-            <input class="form-control" disabled value="{{ email_address }}">
-          </div>
+        {% else %}
 
-          <input class="btn btn-default btn-lg" type="submit" value="Start monitoring" />
+          <h1>Success!</h1>
 
-        </form>
+          <p class="lead">The email address was added successfully.</p>
+
+          <p><a href="{% url 'users.settings' %}">View your account.</a></p>
+
+        {% endif %}
+
 
       </div>
     </div>
