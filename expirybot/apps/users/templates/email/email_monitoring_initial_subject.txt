@@ -1,0 +1,1 @@
+Monitoring active: {{ fingerprints|length }} PGP keys found for {{ email_address }}
