@@ -5966,6 +5966,21 @@ button.close {
   padding-bottom: 50px; }
   #user-settings .email-addresses h2 {
     font-size: 20px; }
+  #user-settings .checkbox input {
+    width: 24px;
+    height: 24px; }
+  #user-settings .checkbox label {
+    font-size: 24px; }
+    #user-settings .checkbox label span {
+      padding-left: 20px; }
+  #user-settings .settings-content {
+    padding-left: 40px; }
+  #user-settings section.email-addresses .settings-content ul {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 20px; }
+  #user-settings button {
+    margin-top: 20px; }
 
 footer {
   margin-top: 30px;
