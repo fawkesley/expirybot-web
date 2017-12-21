@@ -9,10 +9,18 @@
     <div class="row">
       <div class="col-lg-6 col-lg-offset-3">
 
-    <h1>Sign up</h1>
-    <p>
-      Already have an account? <a href="{% url 'users.login' %}?next={{ next }}">Login instead.</a>
-    </p>
+        {% if sign_up_partial %}
+
+          {% include sign_up_partial %}
+
+        {% else %}
+
+          <h1>Sign up</h1>
+          <p>
+            Already have an account? <a href="{% url 'users.login' %}?next={{ next }}">Login instead.</a>
+          </p>
+
+        {% endif %}
 
     <form class="form" method="post">
       {% include 'partials/form_inner.html' %}

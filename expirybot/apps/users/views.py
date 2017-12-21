@@ -180,6 +180,38 @@ class LoginView(AuthLoginView):
     template_name = 'users/login.html'
 
 
+class GetLoginContextMixin():
+
+    def get_context_data(self, *args, **kwargs):
+        """
+        Translate e.g. /u/login/add-email/address to a context object with:
+        {
+            'login_partial': 'users/partials/login_add_user.html'
+            'sign_up_partial': 'users/partials/sign_up_add_user.html'
+        }
+        """
+        ctx = super(GetLoginContextMixin, self).get_context_data(
+            *args, **kwargs
+        )
+
+        login_context = self.kwargs.get('login_context')
+
+        if login_context:
+            fn = login_context.replace('-', '_')
+
+            ctx.update({
+                'login_context': login_context,
+                'login_partial': 'users/partials/login_{}.html'.format(fn),
+                'sign_up_partial': 'users/partials/sign_up_{}.html'.format(fn),
+            })
+
+        return ctx
+
+
+class LoginWithContextView(GetLoginContextMixin, LoginView):
+    pass
+
+
 class LogoutView(AuthLogoutView):
     template_name = 'users/logout.html'
 
@@ -223,3 +255,7 @@ class SignUpView(SuccessURLAllowedHostsMixin, FormView):
             self.redirect_field_name: self.get_redirect_url(),
         })
         return context
+
+
+class SignUpWithContextView(GetLoginContextMixin, SignUpView):
+    pass
