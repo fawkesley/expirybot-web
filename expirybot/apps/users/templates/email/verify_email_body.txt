@@ -6,8 +6,6 @@ Please verify that you own this email address by clicking the link below:
 
 {{ validation_url }}
 
-You'll be asked to login or sign up to create an account.
-
 If this wasn't you, it's safe to delete this email.
 
 Stop *all* future emails from expirybot.com to {{ email_address }}:
