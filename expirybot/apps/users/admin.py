@@ -2,7 +2,14 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
-from .models import UserProfile, EmailAddressOwnershipProof
+from .models import (
+    UserProfile, EmailAddressOwnershipProof, SearchResultForKeysByEmail
+)
+
+
+@admin.register(SearchResultForKeysByEmail)
+class SearchResultForKeysByEmailAdmin(admin.ModelAdmin):
+    list_display = ('datetime', 'email_address')
 
 
 class ProofsInline(admin.StackedInline):

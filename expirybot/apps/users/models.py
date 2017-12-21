@@ -4,6 +4,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 
+from django.contrib.postgres.fields import ArrayField
+
 from expirybot.apps.blacklist.models import EmailAddress
 
 
@@ -68,3 +70,21 @@ class EmailAddressOwnershipProof(models.Model):
         return '{} owns {}'.format(
             self.profile.user.username, self.email_address.email_address
         )
+
+
+class SearchResultForKeysByEmail(models.Model):
+    """
+    Stores the result of searching the keyservers for an email address.
+    """
+    datetime = models.DateTimeField(auto_now_add=True)
+
+    email_address = models.OneToOneField(
+        EmailAddress,
+        related_name='latest_search_by_email',
+        null=True
+    )
+
+    key_fingerprints = ArrayField(
+        base_field=models.CharField(max_length=40),
+        null=False,
+    )
