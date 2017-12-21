@@ -16,7 +16,11 @@ class UserProfileInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'profile'
 
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = (
+        'uuid',
+        'created_at',
+        'updated_at'
+    )
 
     inlines = (ProofsInline,)
 

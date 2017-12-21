@@ -9,11 +9,19 @@
     <div class="row">
       <div class="col-lg-6 col-lg-offset-3">
 
-    <h1>Login</h1>
+        {% if login_partial %}
 
-    <p>
-      No account? <a href="{% url 'users.sign-up' %}?next={{ next }}">Sign up</a>
-    </p>
+          {% include login_partial %}
+
+        {% else %}
+
+          <h1>Login</h1>
+
+          <p>
+            No account? <a href="{% url 'users.sign-up' %}?next={{ next }}">Sign up</a>
+          </p>
+
+        {% endif %}
 
     <form class="form" method="post">
       {% csrf_token %}

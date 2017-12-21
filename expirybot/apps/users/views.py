@@ -27,7 +27,7 @@ from expirybot.apps.blacklist.models import EmailAddress
 
 from .forms import MonitorEmailAddressForm
 from .email_helpers import send_validation_email
-from .models import EmailAddressOwnershipProof
+from .models import EmailAddressOwnershipProof, UserProfile
 
 LOG = logging.getLogger(__name__)
 
@@ -37,19 +37,59 @@ class MonitorEmailAddressView(FormView):
     form_class = MonitorEmailAddressForm
 
     def form_valid(self, form):
-        email_address = form.cleaned_data['email_address']
 
-        self._send_validation_email(email_address)
+        email_address = form.cleaned_data['email_address']
 
         b64_email_address = base64.b64encode(email_address.encode('utf-8'))
 
         return redirect(
             reverse(
-                'users.email-sent',
+                'users.add-email-confirm-send',
                 kwargs={
                     'b64_email_address': b64_email_address
                 }
             )
+        )
+
+
+class EmailAddressContextFromURLMixin():
+    def get_context_data(self, b64_email_address, *args, **kwargs):
+        ctx = super().get_context_data(*args, **kwargs)
+
+        ctx.update({
+            'email_address': self.get_email_address()
+        })
+        return ctx
+
+    def get_email_address(self):
+        if self.kwargs['b64_email_address']:
+            return base64.b64decode(
+                self.kwargs['b64_email_address']
+            ).decode('utf-8')
+        else:
+            return None
+
+
+class AddEmailConfirmSendView(LoginRequiredMixin,
+                              EmailAddressContextFromURLMixin,
+                              TemplateView):
+    template_name = 'users/add_email_confirm_send.html'
+
+    def post(self, request, *args, **kwargs):
+        self._send_validation_email(self.get_email_address())
+
+        return redirect(
+            reverse(
+                'users.email-sent',
+                kwargs={
+                    'b64_email_address': self.kwargs['b64_email_address']
+                }
+            )
+        )
+
+    def get_login_url(self):
+        return reverse(
+            'users.sign-up-with-context', kwargs={'login_context': 'add-email'}
         )
 
     def _send_validation_email(self, email_address):
@@ -57,6 +97,7 @@ class MonitorEmailAddressView(FormView):
             'exp': timezone.now() + datetime.timedelta(minutes=30),
             'a': 'add-email',
             'e': email_address,
+            'u': str(self.request.user.profile.uuid),
         }
 
         validation_url = self.request.build_absolute_uri(
@@ -71,47 +112,29 @@ class MonitorEmailAddressView(FormView):
         send_validation_email(email_address, validation_url)
 
 
-class EmailSentView(TemplateView):
+class EmailSentView(EmailAddressContextFromURLMixin, TemplateView):
     template_name = 'users/email_sent.html'
 
-    def get_context_data(self, b64_email_address, *args, **kwargs):
-        email_address = base64.b64decode(b64_email_address).decode('utf-8')
 
-        return {
-            'email_address': email_address
-        }
-
-
-class AddEmailAddressView(LoginRequiredMixin, TemplateView):
+class AddEmailAddressView(TemplateView):
     template_name = 'users/add_email_address.html'
     form_class = MonitorEmailAddressForm
 
+    class AddEmailError(ValueError):
+        pass
+
     def get(self, request, *args, **kwargs):
-        if not self._validate_jwt(self.kwargs['json_web_token']):
-            return redirect(reverse('users.monitor-email-address'))
-
-        return super(AddEmailAddressView, self).get(request, args, kwargs)
-
-    def post(self, request, *args, **kwargs):
-        email_address = self._validate_jwt(self.kwargs['json_web_token'])
-
-        if email_address is None:
-            return redirect(reverse('users.monitor-email-address'))
-
-        self._add_email_address_to_user(email_address, self.request.user)
-
-        return redirect(
-            reverse(
-                'users.settings',
+        try:
+            (email, profile) = self._validate_jwt(
+                self.kwargs['json_web_token']
             )
-        )
 
-    def get_context_data(self, *args, **kwargs):
-        email_address = self._validate_jwt(self.kwargs['json_web_token'])
+        except self.AddEmailError as e:
+            return self.render_to_response({'error_message': str(e)})
 
-        return {
-            'email_address': email_address
-        }
+        else:
+            self._add_email_address_to_profile(email, profile)
+            return super().get(request, *args, **kwargs)
 
     def _validate_jwt(self, json_web_token):
         try:
@@ -120,12 +143,12 @@ class AddEmailAddressView(LoginRequiredMixin, TemplateView):
         except jwt.ExpiredSignatureError:
             LOG.info("Got expired JSON web token for user {}".format(
                 self.request.user.username))
-            return None
+            raise self.AddEmailError('The link has expired')
 
         except jwt.DecodeError:
-            LOG.error("Got expired JSON web token for user {}".format(
+            LOG.error("Got invalid JSON web token for user {}".format(
                 self.request.user.username))
-            return None
+            raise self.AddEmailError('The link appears to be invalid')
 
         else:
             if data['a'] != 'add-email':
@@ -134,12 +157,19 @@ class AddEmailAddressView(LoginRequiredMixin, TemplateView):
                     "user {}: {}".format(self.request.user.username, data)
                 )
 
-                return None
+                raise self.AddEmailError('The link appears to be invalid')
 
-        return data['e']
+        email = data['e']
+        try:
+            profile = UserProfile.objects.get(uuid=data['u'])
+        except UserProfile.DoesNotExist:
+            raise self.AddEmailError(
+                'The user was not found')
 
-    def _add_email_address_to_user(self, email_address, user):
-        profile = user.profile
+        return (email, profile)
+
+    def _add_email_address_to_profile(self, email_address, profile):
+        user = profile.user
 
         (email_model, _) = EmailAddress.objects.get_or_create(
             email_address=email_address
@@ -180,6 +210,38 @@ class LoginView(AuthLoginView):
     template_name = 'users/login.html'
 
 
+class GetLoginContextMixin():
+
+    def get_context_data(self, *args, **kwargs):
+        """
+        Translate e.g. /u/login/add-email/address to a context object with:
+        {
+            'login_partial': 'users/partials/login_add_user.html'
+            'sign_up_partial': 'users/partials/sign_up_add_user.html'
+        }
+        """
+        ctx = super(GetLoginContextMixin, self).get_context_data(
+            *args, **kwargs
+        )
+
+        login_context = self.kwargs.get('login_context')
+
+        if login_context:
+            fn = login_context.replace('-', '_')
+
+            ctx.update({
+                'login_context': login_context,
+                'login_partial': 'users/partials/login_{}.html'.format(fn),
+                'sign_up_partial': 'users/partials/sign_up_{}.html'.format(fn),
+            })
+
+        return ctx
+
+
+class LoginWithContextView(GetLoginContextMixin, LoginView):
+    pass
+
+
 class LogoutView(AuthLogoutView):
     template_name = 'users/logout.html'
 
@@ -187,6 +249,7 @@ class LogoutView(AuthLogoutView):
 class SignUpView(SuccessURLAllowedHostsMixin, FormView):
     form_class = UserCreationForm
     template_name = 'users/sign_up.html'
+    redirect_field_name = 'next'
 
     def form_valid(self, form):
         form.save()  # save the new user first
@@ -205,11 +268,9 @@ class SignUpView(SuccessURLAllowedHostsMixin, FormView):
     def get_redirect_url(self):
         """Return the user-originating redirect URL if it's safe."""
 
-        redirect_field_name = 'next'
-
         redirect_to = self.request.POST.get(
-            redirect_field_name,
-            self.request.GET.get(redirect_field_name, '')
+            self.redirect_field_name,
+            self.request.GET.get(self.redirect_field_name, '')
         )
         url_is_safe = is_safe_url(
             url=redirect_to,
@@ -217,3 +278,14 @@ class SignUpView(SuccessURLAllowedHostsMixin, FormView):
             require_https=self.request.is_secure(),
         )
         return redirect_to if url_is_safe else ''
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            self.redirect_field_name: self.get_redirect_url(),
+        })
+        return context
+
+
+class SignUpWithContextView(GetLoginContextMixin, SignUpView):
+    pass
