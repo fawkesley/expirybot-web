@@ -134,6 +134,10 @@ class AddEmailAddressView(TemplateView):
 
         else:
             self._add_email_address_to_profile(email, profile)
+            return self.render_to_response({
+                'email_address': email,
+                'user': profile.user,
+            })
             return super().get(request, *args, **kwargs)
 
     def _validate_jwt(self, json_web_token):

@@ -21,7 +21,9 @@
 
           <h1>Success!</h1>
 
-          <p class="lead">The email address was added successfully.</p>
+          <p class="lead">
+            <b>{{ email_address }}</b> was added to the account <b>{{ user }}</b>.
+          </p>
 
           <p><a href="{% url 'users.settings' %}">View your account.</a></p>
 
