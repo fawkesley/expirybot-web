@@ -187,6 +187,7 @@ class LogoutView(AuthLogoutView):
 class SignUpView(SuccessURLAllowedHostsMixin, FormView):
     form_class = UserCreationForm
     template_name = 'users/sign_up.html'
+    redirect_field_name = 'next'
 
     def form_valid(self, form):
         form.save()  # save the new user first
@@ -205,11 +206,9 @@ class SignUpView(SuccessURLAllowedHostsMixin, FormView):
     def get_redirect_url(self):
         """Return the user-originating redirect URL if it's safe."""
 
-        redirect_field_name = 'next'
-
         redirect_to = self.request.POST.get(
-            redirect_field_name,
-            self.request.GET.get(redirect_field_name, '')
+            self.redirect_field_name,
+            self.request.GET.get(self.redirect_field_name, '')
         )
         url_is_safe = is_safe_url(
             url=redirect_to,
@@ -217,3 +216,10 @@ class SignUpView(SuccessURLAllowedHostsMixin, FormView):
             require_https=self.request.is_secure(),
         )
         return redirect_to if url_is_safe else ''
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            self.redirect_field_name: self.get_redirect_url(),
+        })
+        return context
