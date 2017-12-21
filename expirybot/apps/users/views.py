@@ -52,6 +52,22 @@ class MonitorEmailAddressView(FormView):
             )
         )
 
+
+class AddEmailConfirmSendView(LoginRequiredMixin, TemplateView):
+    template_name = 'users/add_email_confirm_send.html'
+
+    def get_context_data(self, b64_email_address, *args, **kwargs):
+        email_address = base64.b64decode(b64_email_address).decode('utf-8')
+
+        return {
+            'email_address': email_address
+        }
+
+    def get_login_url(self):
+        return reverse(
+            'users.sign-up-with-context', kwargs={'login_context': 'add-email'}
+        )
+
     def _send_validation_email(self, email_address):
         jwt_data = {
             'exp': timezone.now() + datetime.timedelta(minutes=30),

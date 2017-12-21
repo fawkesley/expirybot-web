@@ -1,9 +1,9 @@
 from django.conf.urls import url
 
 from .views import (
-    AddEmailAddressView, EmailSentView, LoginView, LoginWithContextView,
-    LogoutView, MonitorEmailAddressView, SignUpView, SignUpWithContextView,
-    UserSettingsView
+    AddEmailAddressView, AddEmailConfirmSendView, EmailSentView, LoginView,
+    LoginWithContextView, LogoutView, MonitorEmailAddressView, SignUpView,
+    SignUpWithContextView, UserSettingsView
 )
 
 JWT_PATTERN = "[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*"
@@ -37,6 +37,12 @@ urlpatterns = [
         name='users.sign-up-with-context'
     ),
 
+    url(
+        r'^u/add-email-address/confirm-send/'
+        '(?P<b64_email_address>[A-Za-z0-9+/=]+)/$',
+        AddEmailConfirmSendView.as_view(),
+        name='users.add-email-confirm-send'
+    ),
 
     url(
         r'^u/add-email-address/(?P<json_web_token>' + JWT_PATTERN + ')/$',
