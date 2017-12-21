@@ -1,0 +1,7 @@
+A PGP key has been added to the public keyservers with your email address:
+
+{% for fingerprint in fingerprints_added %}https://keyserver.paulfurley.com/pks/lookup?op=vindex&search=0x{{ fingerprint }}{% endfor %}
+
+Stop *all* emails from Expirybot:
+
+{{ unsubscribe_url }}

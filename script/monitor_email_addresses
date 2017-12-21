@@ -1,0 +1,9 @@
+#!/bin/sh -eux
+
+THIS_SCRIPT=$0
+REPO_DIR=$(dirname ${THIS_SCRIPT})/..
+
+. ${REPO_DIR}/script/_setup_environment
+
+
+exec ${REPO_DIR}/manage.py monitor_email_addresses
