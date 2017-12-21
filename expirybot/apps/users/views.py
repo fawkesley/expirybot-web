@@ -52,15 +52,30 @@ class MonitorEmailAddressView(FormView):
         )
 
 
-class AddEmailConfirmSendView(LoginRequiredMixin, TemplateView):
+class EmailAddressContextFromURLMixin():
+    def get_context_data(self, b64_email_address, *args, **kwargs):
+        ctx = super().get_context_data(*args, **kwargs)
+
+        ctx.update({
+            'email_address': self.get_email_address()
+        })
+        return ctx
+
+    def get_email_address(self):
+        if self.kwargs['b64_email_address']:
+            return base64.b64decode(
+                self.kwargs['b64_email_address']
+            ).decode('utf-8')
+        else:
+            return None
+
+
+class AddEmailConfirmSendView(LoginRequiredMixin,
+                              EmailAddressContextFromURLMixin,
+                              TemplateView):
     template_name = 'users/add_email_confirm_send.html'
 
-    def get_context_data(self, b64_email_address, *args, **kwargs):
-        email_address = base64.b64decode(b64_email_address).decode('utf-8')
 
-        return {
-            'email_address': email_address
-        }
 
     def get_login_url(self):
         return reverse(
@@ -86,18 +101,12 @@ class AddEmailConfirmSendView(LoginRequiredMixin, TemplateView):
         send_validation_email(email_address, validation_url)
 
 
-class EmailSentView(TemplateView):
+class EmailSentView(EmailAddressContextFromURLMixin, TemplateView):
     template_name = 'users/email_sent.html'
 
-    def get_context_data(self, b64_email_address, *args, **kwargs):
-        email_address = base64.b64decode(b64_email_address).decode('utf-8')
 
-        return {
-            'email_address': email_address
-        }
-
-
-class AddEmailAddressView(LoginRequiredMixin, TemplateView):
+class AddEmailAddressView(LoginRequiredMixin, EmailAddressContextFromURLMixin,
+                          TemplateView):
     template_name = 'users/add_email_address.html'
     form_class = MonitorEmailAddressForm
 
@@ -120,13 +129,6 @@ class AddEmailAddressView(LoginRequiredMixin, TemplateView):
                 'users.settings',
             )
         )
-
-    def get_context_data(self, *args, **kwargs):
-        email_address = self._validate_jwt(self.kwargs['json_web_token'])
-
-        return {
-            'email_address': email_address
-        }
 
     def _validate_jwt(self, json_web_token):
         try:
