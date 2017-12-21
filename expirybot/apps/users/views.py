@@ -37,15 +37,14 @@ class MonitorEmailAddressView(FormView):
     form_class = MonitorEmailAddressForm
 
     def form_valid(self, form):
-        email_address = form.cleaned_data['email_address']
 
-        self._send_validation_email(email_address)
+        email_address = form.cleaned_data['email_address']
 
         b64_email_address = base64.b64encode(email_address.encode('utf-8'))
 
         return redirect(
             reverse(
-                'users.email-sent',
+                'users.add-email-confirm-send',
                 kwargs={
                     'b64_email_address': b64_email_address
                 }
