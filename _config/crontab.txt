@@ -25,6 +25,6 @@ MAILTO="paul@paulfurley.com"
 
 @daily ~/app/script/sync_mailgun_no_mx_domains
 
-@hourly ~/app/script/monitor_email_addresses
+* * * * * ~/app/script/run-one ~/app/script/monitor_email_addresses
 
 # * * * * * run-this-one ~/app/script/sync_keys

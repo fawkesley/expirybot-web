@@ -18,7 +18,7 @@ from expirybot.apps.blacklist.models import EmailAddress
 
 LOG = logging.getLogger(__name__)
 
-SEARCH_PERIOD = datetime.timedelta(seconds=5)  # hours=6)
+SEARCH_PERIOD = datetime.timedelta(hours=1)
 
 
 class Command(BaseCommand):
