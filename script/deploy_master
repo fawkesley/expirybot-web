@@ -36,7 +36,7 @@ restart_expirybot() {
 }
 
 follow_log() {
-  exec tail -f /var/log/supervisor/expirybot*
+  exec tail -F /var/log/supervisor/expirybot* /home/expirybot-web/app/log/info.log
 }
 
 pull_master
