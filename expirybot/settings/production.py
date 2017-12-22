@@ -34,21 +34,3 @@ SERVE_STATIC_FILES = False
 
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES = {'default': db_from_env}
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-    },
-}
