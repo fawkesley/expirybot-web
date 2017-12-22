@@ -22,7 +22,11 @@
           <h1>Success!</h1>
 
           <p class="lead">
-            <b>{{ email_address }}</b> was added to the account <b>{{ user }}</b>.
+            <b>Expirybot will email {{ email_address }}</b> when PGP keys are added to the public keyservers.
+          </p>
+
+          <p>
+            The email address was added to the account <b>{{ user }}</b>.
           </p>
 
           <p><a href="{% url 'users.settings' %}">View your account.</a></p>
