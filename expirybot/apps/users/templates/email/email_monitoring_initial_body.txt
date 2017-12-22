@@ -1,6 +1,6 @@
 Expirybot is now monitoring the public PGP keyservers for your email address.
 
-Currently I can see {{ fingerprints|length }} keys:
+Currently there are {{ fingerprints|length }} keys:
 
 https://keyserver.paulfurley.com/pks/lookup?op=vindex&search={{ email_address }}
 
