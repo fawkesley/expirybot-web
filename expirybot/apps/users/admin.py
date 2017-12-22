@@ -9,7 +9,24 @@ from .models import (
 
 @admin.register(SearchResultForKeysByEmail)
 class SearchResultForKeysByEmailAdmin(admin.ModelAdmin):
-    list_display = ('datetime', 'email_address')
+    list_display = (
+        'datetime',
+        'email_address',
+        'num_fingerprints',
+    )
+
+    def num_fingerprints(self, instance):
+        return len(instance.key_fingerprints)
+
+
+@admin.register(EmailAddressOwnershipProof)
+class EmailAddressOwnershipProofAdmin(admin.ModelAdmin):
+    list_display = ('email_address', 'profile')
+
+    search_fields = (
+        'email_address__email_address',
+        'profile__user__username',
+    )
 
 
 class ProofsInline(admin.StackedInline):
