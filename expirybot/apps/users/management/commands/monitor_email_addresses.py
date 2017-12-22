@@ -138,7 +138,13 @@ def get_set_of_fingerprints(email_address):
         timeout=5
     )
 
-    response.raise_for_status()
+    try:
+        response.raise_for_status()
+    except requests.HTTPError:
+        if response.status_code == 404 and 'No keys found' in response.text:
+            return set()
+        raise
+
     return set(parse_vindex_for_fingerprints(response.text))
 
 
