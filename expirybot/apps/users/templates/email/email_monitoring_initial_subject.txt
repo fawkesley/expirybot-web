@@ -1,1 +1,1 @@
-Monitoring active: {{ fingerprints|length }} PGP keys found for {{ email_address }}
+Monitoring active: {{ fingerprints|length }} PGP {{ fingerprints|length|pluralize:"key,keys" }} found for {{ email_address }}
