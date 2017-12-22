@@ -127,11 +127,11 @@ def record_bounce(email, bounce_datetime):
 
 
 def delete_bounce_from_mailgun(email):
-    LOG.warn("Not deleting bounce for {} yet...")
-    return
     url = 'https://api.mailgun.net/v3/{domain}/bounces/{email}'.format(
         domain=mailgun_domain, email=email
     )
 
     response = requests.delete(url, auth=('api', settings.MAILGUN_API_KEY))
     response.raise_for_status()
+
+    LOG.info('Mailgun delete response: {}'.format(response.text))
