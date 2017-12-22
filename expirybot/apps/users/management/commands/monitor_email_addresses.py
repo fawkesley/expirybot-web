@@ -105,7 +105,8 @@ def compare_and_save_search_result(email_address, fingerprints_before,
 
     keys_added = fingerprints_now - fingerprints_before
 
-    LOG.info('keys added: {}'.format(keys_added))
+    if keys_added:
+        LOG.info('keys added: {}'.format(keys_added))
 
     with transaction.atomic():
         latest_search_result.delete()
