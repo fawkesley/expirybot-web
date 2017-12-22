@@ -104,10 +104,8 @@ def compare_and_save_search_result(email_address, fingerprints_before,
     assert isinstance(fingerprints_now, set)
 
     keys_added = fingerprints_now - fingerprints_before
-    keys_removed = fingerprints_before - fingerprints_now
 
-    LOG.info('keys added: {}, keys removed: {}'.format(
-        keys_added, keys_removed))
+    LOG.info('keys added: {}'.format(keys_added))
 
     with transaction.atomic():
         latest_search_result.delete()
@@ -117,7 +115,7 @@ def compare_and_save_search_result(email_address, fingerprints_before,
             key_fingerprints=list(fingerprints_now)
         )
 
-        if fingerprints_before != fingerprints_now:
+        if keys_added:
             # Do this last to rollback transaction on fail
             send_new_key_email_monitoring_email(
                 email_address.email_address,
