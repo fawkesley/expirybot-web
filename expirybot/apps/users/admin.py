@@ -29,6 +29,24 @@ class EmailAddressOwnershipProofAdmin(admin.ModelAdmin):
     )
 
 
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = (
+        '__str__',
+        'created_at',
+        'updated_at',
+        'notify_product_updates',
+        'notify_email_addresses',
+    )
+
+    list_filter = (
+        'created_at',
+        'updated_at',
+        'notify_product_updates',
+        'notify_email_addresses',
+    )
+
+
 class ProofsInline(admin.StackedInline):
     model = EmailAddressOwnershipProof
 
