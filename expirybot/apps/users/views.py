@@ -150,8 +150,8 @@ class AddEmailAddressView(TemplateView):
             raise self.AddEmailError('The link has expired')
 
         except jwt.DecodeError:
-            LOG.error("Got invalid JSON web token for user {}".format(
-                self.request.user.username))
+            LOG.error("Got invalid JSON web token for user {}: {}".format(
+                self.request.user.username, json_web_token))
             raise self.AddEmailError('The link appears to be invalid')
 
         else:
