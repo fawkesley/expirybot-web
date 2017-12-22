@@ -87,4 +87,5 @@ class SearchResultForKeysByEmail(models.Model):
     key_fingerprints = ArrayField(
         base_field=models.CharField(max_length=40),
         null=False,
+        blank=True,
     )
