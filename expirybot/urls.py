@@ -18,12 +18,20 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.views.generic import TemplateView
 
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
-    # url('^u/', include('django.contrib.auth.urls')),
+    url(
+        r'^robots\.txt$',
+        TemplateView.as_view(
+            template_name='expirybot/robots.txt',
+            content_type='text/plain'
+        ),
+        name="home"
+    ),
 
     url(r'^', include('expirybot.apps.blacklist.urls')),
 
