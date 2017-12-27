@@ -39,6 +39,7 @@ class MonitorEmailAddressView(FormView):
     def form_valid(self, form):
 
         email_address = form.cleaned_data['email_address']
+        LOG.warn('Stage 1: "valid" email address {}'.format(email_address))
 
         b64_email_address = base64.b64encode(email_address.encode('utf-8'))
 
