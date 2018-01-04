@@ -1,14 +1,17 @@
 import base64
 import datetime
 import logging
+import uuid
 
 import jwt
 
+from django.db import transaction
 from django.conf import settings
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.contrib.auth.views import (
     LoginView as AuthLoginView,
     LogoutView as AuthLogoutView,
@@ -43,6 +46,8 @@ class MonitorEmailAddressView(FormView):
 
         b64_email_address = base64.b64encode(email_address.encode('utf-8'))
 
+        self._create_account_if_not_logged_in(email_address)
+
         return redirect(
             reverse(
                 'users.add-email-confirm-send',
@@ -51,6 +56,22 @@ class MonitorEmailAddressView(FormView):
                 }
             )
         )
+
+    def _create_account_if_not_logged_in(self, email_address):
+        if not self.request.user.is_anonymous():
+            return  # already logged in, do nothing
+
+        temp_username = 'tmp-{}'.format(uuid.uuid4())
+
+        with transaction.atomic():
+            user = User.objects.create(
+                username=temp_username,
+            )
+
+            user.set_unusable_password()
+            user.save()
+
+            login(self.request, user)
 
 
 class EmailAddressContextFromURLMixin():
