@@ -26,12 +26,12 @@ class AddEmailAddressView(TemplateView):
             (email, profile) = self._validate_jwt(
                 self.kwargs['json_web_token']
             )
+            self._add_email_address_to_profile(email, profile)
 
         except self.AddEmailError as e:
             return self.render_to_response({'error_message': str(e)})
 
         else:
-            self._add_email_address_to_profile(email, profile)
             return self.render_to_response({
                 'email_address': email,
                 'user': profile.user,
@@ -86,11 +86,15 @@ class AddEmailAddressView(TemplateView):
 
         else:
             if existing_proof.profile != profile:
-                raise RuntimeError(
+                LOG.warn(
                     "Prevented change of ownership of email address {} "
                     "from {} to {}".format(
                         email_address, email_model.owner_profile, profile)
                 )
+
+            raise self.AddEmailError(
+                '{} is already being monitored'.format(email_address)
+            )
 
         if existing_proof is None:
             EmailAddressOwnershipProof.objects.create(
