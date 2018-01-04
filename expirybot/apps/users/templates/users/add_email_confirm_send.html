@@ -3,18 +3,11 @@
 
 {% block content %}
 
-  <div id="monitor-email-address" class="container">
+  <div id="add-email-confirm-send" class="container">
     <div class="row">
       <div class="col-lg-6 col-lg-offset-3">
 
         <h1>Is this email address correct?<br><small>{{ email_address }}</small></h1>
-
-        <p class="lead">
-          The email address will be added to the account <b>{{ user.username }}</b>.<br>
-          <small>
-            <a href="{% url 'users.login' %}?next={{ request.path }}">Log in with a different account.</a>
-          </small>
-        </p>
 
         <form class="form" method="post">
           {% csrf_token %}
@@ -22,6 +15,18 @@
           <input class="btn btn-primary btn-lg" type="submit" value="Send verification email" />
 
         </form>
+
+        {% if user.profile.is_temporary %}
+          <p>
+            Already got an account? <a href="{% url 'users.login' %}?next={{ request.path }}">Log in first</a> to add the email to your existing account.
+          </p>
+        {% else %}
+
+          <p>
+            The email address will be added to the account <b>{{ user.email }}</b>.<br>
+              <a href="{% url 'users.login' %}?next={{ request.path }}">Log in with a different account.</a>
+          </p>
+        {% endif %}
 
       </div>
     </div>
