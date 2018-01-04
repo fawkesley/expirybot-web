@@ -161,7 +161,6 @@ class AddEmailAddressView(TemplateView):
                 'user': profile.user,
                 'form': MonitorEmailAddressForm()
             })
-            return super().get(request, *args, **kwargs)
 
     def _validate_jwt(self, json_web_token):
         try:
