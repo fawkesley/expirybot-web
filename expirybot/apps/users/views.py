@@ -1,14 +1,17 @@
 import base64
 import datetime
 import logging
+import uuid
 
 import jwt
 
+from django.db import transaction
 from django.conf import settings
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.contrib.auth.views import (
     LoginView as AuthLoginView,
     LogoutView as AuthLogoutView,
@@ -28,6 +31,7 @@ from expirybot.apps.blacklist.models import EmailAddress
 from .forms import MonitorEmailAddressForm, UserSettingsForm
 from .email_helpers import send_validation_email
 from .models import EmailAddressOwnershipProof, UserProfile
+from .utils import make_user_permanent
 
 LOG = logging.getLogger(__name__)
 
@@ -43,6 +47,8 @@ class MonitorEmailAddressView(FormView):
 
         b64_email_address = base64.b64encode(email_address.encode('utf-8'))
 
+        self._create_account_if_not_logged_in(email_address)
+
         return redirect(
             reverse(
                 'users.add-email-confirm-send',
@@ -51,6 +57,22 @@ class MonitorEmailAddressView(FormView):
                 }
             )
         )
+
+    def _create_account_if_not_logged_in(self, email_address):
+        if not self.request.user.is_anonymous():
+            return  # already logged in, do nothing
+
+        temp_username = 'tmp-{}'.format(uuid.uuid4())
+
+        with transaction.atomic():
+            user = User.objects.create(
+                username=temp_username,
+            )
+
+            user.set_unusable_password()
+            user.save()
+
+            login(self.request, user)
 
 
 class EmailAddressContextFromURLMixin():
@@ -119,7 +141,6 @@ class EmailSentView(EmailAddressContextFromURLMixin, TemplateView):
 
 class AddEmailAddressView(TemplateView):
     template_name = 'users/add_email_address.html'
-    form_class = MonitorEmailAddressForm
 
     class AddEmailError(ValueError):
         pass
@@ -138,6 +159,7 @@ class AddEmailAddressView(TemplateView):
             return self.render_to_response({
                 'email_address': email,
                 'user': profile.user,
+                'form': MonitorEmailAddressForm()
             })
             return super().get(request, *args, **kwargs)
 
@@ -201,10 +223,8 @@ class AddEmailAddressView(TemplateView):
                 email_address=email_model
             )
 
-        if not user.email:
-            # Also set user's default email address, if not set
-            user.email = email_address
-            user.save()
+        if user.profile.is_temporary:
+            make_user_permanent(user, email_address)
 
 
 class UserSettingsView(LoginRequiredMixin, UpdateView):

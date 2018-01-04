@@ -46,12 +46,12 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
               <li><a href="https://www.paulfurley.com/expirybot">about<span class="sr-only">(current)</span></a></li>
-              {% if request.user.is_anonymous %}
-              <li><a href="{% url 'users.login' %}">login</a></li>
+              {% if request.user.is_anonymous or request.user.profile.is_temporary %}
+              <li><a href="{% url 'users.login' %}?next={{ request.path }}">login</a></li>
               {% else %}
               <li role="presentation" class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                  logged in as {{request.user.username}} <span class="caret"></span>
+                  logged in as {{request.user.email}} <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                   <li><a href="{% url 'users.logout' %}">logout</a></li>

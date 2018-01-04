@@ -5962,6 +5962,17 @@ button.close {
 #monitor-email-address section {
   padding-top: 50px; }
 
+#add-email-confirm-send form {
+  margin-top: 20px;
+  margin-bottom: 20px; }
+
+@media (min-width: 1200px) {
+  #add-email-address input[type="email"] {
+    width: 400px; } }
+#add-email-address form {
+  margin-top: 20px;
+  margin-bottom: 20px; }
+
 #user-settings {
   padding-bottom: 50px; }
   #user-settings .email-addresses h2 {

@@ -46,6 +46,10 @@ class UserProfile(models.Model):
             for proof in self.email_address_ownership_proofs.all()
         )
 
+    @property
+    def is_temporary(self):
+        return self.user.username.startswith('tmp-')
+
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
