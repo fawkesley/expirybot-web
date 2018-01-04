@@ -3,6 +3,7 @@ import logging
 import jwt
 
 from django.conf import settings
+from django.contrib.auth import login
 
 from django.views.generic import TemplateView
 
@@ -32,6 +33,8 @@ class AddEmailAddressView(TemplateView):
             return self.render_to_response({'error_message': str(e)})
 
         else:
+            self._login_user_if_not_logged_in(profile.user)
+
             return self.render_to_response({
                 'email_address': email,
                 'user': profile.user,
@@ -104,3 +107,7 @@ class AddEmailAddressView(TemplateView):
 
         if user.profile.is_temporary:
             make_user_permanent(user, email_address)
+
+    def _login_user_if_not_logged_in(self, user):
+        if self.request.user.is_anonymous():
+            login(self.request, user)
