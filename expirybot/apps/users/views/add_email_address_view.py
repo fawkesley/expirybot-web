@@ -109,5 +109,11 @@ class AddEmailAddressView(TemplateView):
             make_user_permanent(user, email_address)
 
     def _login_user_if_not_logged_in(self, user):
+        """
+        If the user opens the verification link on another device or browser
+        profile, automatically login that browser, until the browser is closed.
+        """
+
         if self.request.user.is_anonymous():
             login(self.request, user)
+            self.request.session.set_expiry(0)  # expire on browser close
