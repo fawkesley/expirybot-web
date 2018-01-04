@@ -31,6 +31,7 @@ from expirybot.apps.blacklist.models import EmailAddress
 from .forms import MonitorEmailAddressForm, UserSettingsForm
 from .email_helpers import send_validation_email
 from .models import EmailAddressOwnershipProof, UserProfile
+from .utils import make_user_permanent
 
 LOG = logging.getLogger(__name__)
 
@@ -222,10 +223,8 @@ class AddEmailAddressView(TemplateView):
                 email_address=email_model
             )
 
-        if not user.email:
-            # Also set user's default email address, if not set
-            user.email = email_address
-            user.save()
+        if user.profile.is_temporary:
+            make_user_permanent(user, email_address)
 
 
 class UserSettingsView(LoginRequiredMixin, UpdateView):
