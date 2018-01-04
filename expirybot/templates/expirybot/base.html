@@ -46,7 +46,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
               <li><a href="https://www.paulfurley.com/expirybot">about<span class="sr-only">(current)</span></a></li>
-              {% if request.user.is_anonymous %}
+              {% if request.user.is_anonymous or request.user.profile.is_temporary %}
               <li><a href="{% url 'users.login' %}">login</a></li>
               {% else %}
               <li role="presentation" class="dropdown">
