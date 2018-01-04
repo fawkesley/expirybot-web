@@ -3,7 +3,7 @@
 
 {% block content %}
 
-  <div id="monitor-email-address" class="container">
+  <div id="add-email-address" class="container">
     <div class="row">
       <div class="col-lg-6 col-lg-offset-3">
 
@@ -25,9 +25,19 @@
             <b>Expirybot will email {{ email_address }}</b> when PGP keys are added to the public keyservers.
           </p>
 
-          <p>
-            The email address was added to the account <b>{{ user }}</b>.
-          </p>
+          <h2 class="h3">Add another email address</h2>
+
+          <form class="form-inline" method="post" action="{% url 'users.monitor-email-address' %}">
+            {% csrf_token %}
+
+            {% with form.email_address as field %}
+              <div class="form-group form-group-lg">
+                {{ field|add_class:"form-control"|attr:"placeholder:e.g. your.name@example.com"|attr:"autofocus" }}
+
+	         <input class="btn btn-default btn-lg" type="submit" value="Notify me" />
+              </div>
+            {% endwith %}
+          </form>
 
           <p><a href="{% url 'users.settings' %}">View your account.</a></p>
 

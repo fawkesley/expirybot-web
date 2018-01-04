@@ -141,7 +141,6 @@ class EmailSentView(EmailAddressContextFromURLMixin, TemplateView):
 
 class AddEmailAddressView(TemplateView):
     template_name = 'users/add_email_address.html'
-    form_class = MonitorEmailAddressForm
 
     class AddEmailError(ValueError):
         pass
@@ -160,6 +159,7 @@ class AddEmailAddressView(TemplateView):
             return self.render_to_response({
                 'email_address': email,
                 'user': profile.user,
+                'form': MonitorEmailAddressForm()
             })
             return super().get(request, *args, **kwargs)
 
