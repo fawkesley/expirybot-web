@@ -117,7 +117,7 @@ class AddEmailConfirmSendView(LoginRequiredMixin,
 
     def _send_validation_email(self, email_address):
         jwt_data = {
-            'exp': timezone.now() + datetime.timedelta(minutes=30),
+            'exp': timezone.now() + datetime.timedelta(days=7),
             'a': 'add-email',
             'e': email_address,
             'u': str(self.request.user.profile.uuid),
@@ -168,7 +168,7 @@ class AddEmailAddressView(TemplateView):
             data = jwt.decode(json_web_token, settings.SECRET_KEY)
 
         except jwt.ExpiredSignatureError:
-            LOG.info("Got expired JSON web token for user {}".format(
+            LOG.warn("Got expired JSON web token for user {}".format(
                 self.request.user.username))
             raise self.AddEmailError('The link has expired')
 
