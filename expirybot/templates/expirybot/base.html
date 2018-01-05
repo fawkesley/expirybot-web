@@ -38,19 +38,31 @@
               <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="/">Expirybot</a>
+
+            <p class="navbar-text">making life easier for PGP users</p>
+
           </div>
 
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
             </ul>
             <ul class="nav navbar-nav navbar-right">
-              <li><a href="https://www.paulfurley.com/expirybot">about<span class="sr-only">(current)</span></a></li>
+	      <li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">services <span class="caret"></span></a>
+		<ul class="dropdown-menu">
+		  <li><a href="https://www.paulfurley.com/expirybot">Remind me before my key expires</a></li>
+                  <li><a href="{% url 'users.monitor-email-address' %}">Alert me about new PGP keys with my email</a></li>
+		  <li role="separator" class="divider"></li>
+                  <li><a href="https://www.paulfurley.com/contact/">Free PGP / GPG help by email or Signal</a></li>
+		</ul>
+	      </li>
+              <li><a href="mailto:paul@paulfurley.com?subject=Expirybot">contact</a></li>
               {% if request.user.is_anonymous or request.user.profile.is_temporary %}
               <li><a href="{% url 'users.login' %}">login</a></li>
               {% else %}
               <li role="presentation" class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                  logged in as {{request.user.email}} <span class="caret"></span>
+                  {{request.user.email}} <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                   <li><a href="{% url 'users.logout' %}">logout</a></li>
