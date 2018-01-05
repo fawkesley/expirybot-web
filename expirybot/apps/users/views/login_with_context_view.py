@@ -1,10 +1,10 @@
 import logging
 
 from .mixins import GetLoginContextMixin
-from . import LoginView
+from . import LoginGetEmailAddressView
 
 LOG = logging.getLogger(__name__)
 
 
-class LoginWithContextView(GetLoginContextMixin, LoginView):
+class LoginWithContextView(GetLoginContextMixin, LoginGetEmailAddressView):
     pass

@@ -1,11 +1,11 @@
 from .add_email_address_view import AddEmailAddressView
 from .add_email_confirm_send_view import AddEmailConfirmSendView
 from .email_sent_view import EmailSentView
-from .login_view import LoginView
+from .login_get_email_address_view import LoginGetEmailAddressView
+from .login_email_sent_view import LoginEmailSentView
+from .login_from_email_link_view import LoginFromEmailLinkView
 from .login_with_context_view import LoginWithContextView
 from .logout_view import LogoutView
 from .mixins import EmailAddressContextFromURLMixin, GetLoginContextMixin
 from .monitor_email_address_view import MonitorEmailAddressView
-from .sign_up_view import SignUpView
-from .sign_up_with_context_view import SignUpWithContextView
 from .user_settings_view import UserSettingsView

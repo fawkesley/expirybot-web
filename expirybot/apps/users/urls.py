@@ -1,9 +1,9 @@
 from django.conf.urls import url
 
 from .views import (
-    AddEmailAddressView, AddEmailConfirmSendView, EmailSentView, LoginView,
-    LoginWithContextView, LogoutView, MonitorEmailAddressView, SignUpView,
-    SignUpWithContextView, UserSettingsView
+    AddEmailAddressView, AddEmailConfirmSendView, EmailSentView,
+    LoginEmailSentView, LoginGetEmailAddressView, LoginFromEmailLinkView,
+    LoginWithContextView, LogoutView, MonitorEmailAddressView, UserSettingsView
 )
 
 JWT_PATTERN = "[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*"
@@ -17,25 +17,31 @@ urlpatterns = [
         name='users.monitor-email-address'
     ),
 
-    url(r'^u/login/$', LoginView.as_view(), name='users.login'),
     url(
-        r'^u/login/(?P<login_context>[a-z\-]+)/$',
+        r'^u/login/reason/(?P<login_context>[a-z\-]+)/$',
         LoginWithContextView.as_view(),
         name='users.login-with-context'
     ),
 
-    url(r'^u/logout/', LogoutView.as_view(), name='users.logout'),
+    url(
+        r'^u/login/$',
+        LoginGetEmailAddressView.as_view(),
+        name='users.login'
+    ),
 
     url(
-        r'^u/sign-up/$',
-        SignUpView.as_view(),
-        name='users.sign-up'
+        r'^u/login/(?P<json_web_token>' + JWT_PATTERN + ')/$',
+        LoginFromEmailLinkView.as_view(),
+        name='users.login-from-email-link'
     ),
+
     url(
-        r'^u/sign-up/(?P<login_context>[a-z\-]+)/$',
-        SignUpWithContextView.as_view(),
-        name='users.sign-up-with-context'
+        r'^u/login/email-sent/$',
+        LoginEmailSentView.as_view(),
+        name='users.login-email-sent'
     ),
+
+    url(r'^u/logout/', LogoutView.as_view(), name='users.logout'),
 
     url(
         r'^u/add-email-address/confirm-send/'

@@ -18,13 +18,13 @@
 
         {% if user.profile.is_temporary %}
           <p>
-            Already got an account? <a href="{% url 'users.login' %}?next={{ request.path }}">Log in first</a> to add the email to your existing account.
+            Already got an account? <a href="{% url 'users.login-with-context' 'add-email' %}?next={{ request.path }}">Log in first</a> to add the email to your existing account.
           </p>
         {% else %}
 
           <p>
             The email address will be added to the account <b>{{ user.email }}</b>.<br>
-              <a href="{% url 'users.login' %}?next={{ request.path }}">Log in with a different account.</a>
+            <a href="{% url 'users.login-with-context' 'add-email' %}?next={{ request.path }}">Log in with a different account.</a>
           </p>
         {% endif %}
 

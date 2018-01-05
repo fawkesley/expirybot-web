@@ -5,6 +5,33 @@ from expirybot.apps.blacklist.utils import allow_send_email
 from expirybot.apps.blacklist.models import EmailAddress
 
 from .models import UserProfile
+from .utils import get_user_for_email_address
+
+
+class EmailLoginForm(forms.Form):
+    email_address = forms.EmailField()
+
+    def clean_email_address(self):
+        email_address = self.cleaned_data['email_address']
+
+        if not allow_send_email(email_address):
+            raise ValidationError(
+                "This email address or domain is unsubscribed from all "
+                "Expirybot emails. If you think this is an error, please "
+                "get in touch."
+            )
+
+        user = get_user_for_email_address(email_address)
+
+        if not user:
+            raise ValidationError(
+                "Could not find an account associated with that email address."
+            )
+
+        if not user.is_active:
+            raise ValidationError("That account is inactive.")
+
+        return email_address
 
 
 class MonitorEmailAddressForm(forms.Form):
@@ -16,7 +43,8 @@ class MonitorEmailAddressForm(forms.Form):
         if not allow_send_email(email_address):
             raise ValidationError(
                 "This email address or domain is unsubscribed from all "
-                "Expirybot emails."
+                "Expirybot emails. If you think this is an error, please "
+                "get in touch."
             )
 
         elif self._already_owned(email_address):
