@@ -4,7 +4,6 @@ from .email_sent_view import EmailSentView
 from .login_get_email_address_view import LoginGetEmailAddressView
 from .login_email_sent_view import LoginEmailSentView
 from .login_from_email_link_view import LoginFromEmailLinkView
-from .login_view import LoginView
 from .login_with_context_view import LoginWithContextView
 from .logout_view import LogoutView
 from .mixins import EmailAddressContextFromURLMixin, GetLoginContextMixin

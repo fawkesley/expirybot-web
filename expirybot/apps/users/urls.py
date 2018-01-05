@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from .views import (
-    AddEmailAddressView, AddEmailConfirmSendView, EmailSentView, LoginView,
+    AddEmailAddressView, AddEmailConfirmSendView, EmailSentView,
     LoginEmailSentView, LoginGetEmailAddressView, LoginFromEmailLinkView,
     LoginWithContextView, LogoutView, MonitorEmailAddressView, SignUpView,
     SignUpWithContextView, UserSettingsView
@@ -16,12 +16,6 @@ urlpatterns = [
         r'^monitor-email-address/$',
         MonitorEmailAddressView.as_view(),
         name='users.monitor-email-address'
-    ),
-
-    url(
-        r'^u/login-with-password/$',
-        LoginView.as_view(),
-        name='users.login-with-password'
     ),
 
     url(
