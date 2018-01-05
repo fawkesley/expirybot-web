@@ -1,0 +1,44 @@
+{% extends 'expirybot/base.html' %}
+
+{% block title_inner %}Expirybot makes it easier to use PGP{% endblock %}
+
+{% block content %}
+
+  <div id="index">
+
+    <div class="jumbotron text-center">
+      <div class="container">
+        <h1>Expirybot makes it<br> easier to use&nbsp;PGP</h1>
+
+        <h2><i>Open</i>PGP Ain't Dead</h2>
+
+        <p class="lead">
+          Journalists, human rights defenders, lawyers, developers and proactive citizens rely on this technology to keep us all safe.
+        </p>
+
+
+      </div>
+    </div>
+
+    <div class="container">
+      <!--
+      <h2>A mission to secure all the things</h2>
+
+      <h2>Expirybot helps you use PGP safely</h2>
+
+      <h2>User experience over perfect security</h2>
+
+      -->
+        <h2>Start using Expirybot</h2>
+        <p class="lead">
+          <a href="{% url 'users.monitor-email-address' %}">Find out when a PGP key is added to the public keyservers with your email address</a>
+        </p>
+
+
+    </div>
+
+
+  </div>
+
+
+{% endblock %}
