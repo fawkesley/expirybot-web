@@ -1,6 +1,26 @@
 import random
 import re
 from django.db import transaction
+from expirybot.apps.blacklist.models import EmailAddress
+
+
+def get_user_for_email_address(email):
+    """
+    Return the django.contrib.auth.User or None for a given email address.
+    """
+
+    try:
+        email_model = EmailAddress.objects.get(email_address=email)
+
+    except EmailAddress.DoesNotExist:
+        return None
+
+    owner_profile = email_model.owner_profile
+
+    if owner_profile is not None:
+        return owner_profile.user
+    else:
+        return None
 
 
 def make_user_permanent(user, email_address):
