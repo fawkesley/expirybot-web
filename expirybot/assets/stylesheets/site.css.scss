@@ -1,5 +1,9 @@
-@import 'bootstrap-3.3.7/_bootstrap.scss';
-@import 'bootswatch-spacelab-3.3.7/_bootswatch.scss';
+@import 'bootstrap-3.3.7/bootstrap.scss';
+@import 'flatly-3.3.7-bootswatch/_bootswatch.scss';
+
+// Note that bootswatch-themes also provides _variables.scss which must be
+// copied over the top of bootstrap-3.3.4/bootstrap/_variables.scss
+
 
 .help-block ul.errorlist {
   list-style-type: none;
@@ -109,15 +113,15 @@
 
 footer {
   margin-top: 30px;
-  background-color: rgb(187, 187, 187);
+  background-color: $brand-primary;
   padding: 50px 0 50px 0;
-  color: rgb(71, 71, 71);
+  color: $navbar-default-color;
 
   a {
-    color: rgb(71, 71, 71);
+    color: $navbar-default-link-color;
   }
 
   a:hover {
-    color: rgb(71, 71, 71);
+    color: $navbar-default-link-color;
   }
 }
