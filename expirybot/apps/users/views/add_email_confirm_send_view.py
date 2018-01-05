@@ -35,7 +35,7 @@ class AddEmailConfirmSendView(LoginRequiredMixin,
 
     def get_login_url(self):
         return reverse(
-            'users.sign-up-with-context', kwargs={'login_context': 'add-email'}
+            'users.login-with-context', kwargs={'login_context': 'add-email'}
         )
 
     def _send_validation_email(self, email_address):
