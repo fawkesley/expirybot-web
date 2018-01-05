@@ -40,6 +40,16 @@ def send_new_key_email_monitoring_email(email_address, fingerprints_added):
     )
 
 
+def send_login_email(email_address, login_url):
+    send_email(
+        email_address,
+        'login',
+        {
+            "login_url": login_url,
+        }
+    )
+
+
 def send_email(email_address, template_fn, context):
     assert isinstance(email_address, str), type(email_address)
     LOG.info('{} : {} context={}'.format(email_address, template_fn, context))

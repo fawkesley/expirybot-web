@@ -1,0 +1,7 @@
+You (or someone pretending to be you) just tried to login to https://www.expirybot.com using the email address {{ email_address }}.
+
+To log in, open the link below in the next 15 minutes:
+
+{{ login_url }}
+
+If this wasn't you, it's safe to delete this email.
