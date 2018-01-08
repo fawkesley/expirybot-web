@@ -1,7 +1,11 @@
+import logging
 import random
 import re
+
 from django.db import transaction
 from expirybot.apps.blacklist.models import EmailAddress
+
+LOG = logging.getLogger(__name__)
 
 
 def get_user_for_email_address(email):
@@ -34,6 +38,8 @@ def make_user_permanent(user, email_address):
         user.username = _make_auto_username(email_address)
         user.email = email_address
         user.save()
+
+        LOG.warn('New user {}'.format(user.username))
 
 
 def _make_auto_username(email_address):
