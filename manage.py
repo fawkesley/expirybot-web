@@ -2,6 +2,11 @@
 import os
 import sys
 
+import logging
+
+LOG = logging.getLogger(__name__)
+
+
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "expirybot.settings.production")
     try:
@@ -19,4 +24,8 @@ if __name__ == "__main__":
                 "forget to activate a virtual environment?"
             )
         raise
-    execute_from_command_line(sys.argv)
+    try:
+        execute_from_command_line(sys.argv)
+    except Exception as e:
+        LOG.exception(e)
+        raise
