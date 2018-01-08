@@ -11,22 +11,38 @@
 
     <p>If that's not the case, can you please <a href="mailto:paul@paulfurley.com&subject=unsubscribe failed for {{ email_address }}">let me know</a> so I can fix this?
 
+  {% elif display_form %}
+
+    <h1>Unsubscribe from all emails?</h1>
+
+    <p class="lead">Block Expirybot from sending <b>any</b> further emails to <b>{{ email_address }}</b>?</p>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <button type="submit" class="btn btn-primary">Unsubscribe</button>
+    </form>
+
   {% else %}
 
     <h1>Unsubscribed</h1>
 
-    <p>Expirybot won't email <b>{{ email_address }}</b> again.</p>
+    <p class="lead">Expirybot won't send <b>any</b> further emails to <b>{{ email_address }}</b>.</p>
 
-    <p>Sorry about that. Have a nice day.<p>
+    <p>
+      I'm genuinely sorry for the inconvenience and I hope I haven't annoyed you too much.
+    </p>
+
+    <div class="signoff">
+      <p class="lighter-text">Paul<p>
+      <p class="lighter-text"><a href="mailto:paul@paulfurley.com">paul@paulfurley.com</a></p>
+
+      <p class="lighter-text"><a href="https://www.paulfurley.com/expirybot-emails-pgp-users-before-their-key-expires/">Blog post: Expirybot emails PGP users before their key expires</a></i></p>
+    </div>
 
   {% endif %}
 
-  <div class="signoff">
-    <p class="lighter-text">Paul<p>
-    <p class="lighter-text"><a href="mailto:paul@paulfurley.com">paul@paulfurley.com</a></p>
 
-    <p class="lighter-text"><a href="https://www.paulfurley.com/expirybot-emails-pgp-users-before-their-key-expires/">Expirybot emails PGP users before their key expires</a></i></p>
-  </div>
 
 </div>
 
