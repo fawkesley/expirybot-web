@@ -7,11 +7,51 @@
 
   <div id="user-settings" class="container">
 
-    <div class="row">
-      <div class="col-sm-12">
+    <h1>Settings for {{ user.email }}</h1>
 
-        <h1>Settings for {{ user.email }}</h1>
+    <div class="row">
+      <div class="col-sm-6">
+
         <section>
+          <h2>Email addresses</h2>
+                <ul>
+                  {% for email_address in user.profile.owned_email_addresses %}
+                  <li>{{ email_address }} <a href="#">[delete]</a></li>
+                  {% empty %}
+                    <p>You haven't added any email addresses yet.</p>
+                  {% endfor %}
+                </ul>
+                <p><a href="{% url 'users.monitor-email-address' %}">Add an email address</a></p>
+        </section>
+
+      </div>
+
+      <div class="col-sm-6">
+
+        <section>
+          <h2>PGP keys</h2>
+
+          <p>
+            These keys are associated with your email addresses, but you must
+            prove you control the key in order to activate any monitoring features.
+          </p>
+
+          <ul>
+            <li>A999B7498D1A8DC473E53C92309F635DAD1B5517 <a href="#">[prove]</a> <a href="#">[hide]</a></li>
+          </ul>
+
+        </section>
+
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+
+
+        <section>
+          <h2>Notifications</h2>
           <form class="form form-horizontal" method="post">
             {% csrf_token %}
             {{ form.non_field_errors }}
