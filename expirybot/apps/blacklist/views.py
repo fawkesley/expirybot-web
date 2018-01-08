@@ -28,13 +28,29 @@ class GetEmailAddressFromJwtMixin:
 
 
 class UnsubscribeEmailView(GetEmailAddressFromJwtMixin, TemplateView):
-    """
-    Accessing this view creates an EmailAddress with unsubscribe_datetime
-    """
 
     template_name = 'blacklist/unsubscribe_email.html'
 
-    def get_context_data(self, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
+        email = self.get_email_address()
+        try:
+            obj = EmailAddress.objects.get(email_address=email)
+        except EmailAddress.DoesNotExist:
+            already_unsubscribed = False
+            unsubscribe_datetime = None
+
+        else:
+            already_unsubscribed = obj.unsubscribe_datetime is not None
+            unsubscribe_datetime = timezone.now()
+
+        return self.render_to_response({
+            'display_form': True,
+            'email_address': email,
+            'already_unsubscribed': already_unsubscribed,
+            'unsubscribe_date': unsubscribe_datetime
+        })
+
+    def post(self, request, *args, **kwargs):
         (obj, new) = EmailAddress.objects.get_or_create(
             email_address=self.get_email_address()
         )
@@ -47,8 +63,9 @@ class UnsubscribeEmailView(GetEmailAddressFromJwtMixin, TemplateView):
         obj.unsubscribe_datetime = timezone.now()
         obj.save()
 
-        return {
+        return self.render_to_response({
+            'display_form': False,
             'email_address': obj.email_address,
             'already_unsubscribed': already_unsubscribed,
             'unsubscribe_date': obj.unsubscribe_datetime
-        }
+        })
