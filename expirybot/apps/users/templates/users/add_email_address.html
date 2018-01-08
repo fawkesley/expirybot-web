@@ -17,6 +17,26 @@
             <a href="{% url 'users.monitor-email-address' %}">Start again</a>
           </p>
 
+        {% elif show_confirm_form %}
+
+          <h1>Confirming email address...</h1>
+
+          <form method="post">
+            {% csrf_token %}
+
+            <button class="btn btn-primary" type="submit">Confirm now</button>
+
+          </form>
+
+          <script>
+            setTimeout(function() {
+              document.forms[0].submit();
+            }, 500);
+          </script>
+
+          </script>
+
+
         {% else %}
 
           <h1>Success!</h1>

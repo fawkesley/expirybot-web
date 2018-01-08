@@ -27,6 +27,23 @@ class AddEmailAddressView(TemplateView):
             (email, profile) = self._validate_jwt(
                 self.kwargs['json_web_token']
             )
+
+        except self.AddEmailError as e:
+            return self.render_to_response({'error_message': str(e)})
+
+        else:
+
+            return self.render_to_response({
+                'show_confirm_form': True,
+                'email_address': email,
+                'user': profile.user,
+            })
+
+    def post(self, request, *args, **kwargs):
+        try:
+            (email, profile) = self._validate_jwt(
+                self.kwargs['json_web_token']
+            )
             self._add_email_address_to_profile(email, profile)
 
         except self.AddEmailError as e:
@@ -36,6 +53,7 @@ class AddEmailAddressView(TemplateView):
             self._login_user_if_not_logged_in(profile.user)
 
             return self.render_to_response({
+                'show_confirm_form': False,
                 'email_address': email,
                 'user': profile.user,
                 'form': MonitorEmailAddressForm()
