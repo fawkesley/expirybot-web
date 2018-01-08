@@ -162,4 +162,7 @@ def parse_vindex_for_fingerprints(string):
 
 
 def validate_fingerprint(fingerprint):
-    return re.match('^[A-F0-9]{40}$', fingerprint)
+    return (
+        re.match('^[A-F0-9]{40}$', fingerprint)
+        or re.match('^[A-F0-9]{16}$', fingerprint)
+    )
