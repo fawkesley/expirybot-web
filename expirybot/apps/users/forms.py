@@ -118,7 +118,7 @@ class UserSettingsForm(ExtraAttrsMixin, forms.ModelForm):
             ),
 
             'notify_expiry': (
-                'Email me before my keys expire'
+                'Email me just before my keys expire'
             ),
 
             'notify_cipher_preferences': (
@@ -135,9 +135,6 @@ class UserSettingsForm(ExtraAttrsMixin, forms.ModelForm):
         }
 
     extra_attrs = {
-        'notify_expiry': {
-            'disabled': '',
-        },
         'notify_cipher_preferences': {
             'disabled': '',
         },
@@ -148,12 +145,6 @@ class UserSettingsForm(ExtraAttrsMixin, forms.ModelForm):
             'disabled': '',
         },
     }
-
-    def clean_notify_expiry(self):  # disable updating this field
-        if self.instance:
-            return self.instance.notify_expiry
-        else:
-            return self.fields['sku']
 
     def clean_notify_cipher_preferences(self):  # disable updating this field
         if self.instance:
