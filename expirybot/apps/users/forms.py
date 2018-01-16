@@ -1,3 +1,5 @@
+import logging
+
 from django import forms
 from django.forms import ValidationError
 
@@ -7,6 +9,8 @@ from expirybot.apps.blacklist.models import EmailAddress
 from .models import UserProfile
 from .utils import get_user_for_email_address
 
+LOG = logging.getLogger(__name__)
+
 
 class EmailLoginForm(forms.Form):
     email_address = forms.EmailField()
@@ -15,6 +19,9 @@ class EmailLoginForm(forms.Form):
         email_address = self.cleaned_data['email_address']
 
         if not allow_send_email(email_address):
+            LOG.warning('Login attempt from blacklisted email {}'.format(
+                email_address))
+
             raise ValidationError(
                 "This email address or domain is unsubscribed from all "
                 "Expirybot emails. If you think this is an error, please "
@@ -24,11 +31,16 @@ class EmailLoginForm(forms.Form):
         user = get_user_for_email_address(email_address)
 
         if not user:
+            LOG.warning('Login attempt from unknown email {}'.format(
+                email_address))
+
             raise ValidationError(
                 "Could not find an account associated with that email address."
             )
 
         if not user.is_active:
+            LOG.warning('Login attempt from inactive email {}'.format(
+                email_address))
             raise ValidationError("That account is inactive.")
 
         return email_address
@@ -41,6 +53,9 @@ class MonitorEmailAddressForm(forms.Form):
         email_address = self.cleaned_data['email_address']
 
         if not allow_send_email(email_address):
+            LOG.warning('Attempt to monitor blacklisted email {}'.format(
+                email_address))
+
             raise ValidationError(
                 "This email address or domain is unsubscribed from all "
                 "Expirybot emails. If you think this is an error, please "
@@ -48,6 +63,9 @@ class MonitorEmailAddressForm(forms.Form):
             )
 
         elif self._already_owned(email_address):
+            LOG.warning('Attempt to monitor already-owned email {}'.format(
+                email_address))
+
             raise ValidationError(
                 "This email address is already monitored by another account."
             )
