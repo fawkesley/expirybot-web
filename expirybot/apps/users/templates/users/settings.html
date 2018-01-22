@@ -10,60 +10,12 @@
     <h1>Settings for {{ user.email }}</h1>
 
     <div class="row">
-      <div class="col-sm-6">
 
-        <section class="email-addresses">
-          <h2>Email addresses</h2>
-
-          <p class="">
-            You've proven that you can access emails sent to these email addresses.
-          </p>
-
-          <ul>
-            {% for email_address in user.profile.owned_email_addresses %}
-            <li>{{ email_address }}</li>
-            {% empty %}
-              <p>You haven't added any email addresses yet.</p>
-            {% endfor %}
-          </ul>
-          <p><a href="{% url 'users.monitor-email-address' %}">Add an email address</a></p>
-        </section>
-
-      </div>
-
-      <div class="col-sm-6">
-
-        <section>
-
-          <h2>PGP keys</h2>
-
-            {% if user.profile.owned_pgp_keys|length %}
-              <p class="">You've proven you can access the private key for these keys.</p>
-
-              <ul class="my-pgp-keys">
-                {% for key in user.profile.owned_pgp_keys %}
-                  <li>
-                        <h3 class="h5">{{ key.human_fingerprint }}</h3>
-
-                        <ul class="uids">
-                          {% for uid in key.uids %}
-                          <li>{{ uid }}</li>
-                          {% endfor %}
-                        </ul>
-
-                  </li>
-                {% endfor %}
-              </ul>
-
-            {% else %}
-              <p class="lead">You haven't proven that you control any PGP keys yet.</p>
-            {% endif %}
-
-        </section>
+      <div class="col-sm-12">
 
         <section id="keys-requiring-proof">
 
-            <h3>Keys requiring proof <span class="badge">{{ user.profile.possible_pgp_keys|length|default:"" }}</span></h3>
+            <h2>Keys requiring proof <span class="badge">{{ user.profile.possible_pgp_keys|length|default:"" }}</span></h2>
 
             {% if user.profile.possible_pgp_keys %}
                 <div class="alert alert-info">
@@ -110,6 +62,58 @@
 
             {% endif %}
 
+        </section>
+
+      </div>
+      <div class="col-sm-6">
+
+        <section>
+
+          <h2>PGP keys</h2>
+
+            {% if user.profile.owned_pgp_keys|length %}
+              <p class="">You've proven you can access the private key for these keys.</p>
+
+              <ul class="my-pgp-keys">
+                {% for key in user.profile.owned_pgp_keys %}
+                  <li>
+                        <h3 class="h5">{{ key.human_fingerprint }}</h3>
+
+                        <ul class="uids">
+                          {% for uid in key.uids %}
+                          <li>{{ uid }}</li>
+                          {% endfor %}
+                        </ul>
+
+                  </li>
+                {% endfor %}
+              </ul>
+
+            {% else %}
+              <p class="lead">You haven't proven that you control any PGP keys yet.</p>
+            {% endif %}
+
+        </section>
+      </div>
+
+
+      <div class="col-sm-6">
+
+        <section class="email-addresses">
+          <h2>Email addresses</h2>
+
+          <p class="">
+            You've proven that you can access emails sent to these email addresses.
+          </p>
+
+          <ul>
+            {% for email_address in user.profile.owned_email_addresses %}
+            <li>{{ email_address }}</li>
+            {% empty %}
+              <p>You haven't added any email addresses yet.</p>
+            {% endfor %}
+          </ul>
+          <p><a href="{% url 'users.monitor-email-address' %}">Add an email address</a></p>
         </section>
 
       </div>
