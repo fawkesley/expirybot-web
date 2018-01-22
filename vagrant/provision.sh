@@ -20,6 +20,7 @@ install_postgresql() {
 install_system_dependencies() {
   apt-get install -y \
     firejail \
+    gnupg2 \
     python3 \
     python3-dev \
     python-virtualenv \
