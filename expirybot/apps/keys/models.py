@@ -6,6 +6,15 @@ from expirybot.libs.uid_parser import parse_email_from_uid
 
 class PGPKey(models.Model):
 
+    ALGORITHM_CHOICES = (
+        ('DSA', 'DSA (1)'),
+        ('RSA-SIGN', 'RSA Sign-only (3)'),
+        ('ELGAMAL', 'ELGAMAL (16)'),
+        ('RSA', 'RSA (17)'),
+        ('ECC', 'ECC (18)'),
+        ('ECDSA', 'ECDSA (19)'),
+    )
+
     fingerprint = models.CharField(
         help_text=(
             "The 40-character key fingerprint without spaces."
@@ -17,14 +26,7 @@ class PGPKey(models.Model):
     key_algorithm = models.CharField(
         null=True, blank=True,
         max_length=10,
-        choices=(
-            ('DSA', 'DSA (1)'),
-            ('RSA-SIGN', 'RSA Sign-only (3)'),
-            ('ELGAMAL', 'ELGAMAL (16)'),
-            ('RSA', 'RSA (17)'),
-            ('ECC', 'ECC (18)'),
-            ('ECDSA', 'ECDSA (19)'),
-        )
+        choices=ALGORITHM_CHOICES
     )
 
     key_length_bits = models.PositiveIntegerField(
