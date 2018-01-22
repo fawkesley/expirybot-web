@@ -27,4 +27,4 @@ MAILTO="paul@paulfurley.com"
 
 * * * * * ~/app/script/run-one ~/app/script/monitor_email_addresses
 
-# * * * * * run-this-one ~/app/script/sync_keys
+*/5 * * * * ~/app/script/run-this-one ~/app/script/sync_keys
