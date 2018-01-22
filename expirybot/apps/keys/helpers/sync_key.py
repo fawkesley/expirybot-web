@@ -16,10 +16,10 @@ LOG = logging.getLogger(__name__)
 def sync_key(key):
     LOG.info('syncing {}'.format(key))
 
-    response = requests.get(
-        '{keyserver}/pks/lookup?op=get&options=mr&search={key_id}'.format(
-            keyserver=settings.KEYSERVER_URL, key_id=key.key_id))
+    url = '{keyserver}/pks/lookup?op=get&options=mr&search={key_id}'.format(
+        keyserver=settings.KEYSERVER_URL, key_id=key.key_id)
 
+    response = requests.get(url, timeout=5)
     response.raise_for_status()
 
     with tempfile.NamedTemporaryFile('wb') as f:
