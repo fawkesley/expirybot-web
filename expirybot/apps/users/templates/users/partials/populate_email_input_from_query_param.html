@@ -1,0 +1,31 @@
+<script>
+  function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, "\\$&");
+      var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
+
+  function ready(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading"){
+      fn();
+    } else {
+      document.addEventListener('DOMContentLoaded', fn);
+    }
+  }
+
+  function fillInputFromQueryParameter() {
+    var input = document.getElementById('id_email_address'),
+        email = getParameterByName('email');
+
+    if(!!input && !!email) {
+      input.value = email;
+    }
+  }
+
+  ready(fillInputFromQueryParameter);
+
+</script>
