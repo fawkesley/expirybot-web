@@ -11,14 +11,14 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect, reverse
 from django.views.generic.edit import FormView
 
-from ..forms import MonitorEmailAddressForm
+from ..forms import LandingPageEmailForm
 
 LOG = logging.getLogger(__name__)
 
 
 class MonitorEmailAddressView(FormView):
     template_name = 'users/monitor_email_address.html'
-    form_class = MonitorEmailAddressForm
+    form_class = LandingPageEmailForm
 
     def form_valid(self, form):
 

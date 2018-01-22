@@ -46,7 +46,7 @@ class EmailLoginForm(forms.Form):
         return email_address
 
 
-class MonitorEmailAddressForm(forms.Form):
+class LandingPageEmailForm(forms.Form):
     email_address = forms.EmailField()
 
     def clean_email_address(self):

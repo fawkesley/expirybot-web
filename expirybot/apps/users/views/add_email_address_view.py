@@ -9,7 +9,7 @@ from django.views.generic import TemplateView
 
 from expirybot.apps.blacklist.models import EmailAddress
 
-from ..forms import MonitorEmailAddressForm
+from ..forms import LandingPageEmailForm
 from ..models import EmailAddressOwnershipProof, UserProfile
 from ..utils import make_user_permanent
 
@@ -56,7 +56,7 @@ class AddEmailAddressView(TemplateView):
                 'show_confirm_form': False,
                 'email_address': email,
                 'user': profile.user,
-                'form': MonitorEmailAddressForm()
+                'form': LandingPageEmailForm()
             })
 
     def _validate_jwt(self, json_web_token):
