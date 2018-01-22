@@ -76,13 +76,17 @@ class PGPKey(models.Model):
             (uid.email_address for uid in self.uids.all())
         ))
 
+    @property
+    def uids(self):
+        return self.uids_set.all()
+
 
 class UID(models.Model):
     id = models.AutoField(primary_key=True)
 
     uid_string = models.CharField(max_length=500, db_index=True)
 
-    key = models.ForeignKey(PGPKey, related_name='uids')
+    key = models.ForeignKey(PGPKey, related_name='uids_set')
 
     email_address = models.ForeignKey(
         EmailAddress,
