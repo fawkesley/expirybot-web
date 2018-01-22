@@ -37,7 +37,7 @@
 
           <h2>PGP keys</h2>
 
-            {% if user.profile.owned_pgp_keys %}
+            {% if user.profile.owned_pgp_keys|length %}
               <p class="">You've proven you can access the private key for these keys.</p>
 
               <ul class="my-pgp-keys">
