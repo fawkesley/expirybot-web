@@ -15,6 +15,7 @@ class PGPKey(models.Model):
     )
 
     key_algorithm = models.CharField(
+        null=True, blank=True,
         max_length=10,
         choices=(
             ('DSA', 'DSA (1)'),
@@ -26,7 +27,9 @@ class PGPKey(models.Model):
         )
     )
 
-    key_length_bits = models.PositiveSmallIntegerField()
+    key_length_bits = models.PositiveIntegerField(
+        null=True, blank=True,
+    )
 
     last_synced = models.DateTimeField(null=True, blank=True)
 
