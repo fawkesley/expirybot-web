@@ -15,7 +15,7 @@
         <section class="email-addresses">
           <h2>Email addresses</h2>
 
-          <p class="lead">
+          <p class="">
             You've proven that you can access emails sent to these email addresses.
           </p>
 
@@ -37,12 +37,33 @@
 
           <h2>PGP keys</h2>
 
-            {% for key in user.profile.owned_pgp_keys %}
-            {% empty %}
-              <p class="lead">You haven't proven that you control any PGP keys yet.</p>
-            {% endfor %}
+            {% if user.profile.owned_pgp_keys %}
+              <p class="">You've proven you can access the private key for these keys.</p>
 
-            <h3>Prove you control these keys <span class="badge">{{ user.profile.possible_pgp_keys|length|default:"" }}</span></h3>
+              <ul class="my-pgp-keys">
+                {% for key in user.profile.owned_pgp_keys %}
+                  <li>
+                        <h3 class="h5">{{ key.human_fingerprint }}</h3>
+
+                        <ul class="uids">
+                          {% for uid in key.uids %}
+                          <li>{{ uid }}</li>
+                          {% endfor %}
+                        </ul>
+
+                  </li>
+                {% endfor %}
+              </ul>
+
+            {% else %}
+              <p class="lead">You haven't proven that you control any PGP keys yet.</p>
+            {% endif %}
+
+        </section>
+
+        <section id="keys-requiring-proof">
+
+            <h3>Keys requiring proof <span class="badge">{{ user.profile.possible_pgp_keys|length|default:"" }}</span></h3>
 
             {% if user.profile.possible_pgp_keys %}
                 <div class="alert alert-info">
@@ -69,7 +90,7 @@
 
                     <div class="col-sm-2">
                       <div class="text-right">
-                        <a class="btn btn-default" href="#">Prove</a>
+                        <a class="btn btn-default" href="{% url 'users.prove-key-ownership' pk=key.fingerprint %}">Prove</a>
                       </div>
                     </div>
                   </div>
