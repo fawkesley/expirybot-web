@@ -3,7 +3,8 @@ from django.conf.urls import url
 from .views import (
     AddEmailAddressView, AddEmailConfirmSendView, EmailSentView,
     LoginEmailSentView, LoginGetEmailAddressView, LoginFromEmailLinkView,
-    LoginWithContextView, LogoutView, MonitorEmailAddressView, UserSettingsView
+    LoginWithContextView, LogoutView, MonitorEmailAddressView,
+    PGPExpiryReminder, UserSettingsView
 )
 
 JWT_PATTERN = "[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*"
@@ -15,6 +16,12 @@ urlpatterns = [
         r'^monitor-email-address/$',
         MonitorEmailAddressView.as_view(),
         name='users.monitor-email-address'
+    ),
+
+    url(
+        r'^pgp-expiry-reminder/$',
+        PGPExpiryReminder.as_view(),
+        name='users.pgp-expiry-reminder'
     ),
 
     url(
