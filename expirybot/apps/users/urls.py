@@ -3,10 +3,13 @@ from django.conf.urls import url
 from .views import (
     AddEmailAddressView, AddEmailConfirmSendView, EmailSentView,
     LoginEmailSentView, LoginGetEmailAddressView, LoginFromEmailLinkView,
-    LoginWithContextView, LogoutView, MonitorEmailAddressView, UserSettingsView
+    LoginWithContextView, LogoutView, MonitorEmailAddressView,
+    ProveKeyOwnershipView, ProveKeyOwnershipFromEmailLinkView, UserSettingsView
 )
 
 JWT_PATTERN = "[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*"
+V4_FINGERPRINT_PATTERN = "[A-Z0-9]{40}"
+V3_FINGERPRINT_PATTERN = "[A-Z0-9]{16}"
 
 
 urlpatterns = [
@@ -68,4 +71,23 @@ urlpatterns = [
         UserSettingsView.as_view(),
         name='users.settings'
     ),
+
+    url(
+        r'^u/settings/prove/(?P<pk>' + V4_FINGERPRINT_PATTERN + ')/$',
+        ProveKeyOwnershipView.as_view(),
+        name='users.prove-key-ownership'
+    ),
+
+    url(
+        r'^u/settings/prove/(?P<pk>' + V3_FINGERPRINT_PATTERN + ')/$',
+        ProveKeyOwnershipView.as_view(),
+        name='users.prove-key-ownership'
+    ),
+
+    url(
+        r'^u/settings/prove/(?P<json_web_token>' + JWT_PATTERN + ')/$',
+        ProveKeyOwnershipFromEmailLinkView.as_view(),
+        name='users.prove-key-ownership-from-email-link'
+    ),
+
 ]

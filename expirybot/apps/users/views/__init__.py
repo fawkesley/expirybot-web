@@ -8,4 +8,8 @@ from .login_with_context_view import LoginWithContextView
 from .logout_view import LogoutView
 from .mixins import EmailAddressContextFromURLMixin, GetLoginContextMixin
 from .monitor_email_address_view import MonitorEmailAddressView
+from .prove_key_ownership_view import ProveKeyOwnershipView
+from .prove_key_ownership_from_email_link_view import (
+    ProveKeyOwnershipFromEmailLinkView
+)
 from .user_settings_view import UserSettingsView
