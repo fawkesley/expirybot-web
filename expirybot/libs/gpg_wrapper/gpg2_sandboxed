@@ -10,10 +10,10 @@ FIREJAIL=/usr/bin/firejail
 FAKE_HOME='/tmp/gpg-fake-home'
 
 export GNUPGHOME="${FAKE_HOME}/.gnupg"
-mkdir -p "${GNUPGHOME}"
-chmod 700 "${GNUPGHOME}"
+/bin/mkdir -p "${GNUPGHOME}"
+/bin/chmod 700 "${GNUPGHOME}"
 
-cp "${THIS_DIR}/gpg.conf" "${GNUPGHOME}/gpg.conf"
+/bin/cp "${THIS_DIR}/gpg.conf" "${GNUPGHOME}/gpg.conf"
 
 
 exec $GPG \
