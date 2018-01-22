@@ -55,7 +55,7 @@ class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
 
     search_fields = (
         'fingerprint',
-        'uids__uid_string',
+        'uids_set__uid_string',
     )
 
     inlines = (UIDInline,)

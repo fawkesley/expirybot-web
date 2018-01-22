@@ -1,0 +1,45 @@
+{% extends 'expirybot/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+  <div id="prove-key-ownership" class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2">
+
+        {% if error %}
+          <h1>Something went wrong</h1>
+
+          <p>
+            There was a problem encrypting a message to the key, so it cannot be
+            proven right now.
+          </p>
+
+          <p>
+            Please send a signed email to <a href="mailto:paul@paulfurley.com">paul@paulfurley.com</a> to prove the key manually.
+          </p>
+
+        {% else %}
+          <h1>Please decrypt this message</h1>
+          <p>
+            Then follow the link to prove you have access to the private key for {{ pgp_key.human_fingerprint }}.
+          </p>
+
+
+<textarea class="form-control" rows="25">
+{{ pgp_message }}
+</textarea>
+
+          <p>
+            The key will be added to the account <b>{{ user.email }}</b>.<br>
+          <a href="{% url 'users.login' %}?next={{ request.path }}">Log in with a different account.</a>
+          </p>
+
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+
+{% endblock %}

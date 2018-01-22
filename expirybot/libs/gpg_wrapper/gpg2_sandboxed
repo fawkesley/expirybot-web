@@ -20,4 +20,3 @@ exec $GPG \
   --batch \
   --no-tty \
   "$@"
-

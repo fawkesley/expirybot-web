@@ -5,6 +5,7 @@ import requests
 
 
 from django.core.management.base import BaseCommand
+from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 
@@ -128,7 +129,7 @@ def get_set_of_fingerprints(email_address):
     assert isinstance(email_address, str)
 
     response = requests.get(
-        'https://keyserver.paulfurley.com/pks/lookup',
+        '{}/pks/lookup'.format(settings.KEYSERVER_URL),
         params={
             'op': 'vindex',
             'options': 'mr',

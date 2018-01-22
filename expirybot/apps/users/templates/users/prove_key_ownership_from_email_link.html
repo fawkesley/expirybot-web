@@ -1,0 +1,42 @@
+{% extends 'expirybot/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+  <div id="add-email-address" class="container">
+    <div class="row">
+      <div class="col-lg-6 col-lg-offset-3">
+
+        {% if error_message %}
+
+          <h1>{{ error_message }}</h1>
+
+          <p class="lead">
+            Failed to add key to your account<br>
+
+          </p>
+
+        {% else %}
+
+          <h1>Success!</h1>
+
+          <p class="lead">
+            You've proven you have access to the private key.
+          </p>
+
+          <p>
+            Expirybot features are now active for this key.
+          <p>
+
+          <p><a href="{% url 'users.settings' %}">View your account settings.</a></p>
+
+        {% endif %}
+
+
+      </div>
+    </div>
+
+  </div>
+
+
+{% endblock %}

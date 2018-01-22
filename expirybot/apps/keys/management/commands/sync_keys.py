@@ -1,16 +1,13 @@
+import datetime
 import logging
-import tempfile
-import requests
 
 from django.core.management.base import BaseCommand
-from django.db import transaction
 from django.utils import timezone
 
-from expirybot.apps.keys.models import (
-    PGPKey, UID
-)
+from expirybot.apps.keys.helpers import get_key, sync_key
+from expirybot.apps.keys.models import PGPKey
 
-from expirybot.libs.gpg_wrapper import parse_public_key, GPGError
+from expirybot.apps.users.models import SearchResultForKeysByEmail
 
 LOG = logging.getLogger(__name__)
 
@@ -33,64 +30,50 @@ class Command(BaseCommand):
 
 
 def sync_keys():
-    for key in get_keys_never_synced():
+    new_fingerprints = get_new_fingerprints_from_search_results()
+    keys_never_synced = get_keys_never_synced()
+    stale_keys = get_stale_keys()
+
+    LOG.info("{} new fingerprints, {} keys never synced, {} stale keys".format(
+        len(new_fingerprints), len(keys_never_synced), len(stale_keys)))
+
+    for fingerprint in new_fingerprints:
+        get_key(fingerprint)
+
+    for key in keys_never_synced:
         sync_key(key)
 
-    LOG.info("All done.")
+    for key in stale_keys:
+        sync_key(key)
+
+    LOG.info("sync_keys finished.")
+
+
+def get_new_fingerprints_from_search_results():
+    """
+    Find key fingerprints from SearchResultForKeysByEmail which haven't yet
+    been added as PGPKey objects, and add them.
+    """
+
+    already_got_fingerprints = set(
+        p.fingerprint for p in PGPKey.objects.all()
+    )
+    found_fingerprints = set()
+
+    for search_result in SearchResultForKeysByEmail.objects.all():
+        found_fingerprints.update(search_result.key_fingerprints)
+
+    return found_fingerprints - already_got_fingerprints
 
 
 def get_keys_never_synced():
     return PGPKey.objects.filter(last_synced=None)
 
 
-def sync_key(key):
-    print('syncing {}'.format(key))
+def get_stale_keys():
+    one_day_ago = timezone.now() - datetime.timedelta(hours=24)
 
-    response = requests.get('https://keyserver.paulfurley.com/pks/lookup?op=get&options=mr&search={}'.format(key.key_id))
-    response.raise_for_status()
-
-    with tempfile.NamedTemporaryFile('wb') as f:
-        f.write(response.content)
-        f.flush()
-
-        try:
-            parsed = parse_public_key(f.name)
-        except GPGError as e:
-            LOG.exception(e)
-            return
-
-        assert parsed['fingerprint'] == key.fingerprint
-
-    with transaction.atomic():
-        sync_key_uids(key, parsed['uids'])
-        sync_created_date(key, parsed['created_date'])
-        sync_expiry_date(key, parsed['expiry_date'])
-        update_last_synced(key)
-        key.save()
-
-
-def sync_key_uids(key, expected_uids):
-
-    current_uids = [u.uid_string for u in key.uids.all()]
-
-    if current_uids != expected_uids:
-        print('Updating UIDs for {}'.format(key))
-
-        with transaction.atomic():
-            key.uids.all().delete()
-
-            for uid_string in expected_uids:
-                print(uid_string)
-                UID.objects.create(key=key, uid_string=uid_string)
-
-
-def sync_created_date(key, date):
-    key.creation_datetime = date
-
-
-def sync_expiry_date(key, date):
-    key.expiry_datetime = date
-
-
-def update_last_synced(key):
-    key.last_synced = timezone.now()
+    return PGPKey.objects.filter(
+        last_synced__isnull=False,
+        last_synced__lt=one_day_ago
+    ).order_by('last_synced')  # ascending: oldest first

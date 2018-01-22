@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 from django.db import models
@@ -7,6 +8,10 @@ from django.db.models.signals import post_save
 from django.contrib.postgres.fields import ArrayField
 
 from expirybot.apps.blacklist.models import EmailAddress
+from expirybot.apps.keys.models import PGPKey
+from expirybot.apps.keys.helpers import get_key
+
+LOG = logging.getLogger(__name__)
 
 
 class UserProfile(models.Model):
@@ -47,8 +52,39 @@ class UserProfile(models.Model):
         )
 
     @property
+    def owned_pgp_keys(self):
+        return (
+            proof.pgp_key
+            for proof in self.pgp_key_ownership_proofs.all()
+        )
+
+    @property
     def is_temporary(self):
         return self.user.username.startswith('tmp-')
+
+    @property
+    def possible_pgp_keys(self):
+        fingerprints = set()
+        owned_fingerprints = set(k.fingerprint for k in self.owned_pgp_keys)
+
+        for email in self.owned_email_addresses:
+            try:
+                search_results = SearchResultForKeysByEmail.objects.get(
+                    email_address=email
+                )
+            except SearchResultForKeysByEmail.DoesNotExist:
+                continue
+            else:
+                fingerprints.update(search_results.key_fingerprints)
+
+        keys = []
+        for f in sorted(fingerprints - owned_fingerprints):
+            try:
+                keys.append(get_key(f))
+            except Exception as e:
+                LOG.error(e)
+
+        return keys
 
 
 def create_user_profile(sender, instance, created, **kwargs):
@@ -73,6 +109,25 @@ class EmailAddressOwnershipProof(models.Model):
     def __str__(self):
         return '{} owns {}'.format(
             self.profile.user.username, self.email_address.email_address
+        )
+
+
+class KeyOwnershipProof(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    pgp_key = models.OneToOneField(
+        PGPKey,
+        related_name='owner_proof'
+    )
+
+    profile = models.ForeignKey(
+        UserProfile,
+        related_name='pgp_key_ownership_proofs'
+    )
+
+    def __str__(self):
+        return '{} owns {}'.format(
+            self.profile.user.username, self.pgp_key
         )
 
 

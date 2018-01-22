@@ -3,7 +3,8 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
 from .models import (
-    UserProfile, EmailAddressOwnershipProof, SearchResultForKeysByEmail
+    UserProfile, EmailAddressOwnershipProof, KeyOwnershipProof,
+    SearchResultForKeysByEmail
 )
 
 
@@ -25,6 +26,26 @@ class EmailAddressOwnershipProofAdmin(admin.ModelAdmin):
 
     search_fields = (
         'email_address__email_address',
+        'profile__user__username',
+    )
+
+
+@admin.register(KeyOwnershipProof)
+class KeyOwnershipProofAdmin(admin.ModelAdmin):
+    list_display = (
+        'pgp_key',
+        'profile',
+        'created_at',
+    )
+
+    readonly_fields = (
+        'pgp_key',
+        'profile',
+        'created_at',
+    )
+
+    search_fields = (
+        'pgp_key__fingerprint',
         'profile__user__username',
     )
 

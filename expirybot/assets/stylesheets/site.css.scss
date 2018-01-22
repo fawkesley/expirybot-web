@@ -59,11 +59,45 @@
 
 }
 
+#prove-key-ownership {
+  textarea {
+    min-height: 100%;
+
+  }
+
+}
+
 #user-settings {
 
-  .email-addresses {
-    h2 {
+  section.email-addresses {
+    ul {
+      padding-top: 20px;
+      padding-bottom: 20px;
+
       font-size: 20px;
+    }
+
+  }
+
+  #keys-requiring-proof {
+    margin-top: 50px;
+  }
+
+  ul.possible-pgp-keys, ul.my-pgp-keys {
+    padding-left: 0;
+
+    li {
+      list-style-type: none;
+    }
+
+    > li {
+      padding: 10px;
+      background: rgb(245, 245, 245);
+      margin-bottom: 5px;
+    }
+
+    ul.uids {
+      padding-left: 0;
     }
   }
 
@@ -90,18 +124,6 @@
   padding-bottom: 50px;
 
 
-  section.email-addresses {
-    .settings-content {
-      ul {
-        padding-top: 20px;
-        padding-bottom: 20px;
-
-        font-size: 20px;
-      }
-
-    }
-
-  }
 
   button {
     margin-top: 20px;
