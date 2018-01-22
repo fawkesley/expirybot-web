@@ -61,18 +61,21 @@ class PGPKey(models.Model):
 
     @property
     def human_fingerprint(self):
-        return '{} {} {} {} {}  {} {} {} {} {}'.format(
-            self.fingerprint[0:4],
-            self.fingerprint[4:8],
-            self.fingerprint[8:12],
-            self.fingerprint[12:16],
-            self.fingerprint[16:20],
-            self.fingerprint[20:24],
-            self.fingerprint[24:28],
-            self.fingerprint[28:32],
-            self.fingerprint[32:36],
-            self.fingerprint[36:40]
-        )
+        if len(self.fingerprint) == 40:
+            return '{} {} {} {} {}  {} {} {} {} {}'.format(  # nbsp
+                self.fingerprint[0:4],
+                self.fingerprint[4:8],
+                self.fingerprint[8:12],
+                self.fingerprint[12:16],
+                self.fingerprint[16:20],
+                self.fingerprint[20:24],
+                self.fingerprint[24:28],
+                self.fingerprint[28:32],
+                self.fingerprint[32:36],
+                self.fingerprint[36:40]
+            )
+        else:
+            return self.fingerprint
 
     def __str__(self):
         return self.zero_x_fingerprint
