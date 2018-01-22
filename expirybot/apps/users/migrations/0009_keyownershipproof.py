@@ -9,7 +9,6 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('keys', '0008_auto_20180122_1908'),
         ('users', '0008_allow_blank_search_rsult'),
     ]
 
