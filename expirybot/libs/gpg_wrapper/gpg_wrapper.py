@@ -46,6 +46,8 @@ def parse_list_keys(fingerprint):
 
     return {
         'fingerprint': _parse_fingerprint_line(stdout),
+        'algorithm': _parse_algorithm(stdout),
+        'length_bits': _parse_length_bits(stdout),
         'created_date': _parse_created_date(stdout),
         'expiry_date': _parse_expiry_date(stdout),
         'uids': list(_parse_uid_lines(stdout)),
@@ -117,6 +119,22 @@ def _parse_created_date(list_keys_output):
     return _parse_pub_line(list_keys_output)['created_date']
 
 
+def _parse_algorithm(list_keys_output):
+    conversion = {
+        'rsa': 'RSA',
+        'dsa': 'DSA',
+        'elg': 'ELGAMAL',
+    }
+    return conversion.get(
+        _parse_pub_line(list_keys_output)['algorithm'],
+        None
+    )
+
+
+def _parse_length_bits(list_keys_output):
+    return _parse_pub_line(list_keys_output)['length_bits']
+
+
 def _parse_pub_line(list_keys_output):
     """
     `pub   rsa4096/0x309F635DAD1B5517 2014-10-31 [SC] [expires: 2017-12-22]`
@@ -131,8 +149,8 @@ def _parse_pub_line(list_keys_output):
 
     pattern = (
         '^pub\s+ '
-        '(?P<type>[^0-9]+)'
-        '(?P<bits>[0-9]+)'
+        '(?P<algorithm>[^0-9]+)'
+        '(?P<length_bits>[0-9]+)'
         '\/'
         '0x[0-9A-F]{16} '
         '(?P<created_date>\d{4}-\d{2}-\d{2})'
@@ -157,6 +175,8 @@ def _parse_pub_line(list_keys_output):
     return {
         'created_date': created_date,
         'expiry_date': expiry_date,
+        'algorithm': match.group('algorithm'),
+        'length_bits': int(match.group('length_bits')),
     }
 
 

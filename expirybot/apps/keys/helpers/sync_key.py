@@ -8,10 +8,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from expirybot.libs.gpg_wrapper import parse_public_key, GPGError
-
-from expirybot.apps.keys.models import (
-    PGPKey, UID
-)
+from expirybot.apps.keys.models import PGPKey, UID
 
 LOG = logging.getLogger(__name__)
 
@@ -38,11 +35,32 @@ def sync_key(key):
         assert parsed['fingerprint'] == key.fingerprint
 
     with transaction.atomic():
+        sync_key_algorithm(key, parsed['algorithm'])
+        sync_key_length_bits(key, parsed['length_bits'])
         sync_key_uids(key, parsed['uids'])
         sync_created_date(key, parsed['created_date'])
         sync_expiry_date(key, parsed['expiry_date'])
         update_last_synced(key)
         key.save()
+
+
+def sync_key_algorithm(key, algorithm):
+    allowed_algorithms = [x[0] for x in PGPKey.ALGORITHM_CHOICES]
+
+    assert algorithm in allowed_algorithms, \
+        'algorithm {} not in {}'.format(algorithm, allowed_algorithms)
+
+    if key.key_algorithm is None:
+        key.key_algorithm = algorithm
+    else:
+        assert key.key_algorithm == algorithm
+
+
+def sync_key_length_bits(key, length_bits):
+    if key.key_length_bits is None:
+        key.key_length_bits = length_bits
+    else:
+        assert key.key_length_bits == length_bits
 
 
 def sync_key_uids(key, expected_uids):
