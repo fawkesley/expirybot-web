@@ -4,6 +4,7 @@ import tempfile
 import requests
 
 from django.db import transaction
+from django.conf import settings
 from django.utils import timezone
 
 from expirybot.libs.gpg_wrapper import parse_public_key, GPGError
@@ -18,7 +19,10 @@ LOG = logging.getLogger(__name__)
 def sync_key(key):
     LOG.info('syncing {}'.format(key))
 
-    response = requests.get('https://keyserver.paulfurley.com/pks/lookup?op=get&options=mr&search={}'.format(key.key_id))
+    response = requests.get(
+        '{keyserver}/pks/lookup?op=get&options=mr&search={key_id}'.format(
+            keyserver=settings.KEYSERVER_URL, key_id=key.key_id))
+
     response.raise_for_status()
 
     with tempfile.NamedTemporaryFile('wb') as f:
