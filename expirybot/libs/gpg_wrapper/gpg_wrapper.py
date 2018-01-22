@@ -6,6 +6,8 @@ import re
 
 from os.path import abspath, dirname, join as pjoin
 
+from django.conf import settings
+
 
 LOG = logging.getLogger(__name__)
 GPG2_SANDBOXED = abspath(pjoin(dirname(__file__), 'gpg2_sandboxed'))
@@ -25,11 +27,43 @@ def parse_public_key(pgp_key_filename):
     return parsed
 
 
+def encrypt_message(fingerprint, text):
+    _receive_key(fingerprint)
+    return _encrypt_text(fingerprint, text)
+
+
 def get_fingerprint(pgp_key_filename):
     stdout = stdout_for_subprocess([
         GPG2_SANDBOXED, pgp_key_filename
     ])
     return _parse_fingerprint_line(stdout)
+
+
+def _receive_key(fingerprint):
+    LOG.info('receiving key {}'.format(fingerprint))
+    return stdout_for_subprocess([
+        GPG2_SANDBOXED,
+        '--keyserver',
+        settings.KEYSERVER_URL,
+        '--recv-key',
+        fingerprint
+    ])
+
+
+def _encrypt_text(fingerprint, text):
+    LOG.info('encrypting to {}'.format(fingerprint))
+    return stdout_for_subprocess([
+        GPG2_SANDBOXED,
+        '--recipient',
+        fingerprint,
+        '--comment',
+        'Copy & paste this encrypted message into your GPG/PGP software',
+        '--no-version',
+        '--armor',
+        '--trust-model',
+        'always',
+        '--encrypt',
+    ], stdin=text).strip()
 
 
 def import_key(pgp_key_filename):
@@ -55,7 +89,7 @@ def parse_list_keys(fingerprint):
     }
 
 
-def stdout_for_subprocess(cmd_parts):
+def stdout_for_subprocess(cmd_parts, stdin=None):
     LOG.info('Running {}'.format(' '.join(cmd_parts)))
     p = subprocess.Popen(
         cmd_parts,
@@ -65,7 +99,14 @@ def stdout_for_subprocess(cmd_parts):
     )
 
     try:
-        stdout, stderr = p.communicate(timeout=5)
+        if stdin is None:
+            stdout, stderr = p.communicate(timeout=5)
+        else:
+            stdout, stderr = p.communicate(
+                input=stdin.encode('utf-8'),
+                timeout=5
+            )  # closes stdin/stdout
+
     except subprocess.TimeoutExpired as e:
         p.kill()
         stdout, stderr = p.communicate()
