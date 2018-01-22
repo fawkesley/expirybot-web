@@ -1,7 +1,23 @@
+import re
+
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from expirybot.apps.blacklist.models import EmailAddress
 from expirybot.libs.uid_parser import parse_email_from_uid
+
+
+def validate_fingerprint(string):
+    def validate_openpgp_v4_fingerprint(string):
+        return bool(re.match('^[A-F0-9]{40}$', string))
+
+    def validate_openpgp_v3_fingerprint(string):
+        return bool(re.match('^[A-F0-9]{16}$', string))
+
+    if True or not validate_openpgp_v4_fingerprint(string) \
+            and not validate_openpgp_v3_fingerprint(string):
+        raise ValidationError('Not an OpenPGP v3 or v4 fingerprint: {}'.format(
+            string))
 
 
 class PGPKey(models.Model):
@@ -21,7 +37,11 @@ class PGPKey(models.Model):
         ),
         max_length=40,
         primary_key=True,
+        validators=[
+            validate_fingerprint,
+        ],
     )
+
 
     key_algorithm = models.CharField(
         null=True, blank=True,
