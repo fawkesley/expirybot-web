@@ -7,11 +7,95 @@
 
   <div id="user-settings" class="container">
 
-    <div class="row">
-      <div class="col-sm-12">
+    <h1>Settings for {{ user.email }}</h1>
 
-        <h1>Settings for {{ user.email }}</h1>
+    <div class="row">
+      <div class="col-sm-6">
+
         <section>
+          <h2>Email addresses</h2>
+          <ul>
+            {% for email_address in user.profile.owned_email_addresses %}
+            <li>{{ email_address }}</li>
+            {% empty %}
+              <p>You haven't added any email addresses yet.</p>
+            {% endfor %}
+          </ul>
+          <p><a href="{% url 'users.monitor-email-address' %}">Add an email address</a></p>
+        </section>
+
+      </div>
+
+      <div class="col-sm-6">
+
+        <section>
+
+          <h2>PGP keys</h2>
+
+            {% for key in user.profile.owned_pgp_keys %}
+            {% empty %}
+              <p class="lead">You haven't proved ownership of any PGP keys yet.</p>
+            {% endfor %}
+
+          <h3>Prove key ownership</h3>
+
+            {% if user.profile.possible_pgp_keys %}
+                <p>
+                  <a href="#" class="close" data-dismiss="alert">&times;</a>
+                  <p>
+                    Activate monitoring on these keys by proving that you control the private key.
+                  </p>
+                </p>
+
+              <ul class="possible-pgp-keys">
+                {% for key in user.profile.possible_pgp_keys %}
+                <li>
+                  <div class="row">
+                    <div class="col-sm-10">
+                      <h3 class="h5"><a target="_new" href="https://keyserver.paulfurley.com/pks/lookup?search=0x{{ key.fingerprint }}&fingerprint=on&op=vindex">{{ key }}</a></h3>
+
+
+                      <ul class="uids">
+                        {% for uid in key.uids %}
+                        <li>{{ uid }}</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+
+                    <div class="col-sm-2">
+                      <div class="text-right">
+                        <a class="btn btn-default" href="#">Prove</a>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+
+            {% else %}
+
+              <p>
+                PGP keys with your email address will appear here.
+              </p>
+
+              <p>
+                To add a PGP key, add the email address to fetch the key from the public keyservers.
+              </p>
+
+            {% endif %}
+
+        </section>
+
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+
+
+        <section>
+          <h2>Notifications</h2>
           <form class="form form-horizontal" method="post">
             {% csrf_token %}
             {{ form.non_field_errors }}
