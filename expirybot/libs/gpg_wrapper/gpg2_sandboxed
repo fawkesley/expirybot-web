@@ -16,7 +16,7 @@ chmod 700 "${GNUPGHOME}"
 cp "${THIS_DIR}/gpg.conf" "${GNUPGHOME}/gpg.conf"
 
 
-exec $GPG \
+exec firejail $GPG \
   --batch \
   --no-tty \
   "$@"
