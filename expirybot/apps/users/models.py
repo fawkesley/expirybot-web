@@ -46,17 +46,17 @@ class UserProfile(models.Model):
 
     @property
     def owned_email_addresses(self):
-        return (
+        return [
             proof.email_address
             for proof in self.email_address_ownership_proofs.all()
-        )
+        ]
 
     @property
     def owned_pgp_keys(self):
-        return (
+        return [
             proof.pgp_key
             for proof in self.pgp_key_ownership_proofs.all()
-        )
+        ]
 
     @property
     def is_temporary(self):
