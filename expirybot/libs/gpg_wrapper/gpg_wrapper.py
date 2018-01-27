@@ -1,10 +1,12 @@
 import datetime
+import io
 import subprocess
 import sys
 import logging
 import re
 
 from os.path import abspath, dirname, join as pjoin
+import os
 
 from django.conf import settings
 
@@ -78,6 +80,8 @@ def parse_list_keys(fingerprint):
         GPG2_SANDBOXED, '--list-keys', fingerprint
     ])
 
+    save_list_keys_stdout(fingerprint, stdout)
+
     return {
         'fingerprint': _parse_fingerprint_line(stdout),
         'algorithm': _parse_algorithm(stdout),
@@ -88,6 +92,22 @@ def parse_list_keys(fingerprint):
         'uids': list(_parse_uid_lines(stdout)),
         'subkeys': list(_parse_subkey_lines(stdout)),
     }
+
+
+def mkdir_p(directory):
+    if not os.path.isdir(directory):
+        os.makedirs(directory)
+    return directory
+
+
+def save_list_keys_stdout(fingerprint, stdout_text):
+    directory = '/tmp/gpg_list_keys/'
+    path = pjoin(directory, fingerprint.replace(' ', '') + '.txt')
+
+    mkdir_p(directory)
+
+    with io.open(path, 'w') as f:
+        f.write(stdout_text)
 
 
 def stdout_for_subprocess(cmd_parts, stdin=None):
