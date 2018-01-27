@@ -39,6 +39,7 @@ class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
         '__str__',
         'key_algorithm',
         'key_length_bits',
+        'revoked',
         'expiry_datetime',
         'uids_string',
         'last_synced',
@@ -47,6 +48,7 @@ class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
 
     list_filter = (
         'creation_datetime',
+        'revoked',
         'expiry_datetime',
         'last_synced',
         'key_algorithm',
