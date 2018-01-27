@@ -58,6 +58,8 @@ class PGPKey(models.Model):
 
     expiry_datetime = models.DateTimeField(null=True, blank=True)
 
+    revoked = models.NullBooleanField(null=True, blank=True, default=None)
+
     @property
     def human_fingerprint(self):
         if len(self.fingerprint) == 40:
