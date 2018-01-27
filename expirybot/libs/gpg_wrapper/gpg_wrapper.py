@@ -188,17 +188,7 @@ def _parse_pub_line(list_keys_output):
 
     assert len(pub_lines) == 1
 
-    pattern = (
-        '^pub\s+ '
-        '(?P<algorithm>[^0-9]+)'
-        '(?P<length_bits>[0-9]+)'
-        '\/'
-        '0x[0-9A-F]{16} '
-        '(?P<created_date>\d{4}-\d{2}-\d{2})'
-        ' \['
-        '(?P<capabilities>[AECS]+)\]'
-        '( \[expire[sd]: (?P<expiry_date>\d{4}-\d{2}-\d{2})\])?$'
-    )
+    pattern = r'^pub\s+ (?P<algorithm>[^0-9]+)(?P<length_bits>[0-9]+)\/0x[0-9A-F]{16} (?P<created_date>\d{4}-\d{2}-\d{2}) \[(?P<capabilities>[AECS]+)\]( \[(?P<status>expires|expired|revoked): (?P<status_date>\d{4}-\d{2}-\d{2})\])?$'  # noqa
 
     match = re.match(pattern, pub_lines[0])
 
@@ -206,16 +196,26 @@ def _parse_pub_line(list_keys_output):
         raise RuntimeError("Can't parse line: `{}` with pattern `{}`".format(
             pub_lines[0], pattern))
 
-    if match.group('expiry_date'):
-        expiry_date = parse_date(match.group('expiry_date'))
+    status = match.groupdict().get('status', None)
+
+    if status in ('expired', 'expires'):
+        expiry_date = parse_date(match.group('status_date'))
+        revoked = False
+
+    elif status == 'revoked':
+        expiry_date = None
+        revoked = True
+
     else:
         expiry_date = None
+        revoked = False
 
     created_date = parse_date(match.group('created_date'))
 
     return {
         'created_date': created_date,
         'expiry_date': expiry_date,
+        'revoked': revoked,
         'algorithm': match.group('algorithm'),
         'length_bits': int(match.group('length_bits')),
     }
