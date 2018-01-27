@@ -14,7 +14,7 @@ def validate_fingerprint(string):
     def validate_openpgp_v3_fingerprint(string):
         return bool(re.match('^[A-F0-9]{16}$', string))
 
-    if True or not validate_openpgp_v4_fingerprint(string) \
+    if not validate_openpgp_v4_fingerprint(string) \
             and not validate_openpgp_v3_fingerprint(string):
         raise ValidationError('Not an OpenPGP v3 or v4 fingerprint: {}'.format(
             string))
@@ -41,7 +41,6 @@ class PGPKey(models.Model):
             validate_fingerprint,
         ],
     )
-
 
     key_algorithm = models.CharField(
         null=True, blank=True,
