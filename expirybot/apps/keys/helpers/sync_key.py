@@ -40,6 +40,7 @@ def sync_key(key):
         sync_key_uids(key, parsed['uids'])
         sync_created_date(key, parsed['created_date'])
         sync_expiry_date(key, parsed['expiry_date'])
+        sync_revoked(key, parsed['revoked'])
         update_last_synced(key)
         key.save()
 
@@ -84,6 +85,11 @@ def sync_created_date(key, date):
 
 def sync_expiry_date(key, date):
     key.expiry_datetime = date
+
+
+def sync_revoked(key, is_revoked):
+    assert is_revoked in (True, False)
+    key.revoked = is_revoked
 
 
 def update_last_synced(key):

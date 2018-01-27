@@ -84,6 +84,7 @@ def parse_list_keys(fingerprint):
         'length_bits': _parse_length_bits(stdout),
         'created_date': _parse_created_date(stdout),
         'expiry_date': _parse_expiry_date(stdout),
+        'revoked': _parse_revoked(stdout),
         'uids': list(_parse_uid_lines(stdout)),
         'subkeys': list(_parse_subkey_lines(stdout)),
     }
@@ -154,6 +155,10 @@ def _parse_fingerprint_line(list_keys_output):
 
 def _parse_expiry_date(list_keys_output):
     return _parse_pub_line(list_keys_output)['expiry_date']
+
+
+def _parse_revoked(list_keys_output):
+    return _parse_pub_line(list_keys_output)['revoked']
 
 
 def _parse_created_date(list_keys_output):
