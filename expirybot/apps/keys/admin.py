@@ -63,7 +63,6 @@ class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
         'capabilities',
         'revoked',
         'uids_string',
-        'last_synced',
         'num_subkeys',
         'keyserver',
         'details',
