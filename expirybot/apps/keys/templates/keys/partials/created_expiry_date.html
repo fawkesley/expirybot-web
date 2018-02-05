@@ -1,0 +1,18 @@
+<ul>
+  <li>Created {{ key.creation_date }}</li>
+  {% if key.expires %}
+    {% if key.has_expired %}
+
+      <li>Expired {{ key.expiry_date }}</li>
+
+    {%  else %}
+
+      <li>Expires {{ key.expiry_date }}</li>
+
+    {% endif %}
+  {% else %}
+
+    <li>Never expires</li>
+
+  {% endif %}
+</ul>

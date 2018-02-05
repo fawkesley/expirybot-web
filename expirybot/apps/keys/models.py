@@ -42,7 +42,7 @@ class ExpiryCalculationMixin():
         return self.expires and self.expiry_date < timezone.now().date()
 
 
-class PGPKey(models.Model, FriendlyCapabilitiesMixin):
+class PGPKey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
 
     ALGORITHM_CHOICES = (
         ('DSA', 'DSA (1)'),

@@ -1,0 +1,96 @@
+{% extends 'expirybot/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+
+  <div id="pgp-key-detail" class="container">
+
+
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2">
+
+
+        <h1>Details for PGP key <br><small>{{ key.human_fingerprint }}</small></h1>
+
+        <!--
+        <div class="alert alert-warning">
+          <p><strong>Warning!</strong> 1 issue found:</p>
+          <ul>
+            <li>The expiry date has passed</li>
+          </ul>
+
+        </div>
+        -->
+
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h2 class="panel-title">Primary key</h2>
+          </div>
+
+          <div class="panel-body">
+
+            <h3>Unique fingerprint</h3>
+            <p class="fingerprint">
+            {{ key.human_fingerprint }}
+            </p>
+
+            <h3>User identities</h3>
+            <ul class="uids">
+              {% for uid in key.uids %}
+              <li>{{ uid }}</li>
+              {% endfor %}
+            </ul>
+
+            <h3>Dates</h3>
+
+            {% with key=key %}
+              {% include 'keys/partials/created_expiry_date.html' %}
+            {% endwith %}
+
+
+            <h3>Encryption parameters</h3>
+
+            {% with key=key %}
+              {% include 'keys/partials/key_type_and_capabilities.html' %}
+            {% endwith %}
+
+            <br>
+
+
+            {% for subkey in key.subkeys %}
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h2 class="panel-title">Subkey 0x{{ subkey.long_id }} for {{ subkey.friendly_capabilities|join:', ' }}</h2>
+                </div>
+
+                <div class="panel-body">
+                  <h3>Dates</h3>
+                  {% with subkey=key %}
+                    {% include 'keys/partials/created_expiry_date.html' %}
+                  {% endwith %}
+
+                  <h3>Encryption parameters</h3>
+
+                  {% with key=subkey %}
+                    {% include 'keys/partials/key_type_and_capabilities.html' %}
+                  {% endwith %}
+
+                </div>
+              </div>
+            {% endfor %}
+
+
+          </div>
+        </div>
+
+
+
+      </div>
+    </div>
+
+
+  </div>
+{% endblock %}
