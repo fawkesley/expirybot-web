@@ -1,7 +1,12 @@
 import re
 
+from collections import OrderedDict
+
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
+
+from django.contrib.postgres.fields import ArrayField
 
 from expirybot.apps.blacklist.models import EmailAddress
 from expirybot.libs.uid_parser import parse_email_from_uid
@@ -21,6 +26,23 @@ def validate_fingerprint(string):
 
 
 class PGPKey(models.Model):
+class FriendlyCapabilitiesMixin():
+    def friendly_capabilities(self):
+        lookup = dict(PGPKey.CAPABILITY_CHOICES)
+
+        return [lookup[c] for c in self.capabilities]
+
+
+class ExpiryCalculationMixin():
+    @property
+    def expires(self):
+        return self.expiry_date is not None
+
+    @property
+    def has_expired(self):
+        return self.expires and self.expiry_date < timezone.now().date()
+
+
 
     ALGORITHM_CHOICES = (
         ('DSA', 'DSA (1)'),
@@ -29,6 +51,15 @@ class PGPKey(models.Model):
         ('RSA', 'RSA (17)'),
         ('ECC', 'ECC (18)'),
         ('ECDSA', 'ECDSA (19)'),
+    )
+
+    CAPABILITY_CHOICES = (
+        # https://tools.ietf.org/html/rfc4880#section-5.2.3.21
+
+        ('C', 'certifying other keys'),      # 0x01
+        ('S', 'signing data'),               # 0x02
+        ('E', 'encrypting data'),            # 0x04 or 0x08
+        ('A', 'authenticating'),             # 0x20
     )
 
     fingerprint = models.CharField(
@@ -104,6 +135,10 @@ class PGPKey(models.Model):
     def uids(self):
         return self.uids_set.all()
 
+    @property
+    def subkeys(self):
+        return self.subkeys_set.all()
+
 
 class UID(models.Model):
     id = models.AutoField(primary_key=True)
@@ -128,3 +163,46 @@ class UID(models.Model):
 
     def __str__(self):
         return self.uid_string
+
+
+class Subkey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
+    id = models.AutoField(primary_key=True)
+
+    long_id = models.CharField(max_length=16)
+
+    key = models.ForeignKey(PGPKey, related_name='subkeys_set')
+
+    key_algorithm = models.CharField(
+        null=False,
+        max_length=10,
+        choices=PGPKey.ALGORITHM_CHOICES
+    )
+
+    key_length_bits = models.PositiveIntegerField(
+        null=True, blank=True,
+    )
+
+    creation_date = models.DateField(null=False)
+
+    expiry_date = models.DateField(null=True, blank=True)
+
+    revoked = models.NullBooleanField(null=True, blank=True, default=None)
+
+    capabilities = ArrayField(
+        base_field=models.CharField(
+            max_length=1,
+            choices=PGPKey.CAPABILITY_CHOICES,
+        ),
+        null=False,
+        blank=True,
+    )
+
+    def to_dict(self):
+        return OrderedDict([
+            ('key_algorithm', self.key_algorithm),
+            ('key_length_bits', self.key_length_bits),
+            ('creation_date', self.creation_date),
+            ('expiry_date', self.expiry_date),
+            ('revoked', self.revoked),
+            ('capabilities', self.capabilities),
+        ])
