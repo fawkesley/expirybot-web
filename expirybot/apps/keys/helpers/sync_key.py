@@ -12,6 +12,8 @@ from django.utils import timezone
 from expirybot.libs.gpg_wrapper import parse_public_key, GPGError
 from expirybot.apps.keys.models import PGPKey, Subkey, UID
 
+from .exceptions import NoSuchKeyError
+
 LOG = logging.getLogger(__name__)
 
 
@@ -21,8 +23,14 @@ def sync_key(key):
     url = '{keyserver}/pks/lookup?op=get&options=mr&search={key_id}'.format(
         keyserver=settings.KEYSERVER_URL, key_id=key.key_id)
 
-    response = requests.get(url, timeout=5)
-    response.raise_for_status()
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+    except requests.HTTPError:
+        if response.status_code == 404:
+            raise NoSuchKeyError("Keyserver HTTP 404 for key {}".format(key))
+        else:
+            raise
 
     with tempfile.NamedTemporaryFile('wb') as f:
         f.write(response.content)
