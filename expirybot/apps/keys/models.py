@@ -89,7 +89,7 @@ class PGPKey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
 
     expiry_date = models.DateField(null=True, blank=True)
 
-    revoked = models.NullBooleanField(null=True, blank=True, default=None)
+    revoked = models.BooleanField(default=False)
 
     capabilities = ArrayField(
         base_field=models.CharField(
@@ -196,7 +196,7 @@ class Subkey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
 
     expiry_date = models.DateField(null=True, blank=True)
 
-    revoked = models.NullBooleanField(null=True, blank=True, default=None)
+    revoked = models.BooleanField(default=False)
 
     capabilities = ArrayField(
         base_field=models.CharField(
