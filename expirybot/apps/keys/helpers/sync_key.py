@@ -43,6 +43,7 @@ def sync_key(key):
         sync_subkeys(key, translate_subkeys(parsed['subkeys']))
         sync_created_date(key, parsed['created_date'])
         sync_expiry_date(key, parsed['expiry_date'])
+        sync_capabilities(key, parsed['capabilities'])
         sync_revoked(key, parsed['revoked'])
         update_last_synced(key)
         key.save()
@@ -118,6 +119,15 @@ def sync_created_date(key, date):
 
 def sync_expiry_date(key, date):
     key.expiry_date = date
+
+
+def sync_capabilities(key, capabilities):
+    assert isinstance(capabilities, list)
+    for capability in capabilities:
+        assert capability in ('C', 'S', 'E', 'A')
+
+    if key.capabilities != capabilities:
+        key.capabilities = capabilities
 
 
 def sync_revoked(key, is_revoked):
