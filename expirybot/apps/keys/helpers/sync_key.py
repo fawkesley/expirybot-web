@@ -1,6 +1,8 @@
 import logging
 import tempfile
 
+from collections import OrderedDict
+
 import requests
 
 from django.db import transaction
@@ -8,7 +10,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from expirybot.libs.gpg_wrapper import parse_public_key, GPGError
-from expirybot.apps.keys.models import PGPKey, UID
+from expirybot.apps.keys.models import PGPKey, Subkey, UID
 
 LOG = logging.getLogger(__name__)
 
@@ -38,11 +40,27 @@ def sync_key(key):
         sync_key_algorithm(key, parsed['algorithm'])
         sync_key_length_bits(key, parsed['length_bits'])
         sync_key_uids(key, parsed['uids'])
+        sync_subkeys(key, translate_subkeys(parsed['subkeys']))
         sync_created_date(key, parsed['created_date'])
         sync_expiry_date(key, parsed['expiry_date'])
         sync_revoked(key, parsed['revoked'])
         update_last_synced(key)
         key.save()
+
+
+def translate_subkeys(parser_subkeys):
+    def translate(s):
+        return OrderedDict([
+            ('long_id', s['long_id']),
+            ('key_algorithm', s['algorithm']),
+            ('key_length_bits', s['length_bits']),
+            ('creation_date', s['created_date']),
+            ('expiry_date', s['expiry_date']),
+            ('revoked', s['revoked']),
+            ('capabilities', s['capabilities']),
+        ])
+
+    return [translate(s) for s in parser_subkeys]
 
 
 def sync_key_algorithm(key, algorithm):
@@ -77,6 +95,21 @@ def sync_key_uids(key, expected_uids):
             for uid_string in expected_uids:
                 LOG.info(uid_string)
                 UID.objects.create(key=key, uid_string=uid_string)
+
+
+def sync_subkeys(key, expected_subkeys):
+
+    current_subkeys = [s.to_dict() for s in key.subkeys.all()]
+
+    if current_subkeys != expected_subkeys:
+        LOG.info('Updating UIDs for {}'.format(key))
+
+        with transaction.atomic():
+            LOG.info('Setting key.subkeys: {}'.format(expected_subkeys))
+            key.subkeys.all().delete()
+
+            for subkey_data in expected_subkeys:
+                Subkey.objects.create(key=key, **subkey_data)
 
 
 def sync_created_date(key, date):
