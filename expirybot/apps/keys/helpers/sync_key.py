@@ -113,11 +113,11 @@ def sync_subkeys(key, expected_subkeys):
 
 
 def sync_created_date(key, date):
-    key.creation_datetime = date
+    key.creation_date = date
 
 
 def sync_expiry_date(key, date):
-    key.expiry_datetime = date
+    key.expiry_date = date
 
 
 def sync_revoked(key, is_revoked):

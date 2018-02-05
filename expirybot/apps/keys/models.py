@@ -85,9 +85,9 @@ class ExpiryCalculationMixin():
 
     last_synced = models.DateTimeField(null=True, blank=True)
 
-    creation_datetime = models.DateTimeField(null=True, blank=True)
+    creation_date = models.DateField(null=True, blank=False)
 
-    expiry_datetime = models.DateTimeField(null=True, blank=True)
+    expiry_date = models.DateField(null=True, blank=True)
 
     revoked = models.NullBooleanField(null=True, blank=True, default=None)
 
