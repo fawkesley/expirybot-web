@@ -25,7 +25,6 @@ def validate_fingerprint(string):
             string))
 
 
-class PGPKey(models.Model):
 class FriendlyCapabilitiesMixin():
     def friendly_capabilities(self):
         lookup = dict(PGPKey.CAPABILITY_CHOICES)
@@ -43,6 +42,7 @@ class ExpiryCalculationMixin():
         return self.expires and self.expiry_date < timezone.now().date()
 
 
+class PGPKey(models.Model, FriendlyCapabilitiesMixin):
 
     ALGORITHM_CHOICES = (
         ('DSA', 'DSA (1)'),
@@ -90,6 +90,16 @@ class ExpiryCalculationMixin():
     expiry_date = models.DateField(null=True, blank=True)
 
     revoked = models.NullBooleanField(null=True, blank=True, default=None)
+
+    capabilities = ArrayField(
+        base_field=models.CharField(
+            max_length=1,
+            choices=CAPABILITY_CHOICES,
+        ),
+        null=False,
+        blank=True,
+        default=[]
+    )
 
     @property
     def human_fingerprint(self):
