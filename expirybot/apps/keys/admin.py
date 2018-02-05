@@ -1,6 +1,7 @@
 from django.contrib import admin
+from django.shortcuts import reverse
 
-from .models import PGPKey, UID
+from .models import PGPKey, Subkey, UID
 
 
 class ReadonlyFieldsOnChangeMixin():
@@ -22,9 +23,29 @@ class UIDInline(admin.TabularInline):
         'uid_string',
     )
 
-    readonly_fields = (
-        'uid_string',
+    readonly_fields = fields
+
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
+
+class SubkeyInline(admin.TabularInline):
+    model = Subkey
+
+    fields = (
+        'long_id',
+        'key_algorithm',
+        'key_length_bits',
+        'creation_date',
+        'expiry_date',
+        'revoked',
+        'capabilities',
     )
+
+    readonly_fields = fields
 
     def has_add_permission(self, *args, **kwargs):
         return False
@@ -39,17 +60,18 @@ class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
         '__str__',
         'key_algorithm',
         'key_length_bits',
+        'capabilities',
         'revoked',
-        'expiry_datetime',
         'uids_string',
-        'last_synced',
+        'num_subkeys',
         'keyserver',
+        'details',
     )
 
     list_filter = (
-        'creation_datetime',
+        'creation_date',
         'revoked',
-        'expiry_datetime',
+        'expiry_date',
         'last_synced',
         'key_algorithm',
         'key_length_bits',
@@ -60,7 +82,16 @@ class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
         'uids_set__uid_string',
     )
 
-    inlines = (UIDInline,)
+    inlines = (UIDInline, SubkeyInline)
+
+    readonly_fields = (
+        'key_algorithm',
+        'key_length_bits',
+        'capabilities',
+        'revoked',
+        'creation_date',
+        'expiry_date',
+    )
     readonly_fields_on_change = ('fingerprint',)
 
     def keyserver(self, instance):
@@ -71,3 +102,16 @@ class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
         )
 
     keyserver.allow_tags = True
+
+    def details(self, instance):
+        return '<a href="{}">[deets]</a>'.format(
+            reverse(
+                'keys.key-detail',
+                kwargs={'pk': instance.fingerprint}
+            )
+        )
+
+    details.allow_tags = True
+
+    def num_subkeys(self, model):
+        return model.subkeys.count()

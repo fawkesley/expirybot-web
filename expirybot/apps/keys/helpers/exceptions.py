@@ -1,0 +1,2 @@
+class NoSuchKeyError(ValueError):
+    pass

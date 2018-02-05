@@ -1,0 +1,6 @@
+<p>{{ key.key_length_bits }} bit {{ key.key_algorithm }} key used for:
+<ul>
+  {% for capability in key.friendly_capabilities %}
+  <li>{{ capability }}</li>
+  {% endfor %}
+</ul>

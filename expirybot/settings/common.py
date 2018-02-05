@@ -155,14 +155,17 @@ LOGIN_REDIRECT_URL = '/u/settings/'
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'en-gb'
-
+USE_I18N = True  # disable Django's translation system
 TIME_ZONE = 'Europe/London'
-
-USE_I18N = True
-
-USE_L10N = True
-
 USE_TZ = True
+USE_L10N = False
+
+TIME_FORMAT = 'H:i'
+DATE_FORMAT = 'l jS F Y'
+DATETIME_FORMAT = 'N j, Y, P'
+
+SHORT_DATE_FORMAT = 'm/d/Y'
+SHORT_DATETIME_FORMAT = 'm/d/Y P'
 
 
 # Static files (CSS, JavaScript, Images)

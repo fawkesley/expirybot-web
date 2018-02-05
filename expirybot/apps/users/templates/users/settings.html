@@ -30,7 +30,7 @@
                 <li>
                   <div class="row">
                     <div class="col-sm-10">
-                      <h3 class="h5"><a target="_new" href="https://keyserver.paulfurley.com/pks/lookup?search={{ key.zero_x_fingerprint }}&fingerprint=on&op=vindex">{{ key.human_fingerprint }}</a></h3>
+                      <h3 class="h5"><a target="_new" href="{% url 'keys.key-detail' pk=key.fingerprint %}">{{ key.human_fingerprint }}</a></h3>
 
 
                       <ul class="uids">

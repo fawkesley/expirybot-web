@@ -44,6 +44,8 @@ urlpatterns = [
 
     url(r'^', include('expirybot.apps.users.urls')),
 
+    url(r'^', include('expirybot.apps.keys.urls')),
+
 ]
 
 if settings.SERVE_STATIC_FILES:
