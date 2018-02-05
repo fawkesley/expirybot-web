@@ -83,6 +83,15 @@ class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
     )
 
     inlines = (UIDInline, SubkeyInline)
+
+    readonly_fields = (
+        'key_algorithm',
+        'key_length_bits',
+        'capabilities',
+        'revoked',
+        'creation_date',
+        'expiry_date',
+    )
     readonly_fields_on_change = ('fingerprint',)
 
     def keyserver(self, instance):
