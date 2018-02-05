@@ -14,6 +14,8 @@ from django.conf import settings
 LOG = logging.getLogger(__name__)
 GPG2_SANDBOXED = abspath(pjoin(dirname(__file__), 'gpg2_sandboxed'))
 
+PUB_SUB_PATTERN = r'^(pub|sub)\s+ (?P<algorithm>[^0-9]+)(?P<length_bits>[0-9]+)\/0x(?P<long_id>[0-9A-F]{16}) (?P<created_date>\d{4}-\d{2}-\d{2}) \[(?P<capabilities>[AECS]+)\]( \[(?P<status>expires|expired|revoked): (?P<status_data>[^ ]+) *\])?$'  # noqa
+
 
 class GPGError(RuntimeError):
     pass
@@ -89,6 +91,7 @@ def parse_list_keys(fingerprint):
         'created_date': _parse_created_date(stdout),
         'expiry_date': _parse_expiry_date(stdout),
         'revoked': _parse_revoked(stdout),
+        'capabilities': _parse_capabilities(stdout),
         'uids': list(_parse_uid_lines(stdout)),
         'subkeys': list(_parse_subkey_lines(stdout)),
     }
@@ -181,20 +184,27 @@ def _parse_revoked(list_keys_output):
     return _parse_pub_line(list_keys_output)['revoked']
 
 
+def _parse_capabilities(list_keys_output):
+    return _parse_pub_line(list_keys_output)['capabilities']
+
+
 def _parse_created_date(list_keys_output):
     return _parse_pub_line(list_keys_output)['created_date']
 
 
 def _parse_algorithm(list_keys_output):
+    return _parse_pub_line(list_keys_output)['algorithm']
+
+
+def _convert_algorithm(gpg_algorithm_text):
+
     conversion = {
         'rsa': 'RSA',
         'dsa': 'DSA',
         'elg': 'ELGAMAL',
     }
-    return conversion.get(
-        _parse_pub_line(list_keys_output)['algorithm'],
-        None
-    )
+
+    return conversion[gpg_algorithm_text]
 
 
 def _parse_length_bits(list_keys_output):
@@ -213,18 +223,38 @@ def _parse_pub_line(list_keys_output):
 
     assert len(pub_lines) == 1
 
-    pattern = r'^pub\s+ (?P<algorithm>[^0-9]+)(?P<length_bits>[0-9]+)\/0x[0-9A-F]{16} (?P<created_date>\d{4}-\d{2}-\d{2}) \[(?P<capabilities>[AECS]+)\]( \[(?P<status>expires|expired|revoked): (?P<status_date>\d{4}-\d{2}-\d{2})\])?$'  # noqa
+    return parse_pub_or_sub_line(pub_lines[0])
 
-    match = re.match(pattern, pub_lines[0])
+
+def _parse_subkey_lines(list_keys_output):
+    """
+    `sub   elg2048/0x8D79AF8CBF15B67A 2009-09-14 [E] [expired: 2017-03-12]`
+    `sub   rsa2048/0x827349966466A87E 2017-12-13 [S] [expires: 2018-12-08]`
+    """
+    sub_lines = list(filter(
+        lambda l: l.startswith('sub'), list_keys_output.split('\n')
+    ))
+
+    return [parse_pub_or_sub_line(line) for line in sub_lines]
+
+
+def parse_pub_or_sub_line(line):
+
+    match = re.match(PUB_SUB_PATTERN, line)
 
     if not match:
         raise RuntimeError("Can't parse line: `{}` with pattern `{}`".format(
-            pub_lines[0], pattern))
+            line, PUB_SUB_PATTERN))
 
     status = match.groupdict().get('status', None)
+    status_extra = match.groupdict().get('status_data', None)
 
-    if status in ('expired', 'expires'):
-        expiry_date = parse_date(match.group('status_date'))
+    if status in ('expired', 'expires') and status_extra == 'never':
+        expiry_date = None
+        revoked = False
+
+    elif status in ('expired', 'expires'):
+        expiry_date = parse_date(status_extra)
         revoked = False
 
     elif status == 'revoked':
@@ -238,16 +268,30 @@ def _parse_pub_line(list_keys_output):
     created_date = parse_date(match.group('created_date'))
 
     return {
+        'long_id': match.group('long_id'),
         'created_date': created_date,
         'expiry_date': expiry_date,
         'revoked': revoked,
-        'algorithm': match.group('algorithm'),
+        'algorithm': _convert_algorithm(match.group('algorithm')),
         'length_bits': int(match.group('length_bits')),
+        'capabilities': list(match.group('capabilities')),
     }
 
 
 def parse_date(date_string):
-    return datetime.date(*map(int, date_string.split('-')))
+    match = re.match(
+        '(?P<year>\d\d\d\d)-(?P<month>\d\d)-(?P<day>\d\d)',
+        date_string
+    )
+
+    if match is not None:
+        return datetime.date(
+            int(match.group('year')),
+            int(match.group('month')),
+            int(match.group('day')),
+        )
+    else:
+        raise ValueError('Bad date: `{}`'.format(date_string))
 
 
 def _parse_uid_lines(list_keys_output):
@@ -265,14 +309,6 @@ def _parse_uid_lines(list_keys_output):
 
             if status not in ('revoked', 'expired'):
                 yield match.group('uid')
-
-
-def _parse_subkey_lines(list_packets_output):
-    """
-    `sub   elg2048/0x8D79AF8CBF15B67A 2009-09-14 [E] [expired: 2017-03-12]`
-    `sub   rsa2048/0x827349966466A87E 2017-12-13 [S] [expires: 2018-12-08]`
-    """
-    return []
 
 
 if __name__ == '__main__':
