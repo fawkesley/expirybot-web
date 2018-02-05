@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.shortcuts import reverse
 
 from .models import PGPKey, Subkey, UID
 
@@ -65,6 +66,7 @@ class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
         'last_synced',
         'num_subkeys',
         'keyserver',
+        'details',
     )
 
     list_filter = (
@@ -92,6 +94,16 @@ class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
         )
 
     keyserver.allow_tags = True
+
+    def details(self, instance):
+        return '<a href="{}">[deets]</a>'.format(
+            reverse(
+                'keys.key-detail',
+                kwargs={'pk': instance.fingerprint}
+            )
+        )
+
+    details.allow_tags = True
 
     def num_subkeys(self, model):
         return model.subkeys.count()
