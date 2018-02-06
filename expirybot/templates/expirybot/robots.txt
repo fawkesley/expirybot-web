@@ -1,3 +1,4 @@
 User-agent: *
 Disallow: /u/
 Disallow: /unsubscribe/
+Disallow: /key/
