@@ -1,4 +1,9 @@
-<p>{{ key.key_length_bits }} bit {{ key.key_algorithm }} key used for:
+{% if key.key_algorithm %}
+  <p>{{ key.key_length_bits }} bit {{ key.key_algorithm }} key used for:
+{% else %}
+  <p>Unknown key type used for:
+{% endif %}
+
 <ul>
   {% for capability in key.friendly_capabilities %}
   <li>{{ capability }}</li>
