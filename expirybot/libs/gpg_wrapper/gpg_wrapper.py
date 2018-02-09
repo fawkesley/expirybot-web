@@ -202,7 +202,8 @@ def _convert_algorithm(gpg_algorithm_text):
         'rsa': 'RSA',
         'dsa': 'DSA',
         'elg': 'ELGAMAL',
-        'ed': 'ECC',
+        'ed': '',     # unknown
+        'nistp': '',  # unknown
     }
 
     return conversion[gpg_algorithm_text]
