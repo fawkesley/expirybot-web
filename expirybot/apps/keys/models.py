@@ -51,6 +51,7 @@ class PGPKey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
         ('RSA', 'RSA (17)'),
         ('ECC', 'ECC (18)'),
         ('ECDSA', 'ECDSA (19)'),
+        ('', 'Unknown'),
     )
 
     CAPABILITY_CHOICES = (
@@ -184,6 +185,7 @@ class Subkey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
 
     key_algorithm = models.CharField(
         null=False,
+        blank=True,
         max_length=10,
         choices=PGPKey.ALGORITHM_CHOICES
     )
