@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import CIEmailField
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -8,7 +9,7 @@ class EmailAddress(models.Model):
             ("make_unsubscribe_links",
              "Can create unsubscribe links for email addresses."),
         )
-    email_address = models.EmailField(primary_key=True)
+    email_address = CIEmailField(primary_key=True)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
