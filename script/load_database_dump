@@ -1,0 +1,23 @@
+#!/bin/bash -eux
+
+
+# generate the dump with:
+# > pg_dump --format custom expirybot > $(date "+%Y-%m-%d.dump")
+
+DUMP_FILE=$1
+
+convert_to_sql_file() {
+    SQL_FILE=$(mktemp --suffix .sql)
+    pg_restore --no-acl --no-owner -f ${SQL_FILE} ${DUMP_FILE}
+}
+
+load_sql_file_to_database() {
+    dropdb ${USER}
+    createdb ${USER}
+    TEMP_LOG=$(mktemp --suffix .log)
+    psql vagrant -v ON_ERROR_STOP=1 < ${SQL_FILE} > ${TEMP_LOG}
+    less ${TEMP_LOG}
+}
+
+convert_to_sql_file
+load_sql_file_to_database
