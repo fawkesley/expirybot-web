@@ -11,9 +11,10 @@ update_apt() {
 
 install_postgresql() {
   apt-get remove -y postgresql-9.3
-  apt-get install -y postgresql-9.6 libpq-dev
+  apt-get remove -y postgresql-9.6
+  apt-get install -y postgresql-10 libpq-dev
 
-  sed -i 's/port = 5433/port = 5432/g' /etc/postgresql/9.6/main/postgresql.conf
+  sed -i 's/port = 5433/port = 5432/g' /etc/postgresql/10/main/postgresql.conf
   sudo service postgresql restart
 }
 
