@@ -26,10 +26,8 @@ def validate_fingerprint(string):
 
 
 class FriendlyCapabilitiesMixin():
-    def friendly_capabilities(self):
-        lookup = dict(PGPKey.CAPABILITY_CHOICES)
-
-        return [lookup[c] for c in self.capabilities]
+    # Required until migration 0010 is squashed
+    pass
 
 
 class ExpiryCalculationMixin():
@@ -42,16 +40,25 @@ class ExpiryCalculationMixin():
         return self.expires and self.expiry_date < timezone.now().date()
 
 
-class PGPKey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
-
+class CryptographicKey(models.Model):
     ALGORITHM_CHOICES = (
-        ('DSA', 'DSA (1)'),
-        ('RSA-SIGN', 'RSA Sign-only (3)'),
-        ('ELGAMAL', 'ELGAMAL (16)'),
-        ('RSA', 'RSA (17)'),
-        ('ECC', 'ECC (18)'),
-        ('ECDSA', 'ECDSA (19)'),
         ('', 'Unknown'),
+
+        # https://tools.ietf.org/html/rfc4880#section-9.1
+        ('RSA', 'RSA (1)'),
+        ('RSA-ENCRYPT', 'RSA Encrypt-only (2)'),
+        ('RSA-SIGN', 'RSA Sign-only (3)'),
+        ('ELGAMAL', 'ELGAMAL (Encrypt-only) (16)'),
+        ('DSA', 'DSA (17)'),
+
+        ('ECC', 'Elliptic curve - ECDH encrypt / ECDSA sign (18/19)'),
+
+        # Technically ECC should be one of the following, but does it matter
+        # for my purposes?
+        #
+        # https://tools.ietf.org/html/rfc6637#section-5
+        # ('ECDH', 'Elliptic Curve Diffie Hillman - encrypt (18)'),
+        # ('ECDSA', 'ECDSA public key algorithm - signing (19)'),
     )
 
     CAPABILITY_CHOICES = (
@@ -62,6 +69,65 @@ class PGPKey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
         ('E', 'encrypting data'),            # 0x04 or 0x08
         ('A', 'authenticating'),             # 0x20
     )
+
+    ECC_CURVE_CHOICES = (
+        # https://tools.ietf.org/html/rfc6637#section-12.1
+        # https://gnupg.org/faq/whats-new-in-2.1.html
+
+        ('', 'Unknown'),
+
+        ('ed25519', 'Ed25519 (sign only)'),        # ECDSA - signing only
+        ('cv25519', 'Curve25519 (encrypt only)'),  # ECDH - encryption only
+
+        ('nistp256', 'NIST P-256'),
+        ('nistp384', 'NIST P-384'),
+        ('nistp521', 'NIST P-521'),
+
+        ('brainpoolP256r1', 'Brainpool P-256'),
+        ('brainpoolP384r1', 'Brainpool P-384'),
+        ('brainpoolP512r1', 'Brainpool P-512'),
+
+        ('secp256k1', 'secp256k1 (sign only)')  # ECDSA - signing
+    )
+
+    class Meta:
+        abstract = True  # https://docs.djangoproject.com/en/1.11/topics/db/models/#abstract-base-classes  # noqa
+
+    key_algorithm = models.CharField(
+        null=False, blank=True,
+        max_length=20,
+        choices=ALGORITHM_CHOICES
+    )
+
+    key_length_bits = models.PositiveIntegerField(
+        null=True, blank=True,
+    )
+
+    capabilities = ArrayField(
+        base_field=models.CharField(
+            max_length=1,
+            choices=CAPABILITY_CHOICES,
+        ),
+        null=False,
+        blank=True,
+        default=[]
+    )
+
+    ecc_curve = models.CharField(
+        null=False,
+        blank=True,
+        default='',
+        max_length=100,
+        choices=ECC_CURVE_CHOICES
+    )
+
+    def friendly_capabilities(self):
+        lookup = dict(PGPKey.CAPABILITY_CHOICES)
+
+        return [lookup[c] for c in self.capabilities]
+
+
+class PGPKey(CryptographicKey, ExpiryCalculationMixin):
 
     fingerprint = models.CharField(
         help_text=(
@@ -74,16 +140,6 @@ class PGPKey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
         ],
     )
 
-    key_algorithm = models.CharField(
-        null=False, blank=True,
-        max_length=10,
-        choices=ALGORITHM_CHOICES
-    )
-
-    key_length_bits = models.PositiveIntegerField(
-        null=True, blank=True,
-    )
-
     last_synced = models.DateTimeField(null=True, blank=True)
 
     creation_date = models.DateField(null=True, blank=False)
@@ -91,16 +147,6 @@ class PGPKey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
     expiry_date = models.DateField(null=True, blank=True)
 
     revoked = models.BooleanField(default=False)
-
-    capabilities = ArrayField(
-        base_field=models.CharField(
-            max_length=1,
-            choices=CAPABILITY_CHOICES,
-        ),
-        null=False,
-        blank=True,
-        default=[]
-    )
 
     @property
     def human_fingerprint(self):
@@ -176,7 +222,7 @@ class UID(models.Model):
         return self.uid_string
 
 
-class Subkey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
+class Subkey(CryptographicKey, ExpiryCalculationMixin):
     id = models.AutoField(primary_key=True)
 
     long_id = models.CharField(max_length=16)
