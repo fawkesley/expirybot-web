@@ -54,6 +54,19 @@ server {
     #     expires 7d;
     # }
 
+
+    # Silently drop some requests
+
+    location = /apple-touch-icon.png                      { return 404; access_log off; log_not_found off; }
+    location = /apple-touch-icon-precomposed.png          { return 404; access_log off; log_not_found off; }
+    location = /apple-touch-icon-120x120.png              { return 404; access_log off; log_not_found off; }
+    location = /apple-touch-icon-120x120-precomposed.png  { return 404; access_log off; log_not_found off; }
+    location = /.well-known/apple-app-site-association    { return 404; access_log off; log_not_found off; }
+    location = /wp-login.php                              { return 404; access_log off; log_not_found off; }
+    location /wordpress/                                  { return 404; access_log off; log_not_found off; }
+    location /wp-admin/                                   { return 404; access_log off; log_not_found off; }
+
+
     # path for static files
     root /home/expirybot-web/app/collected_static;
 
