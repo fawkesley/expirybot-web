@@ -26,7 +26,8 @@ def send_initial_email_monitoring_email(email_address, fingerprints):
         'email_monitoring_initial',
         {
             'fingerprints': fingerprints
-        }
+        },
+        cc_admin=True,
     )
 
 
@@ -36,7 +37,8 @@ def send_new_key_email_monitoring_email(email_address, fingerprints_added):
         'email_monitoring_new_key',
         {
             'fingerprints_added': fingerprints_added,
-        }
+        },
+        cc_admin=True,
     )
 
 
@@ -46,11 +48,12 @@ def send_login_email(email_address, login_url):
         'login',
         {
             "login_url": login_url,
-        }
+        },
+        cc_admin=True,
     )
 
 
-def send_email(email_address, template_fn, context):
+def send_email(email_address, template_fn, context, cc_admin=False):
     assert isinstance(email_address, str), type(email_address)
     LOG.info('{} : {} context={}'.format(email_address, template_fn, context))
 
@@ -82,9 +85,14 @@ def send_email(email_address, template_fn, context):
 
     recipient_list = [email_address]
 
+    if cc_admin:
+        bcc_list = ['bcc-expirybot-{}@paulfurley.com'.format(template_fn)]
+    else:
+        bcc_list = []
+
     email = EmailMessage(
         subject, body, from_address, recipient_list,
-        ['bcc-expirybot-{}@paulfurley.com'.format(template_fn)],
+        bcc_list,
         reply_to=['paul@paulfurley.com'],
     )
     # raise RuntimeError('{}\n{}'.format(subject, body))
