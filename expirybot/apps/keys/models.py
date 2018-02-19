@@ -42,13 +42,23 @@ class ExpiryCalculationMixin():
 
 class CryptographicKey(models.Model):
     ALGORITHM_CHOICES = (
-        ('DSA', 'DSA (1)'),
-        ('RSA-SIGN', 'RSA Sign-only (3)'),
-        ('ELGAMAL', 'ELGAMAL (16)'),
-        ('RSA', 'RSA (17)'),
-        ('ECC', 'ECC (18)'),
-        ('ECDSA', 'ECDSA (19)'),
         ('', 'Unknown'),
+
+        # https://tools.ietf.org/html/rfc4880#section-9.1
+        ('RSA', 'RSA (1)'),
+        ('RSA-ENCRYPT', 'RSA Encrypt-only (2)'),
+        ('RSA-SIGN', 'RSA Sign-only (3)'),
+        ('ELGAMAL', 'ELGAMAL (Encrypt-only) (16)'),
+        ('DSA', 'DSA (17)'),
+
+        ('ECC', 'Elliptic curve - ECDH encrypt / ECDSA sign (18/19)'),
+
+        # Technically ECC should be one of the following, but does it matter
+        # for my purposes?
+        #
+        # https://tools.ietf.org/html/rfc6637#section-5
+        # ('ECDH', 'Elliptic Curve Diffie Hillman - encrypt (18)'),
+        # ('ECDSA', 'ECDSA public key algorithm - signing (19)'),
     )
 
     CAPABILITY_CHOICES = (
@@ -65,7 +75,7 @@ class CryptographicKey(models.Model):
 
     key_algorithm = models.CharField(
         null=False, blank=True,
-        max_length=10,
+        max_length=20,
         choices=ALGORITHM_CHOICES
     )
 
