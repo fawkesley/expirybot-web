@@ -55,7 +55,9 @@ def send_login_email(email_address, login_url):
 
 def send_email(email_address, template_fn, context, cc_admin=False):
     assert isinstance(email_address, str), type(email_address)
-    LOG.info('{} : {} context={}'.format(email_address, template_fn, context))
+    LOG.info('Sending email {} : {} context={}'.format(
+        email_address, template_fn, context
+    ))
 
     if not allow_send_email(email_address):
         raise RuntimeError(
@@ -95,5 +97,4 @@ def send_email(email_address, template_fn, context, cc_admin=False):
         bcc_list,
         reply_to=['paul@paulfurley.com'],
     )
-    # raise RuntimeError('{}\n{}'.format(subject, body))
     email.send()
