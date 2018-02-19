@@ -39,7 +39,7 @@ def make_user_permanent(user, email_address):
         user.email = email_address
         user.save()
 
-        LOG.warn('New user {}'.format(user.username))
+        LOG.info('New user {}'.format(user.username))
 
 
 def _make_auto_username(email_address):
