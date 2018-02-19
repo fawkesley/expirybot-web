@@ -1,7 +1,5 @@
 import re
 
-from collections import OrderedDict
-
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -125,6 +123,27 @@ class CryptographicKey(models.Model):
         lookup = dict(PGPKey.CAPABILITY_CHOICES)
 
         return [lookup[c] for c in self.capabilities]
+
+    def friendly_type(self):
+        """
+        Return a friendly name describing the key type
+        """
+
+        types_with_key_length = set(
+            ['RSA', 'RSA-ENCRYPT', 'RSA-SIGN', 'DSA', 'ELGAMAL']
+        )
+
+        if self.key_algorithm in types_with_key_length:
+            return '{}-bit {}'.format(self.key_length_bits, self.key_algorithm)
+
+        elif self.key_algorithm == 'ECC':
+            return 'Elliptic Curve ({})'.format(self.friendly_ecc_curve())
+
+        elif not self.key_algorithm:
+            return 'unknown'
+
+    def friendly_ecc_curve(self):
+        return dict(self.ECC_CURVE_CHOICES)[self.ecc_curve]
 
 
 class PGPKey(CryptographicKey, ExpiryCalculationMixin):
@@ -256,11 +275,13 @@ class Subkey(CryptographicKey, ExpiryCalculationMixin):
     )
 
     def to_dict(self):
-        return OrderedDict([
-            ('key_algorithm', self.key_algorithm),
-            ('key_length_bits', self.key_length_bits),
-            ('creation_date', self.creation_date),
-            ('expiry_date', self.expiry_date),
-            ('revoked', self.revoked),
-            ('capabilities', self.capabilities),
-        ])
+        return {
+            'long_id': self.long_id,
+            'key_algorithm': self.key_algorithm,
+            'key_length_bits': self.key_length_bits,
+            'ecc_curve': self.ecc_curve,
+            'creation_date': self.creation_date,
+            'expiry_date': self.expiry_date,
+            'revoked': self.revoked,
+            'capabilities': self.capabilities,
+        }

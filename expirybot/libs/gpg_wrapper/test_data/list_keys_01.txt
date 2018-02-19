@@ -1,0 +1,6 @@
+pub   rsa4096/0x309F635DAD1B5517 2014-10-31 [SC] [expires: 2018-05-15]
+      Key fingerprint = A999 B749 8D1A 8DC4 73E5  3C92 309F 635D AD1B 5517
+uid                   [ultimate] Paul Michael Furley <paul@paulfurley.com>
+sub   rsa4096/0x627B1B4E8E532C34 2014-10-31 [E] [expires: 2018-05-15]
+sub   rsa4096/0x0AC6AD63E8E8A9B0 2014-10-31 [S] [expires: 2018-05-15]
+

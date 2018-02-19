@@ -1,8 +1,6 @@
 import logging
 import tempfile
 
-from collections import OrderedDict
-
 import requests
 
 from django.db import transaction
@@ -47,6 +45,7 @@ def sync_key(key):
     with transaction.atomic():
         sync_key_algorithm(key, parsed['algorithm'])
         sync_key_length_bits(key, parsed['length_bits'])
+        sync_key_ecc_curve(key, parsed['ecc_curve'])
         sync_key_uids(key, parsed['uids'])
         sync_subkeys(key, translate_subkeys(parsed['subkeys']))
         sync_created_date(key, parsed['created_date'])
@@ -58,16 +57,19 @@ def sync_key(key):
 
 
 def translate_subkeys(parser_subkeys):
+    # TODO: think about how to remove this, it's kind of stupid
+
     def translate(s):
-        return OrderedDict([
-            ('long_id', s['long_id']),
-            ('key_algorithm', s['algorithm']),
-            ('key_length_bits', s['length_bits']),
-            ('creation_date', s['created_date']),
-            ('expiry_date', s['expiry_date']),
-            ('revoked', s['revoked']),
-            ('capabilities', s['capabilities']),
-        ])
+        return {
+            'long_id': s['long_id'],
+            'key_algorithm': s['algorithm'],
+            'key_length_bits': s['length_bits'],
+            'ecc_curve': s['ecc_curve'] or '',  # translate None -> ''
+            'creation_date': s['created_date'],
+            'expiry_date': s['expiry_date'],
+            'revoked': s['revoked'],
+            'capabilities': s['capabilities'],
+        }
 
     return [translate(s) for s in parser_subkeys]
 
@@ -87,10 +89,14 @@ def sync_key_algorithm(key, algorithm):
 
 
 def sync_key_length_bits(key, length_bits):
-    if key.key_length_bits is None:
-        key.key_length_bits = length_bits
-    else:
-        assert key.key_length_bits == length_bits
+    key.key_length_bits = length_bits
+
+
+def sync_key_ecc_curve(key, ecc_curve):
+    if ecc_curve is None:
+        ecc_curve = ''
+
+    key.ecc_curve = ecc_curve
 
 
 def sync_key_uids(key, expected_uids):
@@ -113,10 +119,14 @@ def sync_subkeys(key, expected_subkeys):
     current_subkeys = [s.to_dict() for s in key.subkeys.all()]
 
     if current_subkeys != expected_subkeys:
-        LOG.info('Updating UIDs for {}'.format(key))
+        if len(current_subkeys):
+            LOG.warn('Deleting & re-creating subkeys for {}: '
+                     'current: {} expected: {}'.format(
+                         key, current_subkeys, expected_subkeys))
+        else:
+            LOG.info('Setting key.subkeys: {}'.format(expected_subkeys))
 
         with transaction.atomic():
-            LOG.info('Setting key.subkeys: {}'.format(expected_subkeys))
             key.subkeys.all().delete()
 
             for subkey_data in expected_subkeys:
