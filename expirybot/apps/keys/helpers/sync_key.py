@@ -45,6 +45,7 @@ def sync_key(key):
     with transaction.atomic():
         sync_key_algorithm(key, parsed['algorithm'])
         sync_key_length_bits(key, parsed['length_bits'])
+        sync_key_ecc_curve(key, parsed['ecc_curve'])
         sync_key_uids(key, parsed['uids'])
         sync_subkeys(key, translate_subkeys(parsed['subkeys']))
         sync_created_date(key, parsed['created_date'])
@@ -63,6 +64,7 @@ def translate_subkeys(parser_subkeys):
             'long_id': s['long_id'],
             'key_algorithm': s['algorithm'],
             'key_length_bits': s['length_bits'],
+            'ecc_curve': s['ecc_curve'] or '',  # translate None -> ''
             'creation_date': s['created_date'],
             'expiry_date': s['expiry_date'],
             'revoked': s['revoked'],
@@ -91,6 +93,13 @@ def sync_key_length_bits(key, length_bits):
         key.key_length_bits = length_bits
     else:
         assert key.key_length_bits == length_bits
+
+
+def sync_key_ecc_curve(key, ecc_curve):
+    if ecc_curve is None:
+        ecc_curve = ''
+
+    key.ecc_curve = ecc_curve
 
 
 def sync_key_uids(key, expected_uids):
