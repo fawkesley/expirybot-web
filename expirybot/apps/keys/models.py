@@ -70,6 +70,26 @@ class CryptographicKey(models.Model):
         ('A', 'authenticating'),             # 0x20
     )
 
+    ECC_CURVE_CHOICES = (
+        # https://tools.ietf.org/html/rfc6637#section-12.1
+        # https://gnupg.org/faq/whats-new-in-2.1.html
+
+        ('', 'Unknown'),
+
+        ('ed25519', 'Ed25519 (sign only)'),        # ECDSA - signing only
+        ('cv25519', 'Curve25519 (encrypt only)'),  # ECDH - encryption only
+
+        ('nistp256', 'NIST P-256'),
+        ('nistp384', 'NIST P-384'),
+        ('nistp521', 'NIST P-521'),
+
+        ('brainpoolP256r1', 'Brainpool P-256'),
+        ('brainpoolP384r1', 'Brainpool P-384'),
+        ('brainpoolP512r1', 'Brainpool P-512'),
+
+        ('secp256k1', 'secp256k1 (sign only)')  # ECDSA - signing
+    )
+
     class Meta:
         abstract = True  # https://docs.djangoproject.com/en/1.11/topics/db/models/#abstract-base-classes  # noqa
 
@@ -91,6 +111,14 @@ class CryptographicKey(models.Model):
         null=False,
         blank=True,
         default=[]
+    )
+
+    ecc_curve = models.CharField(
+        null=False,
+        blank=True,
+        default='',
+        max_length=100,
+        choices=ECC_CURVE_CHOICES
     )
 
     def friendly_capabilities(self):
