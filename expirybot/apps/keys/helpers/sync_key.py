@@ -81,7 +81,8 @@ def sync_key_algorithm(key, algorithm):
     if key.key_algorithm is None:
         key.key_algorithm = algorithm
     else:
-        assert key.key_algorithm == algorithm
+        assert key.key_algorithm == algorithm, \
+            'key.key_algorithm `{}` != algorithm `{}`'
 
 
 def sync_key_length_bits(key, length_bits):
