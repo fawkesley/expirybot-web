@@ -37,8 +37,7 @@ class SubkeyInline(admin.TabularInline):
 
     fields = (
         'long_id',
-        'key_algorithm',
-        'key_length_bits',
+        'friendly_type',
         'creation_date',
         'expiry_date',
         'revoked',
@@ -58,8 +57,7 @@ class SubkeyInline(admin.TabularInline):
 class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
     list_display = (
         '__str__',
-        'key_algorithm',
-        'key_length_bits',
+        'friendly_type',
         'capabilities',
         'revoked',
         'uids_string',

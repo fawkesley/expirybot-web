@@ -126,6 +126,27 @@ class CryptographicKey(models.Model):
 
         return [lookup[c] for c in self.capabilities]
 
+    def friendly_type(self):
+        """
+        Return a friendly name describing the key type
+        """
+
+        types_with_key_length = set(
+            ['RSA', 'RSA-ENCRYPT', 'RSA-SIGN', 'DSA', 'ELGAMAL']
+        )
+
+        if self.key_algorithm in types_with_key_length:
+            return '{}-bit {}'.format(self.key_length_bits, self.key_algorithm)
+
+        elif self.key_algorithm == 'ECC':
+            return 'Elliptic Curve ({})'.format(self.friendly_ecc_curve())
+
+        elif not self.key_algorithm:
+            return 'unknown'
+
+    def friendly_ecc_curve(self):
+        return dict(self.ECC_CURVE_CHOICES)[self.ecc_curve]
+
 
 class PGPKey(CryptographicKey, ExpiryCalculationMixin):
 

@@ -39,7 +39,7 @@ run_more_pep8_checks() {
 }
 
 run_python_unit_tests() {
-    python manage.py test --failfast -v 3
+    python manage.py test -v 3
 }
 
 test_that_no_models_need_migrations() {
