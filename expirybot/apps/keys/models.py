@@ -26,10 +26,8 @@ def validate_fingerprint(string):
 
 
 class FriendlyCapabilitiesMixin():
-    def friendly_capabilities(self):
-        lookup = dict(PGPKey.CAPABILITY_CHOICES)
-
-        return [lookup[c] for c in self.capabilities]
+    # Required until migration 0010 is squashed
+    pass
 
 
 class ExpiryCalculationMixin():
@@ -42,8 +40,7 @@ class ExpiryCalculationMixin():
         return self.expires and self.expiry_date < timezone.now().date()
 
 
-class PGPKey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
-
+class CryptographicKey(models.Model):
     ALGORITHM_CHOICES = (
         ('DSA', 'DSA (1)'),
         ('RSA-SIGN', 'RSA Sign-only (3)'),
@@ -63,16 +60,8 @@ class PGPKey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
         ('A', 'authenticating'),             # 0x20
     )
 
-    fingerprint = models.CharField(
-        help_text=(
-            "The 40-character key fingerprint without spaces."
-        ),
-        max_length=40,
-        primary_key=True,
-        validators=[
-            validate_fingerprint,
-        ],
-    )
+    class Meta:
+        abstract = True  # https://docs.djangoproject.com/en/1.11/topics/db/models/#abstract-base-classes  # noqa
 
     key_algorithm = models.CharField(
         null=False, blank=True,
@@ -84,14 +73,6 @@ class PGPKey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
         null=True, blank=True,
     )
 
-    last_synced = models.DateTimeField(null=True, blank=True)
-
-    creation_date = models.DateField(null=True, blank=False)
-
-    expiry_date = models.DateField(null=True, blank=True)
-
-    revoked = models.BooleanField(default=False)
-
     capabilities = ArrayField(
         base_field=models.CharField(
             max_length=1,
@@ -101,6 +82,33 @@ class PGPKey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
         blank=True,
         default=[]
     )
+
+    def friendly_capabilities(self):
+        lookup = dict(PGPKey.CAPABILITY_CHOICES)
+
+        return [lookup[c] for c in self.capabilities]
+
+
+class PGPKey(CryptographicKey, ExpiryCalculationMixin):
+
+    fingerprint = models.CharField(
+        help_text=(
+            "The 40-character key fingerprint without spaces."
+        ),
+        max_length=40,
+        primary_key=True,
+        validators=[
+            validate_fingerprint,
+        ],
+    )
+
+    last_synced = models.DateTimeField(null=True, blank=True)
+
+    creation_date = models.DateField(null=True, blank=False)
+
+    expiry_date = models.DateField(null=True, blank=True)
+
+    revoked = models.BooleanField(default=False)
 
     @property
     def human_fingerprint(self):
@@ -176,7 +184,7 @@ class UID(models.Model):
         return self.uid_string
 
 
-class Subkey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
+class Subkey(CryptographicKey, ExpiryCalculationMixin):
     id = models.AutoField(primary_key=True)
 
     long_id = models.CharField(max_length=16)
