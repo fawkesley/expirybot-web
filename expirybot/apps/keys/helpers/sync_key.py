@@ -89,10 +89,7 @@ def sync_key_algorithm(key, algorithm):
 
 
 def sync_key_length_bits(key, length_bits):
-    if key.key_length_bits is None:
-        key.key_length_bits = length_bits
-    else:
-        assert key.key_length_bits == length_bits
+    key.key_length_bits = length_bits
 
 
 def sync_key_ecc_curve(key, ecc_curve):
