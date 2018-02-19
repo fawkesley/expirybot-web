@@ -75,7 +75,7 @@ class PGPKey(models.Model, FriendlyCapabilitiesMixin, ExpiryCalculationMixin):
     )
 
     key_algorithm = models.CharField(
-        null=True, blank=True,
+        null=False, blank=True,
         max_length=10,
         choices=ALGORITHM_CHOICES
     )
