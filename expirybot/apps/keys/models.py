@@ -1,7 +1,5 @@
 import re
 
-from collections import OrderedDict
-
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -256,11 +254,13 @@ class Subkey(CryptographicKey, ExpiryCalculationMixin):
     )
 
     def to_dict(self):
-        return OrderedDict([
-            ('key_algorithm', self.key_algorithm),
-            ('key_length_bits', self.key_length_bits),
-            ('creation_date', self.creation_date),
-            ('expiry_date', self.expiry_date),
-            ('revoked', self.revoked),
-            ('capabilities', self.capabilities),
-        ])
+        return {
+            'long_id': self.long_id,
+            'key_algorithm': self.key_algorithm,
+            'key_length_bits': self.key_length_bits,
+            'ecc_curve': self.ecc_curve,
+            'creation_date': self.creation_date,
+            'expiry_date': self.expiry_date,
+            'revoked': self.revoked,
+            'capabilities': self.capabilities,
+        }

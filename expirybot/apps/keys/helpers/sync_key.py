@@ -1,8 +1,6 @@
 import logging
 import tempfile
 
-from collections import OrderedDict
-
 import requests
 
 from django.db import transaction
@@ -58,16 +56,18 @@ def sync_key(key):
 
 
 def translate_subkeys(parser_subkeys):
+    # TODO: think about how to remove this, it's kind of stupid
+
     def translate(s):
-        return OrderedDict([
-            ('long_id', s['long_id']),
-            ('key_algorithm', s['algorithm']),
-            ('key_length_bits', s['length_bits']),
-            ('creation_date', s['created_date']),
-            ('expiry_date', s['expiry_date']),
-            ('revoked', s['revoked']),
-            ('capabilities', s['capabilities']),
-        ])
+        return {
+            'long_id': s['long_id'],
+            'key_algorithm': s['algorithm'],
+            'key_length_bits': s['length_bits'],
+            'creation_date': s['created_date'],
+            'expiry_date': s['expiry_date'],
+            'revoked': s['revoked'],
+            'capabilities': s['capabilities'],
+        }
 
     return [translate(s) for s in parser_subkeys]
 
@@ -113,10 +113,14 @@ def sync_subkeys(key, expected_subkeys):
     current_subkeys = [s.to_dict() for s in key.subkeys.all()]
 
     if current_subkeys != expected_subkeys:
-        LOG.info('Updating UIDs for {}'.format(key))
+        if len(current_subkeys):
+            LOG.warn('Deleting & re-creating subkeys for {}: '
+                     'current: {} expected: {}'.format(
+                         key, current_subkeys, expected_subkeys))
+        else:
+            LOG.info('Setting key.subkeys: {}'.format(expected_subkeys))
 
         with transaction.atomic():
-            LOG.info('Setting key.subkeys: {}'.format(expected_subkeys))
             key.subkeys.all().delete()
 
             for subkey_data in expected_subkeys:
