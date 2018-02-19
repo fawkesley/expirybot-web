@@ -10,11 +10,13 @@ import os
 
 from django.conf import settings
 
+from expirybot.apps.keys.models import CryptographicKey
+
 
 LOG = logging.getLogger(__name__)
 GPG2_SANDBOXED = abspath(pjoin(dirname(__file__), 'gpg2_sandboxed'))
 
-PUB_SUB_PATTERN = r'^(pub|sub)\s+ (?P<algorithm>[^0-9]+)(?P<length_bits>[0-9]+)\/0x(?P<long_id>[0-9A-F]{16}) (?P<created_date>\d{4}-\d{2}-\d{2}) \[(?P<capabilities>[AECS]+)\]( \[(?P<status>expires|expired|revoked): (?P<status_data>[^ ]+) *\])?$'  # noqa
+PUB_SUB_PATTERN = r'^(pub|sub)\s+ (?P<algorithm>[A-Za-z0-9]+)\/0x(?P<long_id>[0-9A-F]{16}) (?P<created_date>\d{4}-\d{2}-\d{2}) \[(?P<capabilities>[AECS]+)\]( \[(?P<status>expires|expired|revoked): (?P<status_data>[^ ]+) *\])?$'  # noqa
 
 
 class GPGError(RuntimeError):
@@ -26,7 +28,7 @@ def parse_public_key(pgp_key_filename):
 
     import_key(pgp_key_filename)
 
-    parsed = parse_list_keys(fingerprint)
+    parsed = run_list_keys(fingerprint)
 
     return parsed
 
@@ -77,24 +79,26 @@ def import_key(pgp_key_filename):
     ])
 
 
-def parse_list_keys(fingerprint):
+def run_list_keys(fingerprint):
     stdout = stdout_for_subprocess([
         GPG2_SANDBOXED, '--list-keys', fingerprint
     ])
 
     save_list_keys_stdout(fingerprint, stdout)
 
-    return {
+    return parse_list_keys(stdout)
+
+
+def parse_list_keys(stdout):
+    result = {
         'fingerprint': _parse_fingerprint_line(stdout),
-        'algorithm': _parse_algorithm(stdout),
-        'length_bits': _parse_length_bits(stdout),
-        'created_date': _parse_created_date(stdout),
-        'expiry_date': _parse_expiry_date(stdout),
-        'revoked': _parse_revoked(stdout),
-        'capabilities': _parse_capabilities(stdout),
         'uids': list(_parse_uid_lines(stdout)),
         'subkeys': list(_parse_subkey_lines(stdout)),
     }
+
+    result.update(_parse_pub_line(stdout))
+
+    return result
 
 
 def mkdir_p(directory):
@@ -171,46 +175,61 @@ def _parse_fingerprint_line(list_keys_output):
         if match is not None:
             fingerprints.append(match.group('fingerprint'))
 
-    assert len(fingerprints) == 1, '{}: {}'.format(
+    assert len(fingerprints) == 1, 'expected 1 fingerprint {}: {}'.format(
             fingerprints, list_keys_output)
     return fingerprints[0].replace(' ', '').upper()
 
 
-def _parse_expiry_date(list_keys_output):
-    return _parse_pub_line(list_keys_output)['expiry_date']
-
-
-def _parse_revoked(list_keys_output):
-    return _parse_pub_line(list_keys_output)['revoked']
-
-
-def _parse_capabilities(list_keys_output):
-    return _parse_pub_line(list_keys_output)['capabilities']
-
-
-def _parse_created_date(list_keys_output):
-    return _parse_pub_line(list_keys_output)['created_date']
-
-
-def _parse_algorithm(list_keys_output):
-    return _parse_pub_line(list_keys_output)['algorithm']
-
-
-def _convert_algorithm(gpg_algorithm_text):
-
-    conversion = {
-        'rsa': 'RSA',
-        'dsa': 'DSA',
-        'elg': 'ELGAMAL',
-        'ed': '',     # unknown
-        'nistp': '',  # unknown
+def parse_algorithm_params(gpg_algorithm_text):
+    """
+    return {
+        'algorithm': '...',
+        'length_bits': '<bits or None>',
+        'ecc_curve': '<curve or None>',
     }
+    """
 
-    return conversion[gpg_algorithm_text]
+    ecc_algorithms = dict(CryptographicKey.ECC_CURVE_CHOICES).keys()
+
+    if gpg_algorithm_text in ecc_algorithms:
+        return {
+            'algorithm': 'ECC',
+            'ecc_curve': gpg_algorithm_text,
+            'length_bits': None
+        }
+
+    else:
+        try:
+            return parse_algo_with_bits(gpg_algorithm_text)
+        except ValueError:
+            return {
+                'algorithm': None,
+                'ecc_curve': None,
+                'length_bits': None
+            }
 
 
-def _parse_length_bits(list_keys_output):
-    return _parse_pub_line(list_keys_output)['length_bits']
+def parse_algo_with_bits(gpg_algorithm):
+    algo = None
+
+    match = re.match('^(?P<algo>(rsa|dsa|elg))(?P<bits>\d+)', gpg_algorithm)
+
+    if match:
+        algo = {
+            'rsa': 'RSA',
+            'dsa': 'DSA',
+            'elg': 'ELGAMAL',
+        }.get(match.group('algo'), None)
+
+    if algo is None:
+        raise ValueError('Unrecognised algorithm line `{}`'.format(
+            gpg_algorithm))
+
+    return {
+        'algorithm': algo,
+        'length_bits': int(match.group('bits')),
+        'ecc_curve': None,
+    }
 
 
 def _parse_pub_line(list_keys_output):
@@ -269,15 +288,15 @@ def parse_pub_or_sub_line(line):
 
     created_date = parse_date(match.group('created_date'))
 
-    return {
+    result = {
         'long_id': match.group('long_id'),
         'created_date': created_date,
         'expiry_date': expiry_date,
         'revoked': revoked,
-        'algorithm': _convert_algorithm(match.group('algorithm')),
-        'length_bits': int(match.group('length_bits')),
         'capabilities': list(match.group('capabilities')),
     }
+    result.update(parse_algorithm_params(match.group('algorithm')))
+    return result
 
 
 def parse_date(date_string):
@@ -306,7 +325,7 @@ def _parse_uid_lines(list_keys_output):
         match = re.match('^uid\s+\[(?P<status>.*)\] (?P<uid>.*)$', line)
         if match is not None:
             status = match.group('status').strip()
-            if status not in ('unknown', 'revoked', 'expired'):
+            if status not in ('unknown', 'revoked', 'expired', 'ultimate'):
                 raise RuntimeError(status)
 
             if status not in ('revoked', 'expired'):
