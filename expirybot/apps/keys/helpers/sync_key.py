@@ -78,7 +78,7 @@ def sync_key_algorithm(key, algorithm):
     assert algorithm in allowed_algorithms, \
         'algorithm {} not in {}'.format(algorithm, allowed_algorithms)
 
-    if key.key_algorithm is None:
+    if not key.key_algorithm:
         key.key_algorithm = algorithm
     else:
         assert key.key_algorithm == algorithm, \
