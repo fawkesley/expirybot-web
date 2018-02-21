@@ -5,7 +5,25 @@
 
 {% block content %}
 
-  <div id="pgp-key-detail" class="container">
+  <div id="pgp-key-detail">
+
+    <section id="alert-container" class="container-fluid" style="">
+
+      <div class="alert alert-danger" style="margin-bottom: 0;" role="alert">
+        <h1 class="text-center" style="">
+          Encryption subkey expired 5 days ago
+        </h1>
+      </div>
+
+      <div class="alert alert-warning" role="alert">
+        <h1 class="text-center" style="">
+          Primary key expires in 14 days
+        </h1>
+      </div>
+
+    </section>
+
+    <section class="container">
 
 
     <div class="row">
@@ -13,17 +31,6 @@
 
 
         <h1>Details for PGP key <br><small>{{ key.human_fingerprint }}</small></h1>
-
-        <!--
-        <div class="alert alert-warning">
-          <p><strong>Warning!</strong> 1 issue found:</p>
-          <ul>
-            <li>The expiry date has passed</li>
-          </ul>
-
-        </div>
-        -->
-
 
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -90,6 +97,7 @@
 
       </div>
     </div>
+    </section>
 
 
   </div>

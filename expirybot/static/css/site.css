@@ -6070,6 +6070,15 @@ a.list-group-item-danger.active:hover, a.list-group-item-danger.active:focus {
   #user-settings button {
     margin-top: 20px; }
 
+#pgp-key-detail #alert-container {
+  padding-left: 0;
+  padding-right: 0; }
+#pgp-key-detail .alert {
+  margin-bottom: 0;
+  border-radius: 0; }
+#pgp-key-detail .alert:last-of-type {
+  margin-bottom: 20px; }
+
 footer {
   margin-top: 30px;
   background-color: #2C3E50;
