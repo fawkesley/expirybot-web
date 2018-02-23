@@ -120,7 +120,7 @@ def sync_subkeys(key, expected_subkeys):
 
     if current_subkeys != expected_subkeys:
         if len(current_subkeys):
-            LOG.warn('Deleting & re-creating subkeys for {}: '
+            LOG.info('Deleting & re-creating subkeys for {}: '
                      'current: {} expected: {}'.format(
                          key, current_subkeys, expected_subkeys))
         else:
