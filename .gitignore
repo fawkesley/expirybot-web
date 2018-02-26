@@ -9,3 +9,6 @@ secrets.sh
 *__pycache__*
 *.log
 .sass-cache/*
+
+*.dump
+keys.csv
