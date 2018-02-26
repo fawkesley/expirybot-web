@@ -1,10 +1,11 @@
 import re
 
 from django.core.exceptions import ValidationError
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils import timezone
 
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import ArrayField, JSONField
 
 from expirybot.apps.blacklist.models import EmailAddress
 from expirybot.libs.uid_parser import parse_email_from_uid
@@ -43,6 +44,14 @@ class ExpiryCalculationMixin():
             raise ValueError('days_till_expiry called with expiry_date=None')
 
         return (self.expiry_date - timezone.now().date().today()).days
+
+
+class CustomJSONEncoder(DjangoJSONEncoder):
+    def default(self, obj):
+        try:
+            return obj._json()
+        except AttributeError:
+            return DjangoJSONEncoder.default(self, obj)
 
 
 class CryptographicKey(models.Model):
@@ -125,6 +134,17 @@ class CryptographicKey(models.Model):
         max_length=100,
         choices=ECC_CURVE_CHOICES
     )
+
+    alerts_json = JSONField(encoder=CustomJSONEncoder, default=list)
+
+    @property
+    def alerts(self):
+        from .helpers.alerts import Alert
+        return [Alert(**a) for a in self.alerts_json]
+
+    @alerts.setter
+    def alerts(self, value):
+        self.alerts_json = value
 
     def friendly_capabilities(self):
         lookup = dict(PGPKey.CAPABILITY_CHOICES)

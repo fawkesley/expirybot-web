@@ -10,6 +10,7 @@ from django.utils import timezone
 from expirybot.libs.gpg_wrapper import parse_public_key, GPGError
 from expirybot.apps.keys.models import PGPKey, Subkey, UID
 
+from .alerts import make_alerts
 from .exceptions import NoSuchKeyError
 
 LOG = logging.getLogger(__name__)
@@ -52,6 +53,7 @@ def sync_key(key):
         sync_expiry_date(key, parsed['expiry_date'])
         sync_capabilities(key, parsed['capabilities'])
         sync_revoked(key, parsed['revoked'])
+        sync_alerts(key, make_alerts(key))
         update_last_synced(key)
         key.save()
 
@@ -153,6 +155,10 @@ def sync_capabilities(key, capabilities):
 def sync_revoked(key, is_revoked):
     assert is_revoked in (True, False)
     key.revoked = is_revoked
+
+
+def sync_alerts(key, alerts):
+    key.alerts = alerts
 
 
 def update_last_synced(key):
