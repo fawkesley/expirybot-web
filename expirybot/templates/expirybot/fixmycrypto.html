@@ -1,0 +1,122 @@
+{% extends 'expirybot/base.html' %}
+
+{% block title_inner %}FixMyCrypto - test, fix and monitor your PGP keys{% endblock %}
+
+{% block content %}
+
+  <div id="fixmycrypto-landing">
+
+    <div class="container">
+      <div class="jumbotron text-center col-lg-10 col-lg-offset-1">
+        <h1>Test, fix and monitor<br> your PGP keys</h1>
+        <h2>FixMyCrypto identifies issues and shows you how to resolve them</h2>
+
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="col-lg-10 col-lg-offset-1">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th></th>
+              <th><span class="h3">Solo</span></th>
+              <th class="active"><span class="h3">Professional</span></th>
+              <th><span class="h3">Team</span></th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <td><span class="feature-name">expiry emails</span><br>get email alerts before your keys expire</td>
+              <td><i class="fa fa-check-circle"></i></td>
+              <td class="active"><i class="fa fa-check-circle"></i></td>
+              <td><i class="fa fa-check-circle"></i></td>
+            </tr>
+
+            <tr>
+              <td><span class="feature-name">email monitoring</span><br>get alerts about new keys with your email address</td>
+              <td><i class="fa fa-check-circle"></i></td>
+              <td class="active"><i class="fa fa-check-circle"></i></td>
+              <td><i class="fa fa-check-circle"></i></td>
+            </tr>
+
+            <tr>
+              <td><span class="feature-name">manual config testing</span><br>test for issues with your PGP key's settings and cipher preferences</td>
+              <td><i class="fa fa-check-circle"></i></td>
+              <td class="active"><i class="fa fa-check-circle"></i></td>
+              <td><i class="fa fa-check-circle"></i></td>
+            </tr>
+
+            <tr>
+              <td><span class="feature-name">automatic config testing</span><br>get automatic warnings about config and ciphers</td>
+              <td></td>
+              <td class="active"><i class="fa fa-check-circle"></i></td>
+              <td><i class="fa fa-check-circle"></i></td>
+            </tr>
+
+            <tr>
+              <td><span class="feature-name">domain monitoring</span><br>get alerts for your any address at your domain</td>
+              <td></td>
+              <td class="active"><i class="fa fa-check-circle"></i></td>
+              <td><i class="fa fa-check-circle"></i></td>
+            </tr>
+
+
+            <tr>
+              <td><span class="feature-name">multiple users</span><br>add multiple users with individual alerts</td>
+              <td></td>
+              <td class="active"></td>
+              <td><i class="fa fa-check-circle"></i></td>
+            </tr>
+
+            <tr>
+              <td><span class="feature-name">team view</span></br>see a whole team overview of key expiry and config</td>
+              <td></td>
+              <td class="active"></td>
+              <td><i class="fa fa-check-circle"></i></td>
+            </tr>
+
+            <!--
+            <tr>
+            <td><span class="feature-name">Github code signature checking</td>
+              <td></td>
+              <td class="active"></td>
+              <td><i class="fa fa-check-circle"></i></td>
+            </tr>
+            -->
+
+            <tr>
+              <td><span class="feature-name">email support</span><br>get PGP support by email</td>
+              <td></td>
+              <td class="active"></td>
+              <td><i class="fa fa-check-circle"></i></td>
+            </tr>
+
+            <tr>
+              <td></td>
+              <td><span class="price free">Free</span></td>
+              <td class="active"><span class="price">$10 / month</span><br><i>30 days free trial</i></td>
+              <td><span class="price">$50 / month</span><br><i>30 days free trial</i></td>
+            </tr>
+
+            <tr>
+              <td></td>
+              <td><a class="btn btn-default">Sign up</a></td>
+              <td class="active"><a class="btn btn-success">Start free trial</a></td>
+              <td><a class="btn btn-default">Start free trial</a></td>
+            </tr>
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+{% endblock %}
