@@ -21,6 +21,8 @@ ALGOS = {
     19: 'ECDSA',
 }
 
+SYNC_EVERY = datetime.timedelta(days=7)
+
 
 class Command(BaseCommand):
     help = ('Updates keys from the keyserver')
@@ -71,7 +73,7 @@ def get_keys_never_synced():
 
 
 def get_stale_keys():
-    one_day_ago = timezone.now() - datetime.timedelta(hours=24)
+    one_day_ago = timezone.now() - SYNC_EVERY
 
     return PGPKey.objects.filter(
         last_synced__isnull=False,
