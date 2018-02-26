@@ -5,25 +5,49 @@
 
 {% block content %}
 
-  <div id="pgp-key-detail" class="container">
+  <div id="pgp-key-detail">
+
+    <section id="alert-container" class="container-fluid" style="">
+
+      {% if danger_alerts|length == 1 %}
+
+        {% with alert_severity="danger" alert_text=danger_alerts.0 %}
+          {% include 'keys/partials/alert.html' %}
+        {% endwith %}
+
+      {% elif danger_alerts|length > 1 %}
+
+        {% with alert_severity="danger" alert_text=danger_alerts|join:',<br>' %}
+          {% include 'keys/partials/alert.html' %}
+        {% endwith %}
+
+      {% endif %}
+
+
+      {% if warning_alerts|length == 1 %}
+
+        {% with alert_severity="warning" alert_text=warning_alerts.0 %}
+          {% include 'keys/partials/alert.html' %}
+        {% endwith %}
+
+      {% elif warning_alerts|length > 1 %}
+
+        {% with alert_severity="warning" alert_text=warning_alerts|join:',<br>' %}
+          {% include 'keys/partials/alert.html' %}
+        {% endwith %}
+
+      {% endif %}
+
+    </section>
+
+    <section class="container">
 
 
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2">
 
 
-        <h1>Details for PGP key <br><small>{{ key.human_fingerprint }}</small></h1>
-
-        <!--
-        <div class="alert alert-warning">
-          <p><strong>Warning!</strong> 1 issue found:</p>
-          <ul>
-            <li>The expiry date has passed</li>
-          </ul>
-
-        </div>
-        -->
-
+        <h1>PGP key <br><small>{{ key.human_fingerprint }}</small></h1>
 
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -90,6 +114,7 @@
 
       </div>
     </div>
+    </section>
 
 
   </div>
