@@ -7,6 +7,7 @@ from django.http import HttpResponse
 
 from expirybot.apps.keys.models import PGPKey
 from expirybot.apps.keys.helpers import get_key, NoSuchKeyError
+from expirybot.apps.keys.helpers import make_alerts
 
 
 LOG = logging.getLogger(__name__)
@@ -28,7 +29,7 @@ class PGPKeyDetailView(TemplateView):
         except NoSuchKeyError:
             return HttpResponse(status=404)  # TODO - improve this UX
 
-        alerts = pgp_key.alerts
+        alerts = make_alerts(pgp_key)
 
         danger = list(filter(lambda a: a.severity == 'danger', alerts))
         warning = list(filter(lambda a: a.severity == 'warning', alerts))
