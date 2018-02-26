@@ -162,6 +162,29 @@
 }
 
 
+#pgp-key-detail {
+  #alert-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .alert {
+    margin-bottom: 0;
+    border-bottom: 1px solid white;
+    border-radius: 0;
+
+    a {
+      color: inherit;
+    }
+  }
+
+  .alert:last-of-type {
+    margin-bottom: 20px;  // TODO: get from bootstrap
+  }
+
+}
+
+
 
 
 footer {

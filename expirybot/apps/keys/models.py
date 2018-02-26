@@ -37,6 +37,13 @@ class ExpiryCalculationMixin():
     def has_expired(self):
         return self.expires and self.expiry_date < timezone.now().date()
 
+    @property
+    def days_till_expiry(self):
+        if self.expiry_date is None:
+            raise ValueError('days_till_expiry called with expiry_date=None')
+
+        return (self.expiry_date - timezone.now().date().today()).days
+
 
 class CryptographicKey(models.Model):
     ALGORITHM_CHOICES = (
