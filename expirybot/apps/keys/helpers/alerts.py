@@ -11,6 +11,12 @@ class Alert():
     def __str__(self):
         return self.text
 
+    def _json(self):
+        return {
+            'severity': self.severity,
+            'text': self.text,
+        }
+
 
 def make_alerts(pgp_key):
     """
