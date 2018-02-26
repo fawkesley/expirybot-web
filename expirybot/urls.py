@@ -27,6 +27,11 @@ urlpatterns = [
         TemplateView.as_view(template_name='expirybot/index.html')
     ),
 
+    url(
+        r'^fixmycrypto/$',
+        TemplateView.as_view(template_name='expirybot/fixmycrypto.html')
+    ),
+
     url(r'^admin/', admin.site.urls),
 
     url(
