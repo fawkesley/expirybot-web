@@ -1,18 +1,25 @@
 from django.conf.urls import url
+from django.contrib.admin.views.decorators import staff_member_required
 
 from .views import (
-    AddEmailAddressView, AddEmailConfirmSendView, EmailSentView,
-    LoginEmailSentView, LoginGetEmailAddressView, LoginFromEmailLinkView,
-    LoginWithContextView, LogoutView, MonitorEmailAddressView,
-    ProveKeyOwnershipView, ProveKeyOwnershipFromEmailLinkView, UserSettingsView
+    AddEmailAddressView, AddEmailConfirmSendView, AdminListUsers,
+    EmailSentView, LoginEmailSentView, LoginGetEmailAddressView,
+    LoginFromEmailLinkView, LoginWithContextView, LogoutView,
+    MonitorEmailAddressView, ProveKeyOwnershipView,
+    ProveKeyOwnershipFromEmailLinkView, UserSettingsView
 )
 
 JWT_PATTERN = "[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*"
 V4_FINGERPRINT_PATTERN = "[A-Z0-9]{40}"
 V3_FINGERPRINT_PATTERN = "[A-Z0-9]{16}"
 
-
 urlpatterns = [
+
+    url(
+        r'^admin/list-users/$',
+        staff_member_required(AdminListUsers.as_view()),
+        name='admin-list-users'
+    ),
 
     url(
         r'^monitor-email-address/$',

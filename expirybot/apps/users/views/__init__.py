@@ -1,5 +1,6 @@
 from .add_email_address_view import AddEmailAddressView
 from .add_email_confirm_send_view import AddEmailConfirmSendView
+from .admin_list_users import AdminListUsers
 from .email_sent_view import EmailSentView
 from .login_get_email_address_view import LoginGetEmailAddressView
 from .login_email_sent_view import LoginEmailSentView
