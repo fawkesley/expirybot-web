@@ -140,10 +140,18 @@ class CryptographicKey(models.Model):
     @property
     def alerts(self):
         from .helpers.alerts import Alert
-        return [Alert(**a) for a in self.alerts_json]
+
+        def to_alert(dict_or_alert):
+            if isinstance(dict_or_alert, Alert):
+                return dict_or_alert
+            else:
+                return Alert(**dict_or_alert)
+
+        return [to_alert(a) for a in self.alerts_json]
 
     @alerts.setter
     def alerts(self, value):
+        assert isinstance(value, list), '{} type {}'.format(value, type(value))
         self.alerts_json = value
 
     def friendly_capabilities(self):
