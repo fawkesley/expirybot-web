@@ -7,6 +7,7 @@ from django.http import HttpResponse
 
 from expirybot.apps.keys.models import PGPKey
 from expirybot.apps.keys.helpers import get_key, NoSuchKeyError
+from expirybot.apps.users.forms import MonitorEmailAddressForm
 
 
 LOG = logging.getLogger(__name__)
@@ -38,5 +39,6 @@ class PGPKeyDetailView(TemplateView):
                 'key': pgp_key,
                 'danger_alerts': danger,
                 'warning_alerts': warning,
+                'form': MonitorEmailAddressForm(),
             }
         )
