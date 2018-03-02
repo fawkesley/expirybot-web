@@ -176,10 +176,21 @@
     a {
       color: inherit;
     }
+
+    &.alert-gray {
+      background-color: #ecf0f1;
+
+    }
   }
 
   .alert:last-of-type {
     margin-bottom: 20px;  // TODO: get from bootstrap
+  }
+
+  input[type="email"] {
+    @media(min-width: $screen-lg-min) {
+      width: 400px;
+    }
   }
 
 }

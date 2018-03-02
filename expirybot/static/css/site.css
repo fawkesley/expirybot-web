@@ -6097,8 +6097,13 @@ a.list-group-item-danger.active:hover, a.list-group-item-danger.active:focus {
   border-radius: 0; }
   #pgp-key-detail .alert a {
     color: inherit; }
+  #pgp-key-detail .alert.alert-gray {
+    background-color: #ecf0f1; }
 #pgp-key-detail .alert:last-of-type {
   margin-bottom: 20px; }
+@media (min-width: 1200px) {
+  #pgp-key-detail input[type="email"] {
+    width: 400px; } }
 
 footer {
   margin-top: 30px;
