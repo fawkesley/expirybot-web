@@ -42,3 +42,7 @@ class PGPKeyDetailView(TemplateView):
                 'form': MonitorEmailAddressForm(),
             }
         )
+
+
+class TestPGPKeyView(TemplateView):
+    template_name = 'keys/test_pgp_key.html'

@@ -1,0 +1,26 @@
+{% extends 'expirybot/base.html' %}
+{% load widget_tweaks %}
+
+{% block title_inner %}PGP key {{ key.human_fingerprint }}{% endblock %}
+
+{% block content %}
+
+  <div id="test-pgp-key" class="container">
+
+      <h1>Test your PGP key for issues</h1>
+
+      <label for="public-key">
+        Copy &amp; paste your public key. It starts with <code>-----BEGIN PGP PUBLIC KEY BLOCK-----</code>
+
+      </label>
+
+
+<textarea id="public-key" class="form-control" rows="10"></textarea>
+
+    <p>
+      We delete don't keep a copy of keys or push them to the public keyservers. Test results are deleted within 2 hours.
+    </p>
+
+
+  </div>
+{% endblock %}
