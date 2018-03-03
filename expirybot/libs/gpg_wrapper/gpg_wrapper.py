@@ -14,7 +14,10 @@ from expirybot.apps.keys.models import CryptographicKey
 
 
 LOG = logging.getLogger(__name__)
+
+# TODO: Replace gpg2_sandbox with new script/encrypt <public_key> <messgae>
 GPG2_SANDBOXED = abspath(pjoin(dirname(__file__), 'gpg2_sandboxed'))
+DUMP_KEY = abspath(pjoin(dirname(__file__), 'script', 'dump_key'))
 
 PUB_SUB_PATTERN = r'^(pub|sub)\s+ (?P<algorithm>[A-Za-z0-9]+)\/0x(?P<long_id>[0-9A-F]{16}) (?P<created_date>\d{4}-\d{2}-\d{2}) \[(?P<capabilities>[AECS]+)\]( \[(?P<status>expires|expired|revoked): (?P<status_data>[^ ]+) *\])?$'  # noqa
 
@@ -24,25 +27,28 @@ class GPGError(RuntimeError):
 
 
 def parse_public_key(pgp_key_filename):
-    fingerprint = get_fingerprint(pgp_key_filename)
+    list_keys, list_packets = run_dump_key(pgp_key_filename)
+    return parse_list_keys(list_keys)
 
-    import_key(pgp_key_filename)
 
-    parsed = run_list_keys(fingerprint)
+def run_dump_key(pgp_key_filename):
+    dump_key_stdout = stdout_for_subprocess([DUMP_KEY, pgp_key_filename])
 
-    return parsed
+    match = re.search('LIST_KEYS: (?P<list_keys>.*)\n'
+                      'LIST_PACKETS: (?P<list_packets>.*)\n', dump_key_stdout)
+
+    with io.open(match.group('list_keys'), 'r') as f:
+        list_keys = f.read()
+
+    with io.open(match.group('list_packets'), 'r') as f:
+        list_packets = f.read()
+
+    return list_keys, list_packets
 
 
 def encrypt_message(fingerprint, text):
     _receive_key(fingerprint)
     return _encrypt_text(fingerprint, text)
-
-
-def get_fingerprint(pgp_key_filename):
-    stdout = stdout_for_subprocess([
-        GPG2_SANDBOXED, pgp_key_filename
-    ])
-    return _parse_fingerprint_line(stdout)
 
 
 def _receive_key(fingerprint):
@@ -70,23 +76,6 @@ def _encrypt_text(fingerprint, text):
         'always',
         '--encrypt',
     ], stdin=text).strip()
-
-
-def import_key(pgp_key_filename):
-    LOG.info("importing key")
-    stdout_for_subprocess([
-        GPG2_SANDBOXED, '--import', pgp_key_filename
-    ])
-
-
-def run_list_keys(fingerprint):
-    stdout = stdout_for_subprocess([
-        GPG2_SANDBOXED, '--list-keys', fingerprint
-    ])
-
-    save_list_keys_stdout(fingerprint, stdout)
-
-    return parse_list_keys(stdout)
 
 
 def parse_list_keys(stdout):
@@ -169,7 +158,6 @@ def _parse_fingerprint_line(list_keys_output):
     fingerprints = []
 
     for line in list_keys_output.split('\n'):
-        LOG.info(line)
         match = re.match('^\s*Key fingerprint = (?P<fingerprint>.*)$', line)
 
         if match is not None:
