@@ -17,41 +17,47 @@
           Copy &amp; paste your public key starting with <code>-----BEGIN PGP PUBLIC KEY BLOCK-----</code>
 
         </label>
-        <div id="public-key-form-group" class="form-group">
-          <textarea id="public-key" name="public-key" class="form-control" rows="10" autofocus></textarea>
 
-	  <div id="format-warning" class="hidden help-block">
-            <p>
-	      That doesn't appear to be a PGP key — it should look like:<br>
-	      <code>-----BEGIN PGP PUBLIC KEY BLOCK-----<br><br>
-	      [lots of random characters]<br><br>
-	      -----END PGP PUBLIC KEY BLOCK-----</code>
-            </p>
+        {% with form.public_key as field %}
+          <div id="public-key-form-group" class="form-group {% if field.errors %}has-error{% endif %}">
 
-            <p>If you use GnuPG, type:</p>
-	      <code>
-	      gpg --armor --export [key id or email]
-	      </code>
-            </p>
+            {{ field|add_class:"form-control"|attr:"rows:10"|attr:"autofocus" }}
+
+            <div class="help-block">{{ field.errors }}</div>
+
+            <div id="format-warning" class="hidden help-block">
+              <p>
+                That doesn't appear to be a PGP key — it should look like:<br>
+                <code>-----BEGIN PGP PUBLIC KEY BLOCK-----<br><br>
+                [lots of random characters]<br><br>
+                -----END PGP PUBLIC KEY BLOCK-----</code>
+              </p>
+
+              <p>If you use GnuPG, type:</p>
+                <code>
+                gpg --armor --export [key id or email]
+                </code>
+              </p>
+            </div>
+
+            <div id="private-key-warning" class="hidden help-block">
+              <p class="lead">😮 That contains a private key!</p>
+
+              <p>
+              It's very important to keep your private key secret since it allows someone else to read your encrypted files and sign things as you.
+              </p>
+
+              <p>
+              The key hasn't been uploaded, but you'll have to take our word for it.
+              </p>
+
+              <p>
+              <b>If you're serious about the security of this key, you should treat it as compromised and create a new one.</b>
+              </p>
+
+            </div>
           </div>
-
-          <div id="private-key-warning" class="hidden help-block">
-            <p class="lead">😮 That contains a private key!</p>
-
-            <p>
-            It's very important to keep your private key secret since it allows someone else to read your encrypted files and sign things as you.
-            </p>
-
-            <p>
-            The key hasn't been uploaded, but you'll have to take our word for it.
-            </p>
-
-            <p>
-            <b>If you're serious about the security of this key, you should treat it as compromised and create a new one.</b>
-            </p>
-
-          </div>
-        </div>
+        {% endwith %}
 
         <button id="submit-button" class="btn btn-primary" type="submit">Test my key</button>
       </form>
