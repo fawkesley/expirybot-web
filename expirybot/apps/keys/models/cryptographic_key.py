@@ -89,7 +89,7 @@ class CryptographicKey(models.Model):
 
     @property
     def alerts(self):
-        from .helpers.alerts import Alert
+        from ..helpers.alerts import Alert
 
         def to_alert(dict_or_alert):
             if isinstance(dict_or_alert, Alert):
