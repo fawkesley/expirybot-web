@@ -3,7 +3,6 @@ import datetime
 from django.utils import timezone
 from django.db import transaction
 
-from expirybot.apps.keys.models import PGPKey
 from .sync_key import sync_key
 
 
@@ -12,6 +11,8 @@ def get_key(fingerprint, max_staleness=None):
     Return a reasonably up-to-date key, where max_staleness is a timedelta.
     If the fingerprint was invalid, the key won't be saved.
     """
+
+    from expirybot.apps.keys.models import PGPKey
 
     max_staleness = max_staleness or datetime.timedelta(hours=24)
 
