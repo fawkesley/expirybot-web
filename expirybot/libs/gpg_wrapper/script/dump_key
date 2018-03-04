@@ -4,17 +4,17 @@
 # gpg --list-keys for the key contained within
 
 
-THIS_SCRIPT=$(readlink -f $0)
-THIS_DIR=$(dirname ${THIS_SCRIPT})
+THIS_SCRIPT=$(/bin/readlink -f $0)
+THIS_DIR=$(/usr/bin/dirname ${THIS_SCRIPT})
 
 ASCII_KEY_FILENAME=$1
 
 GPG="/usr/bin/gpg2 --batch --no-tty"
 
-DATE_SUBDIR="/tmp/gpg.$(date +%F)"
-mkdir -p ${DATE_SUBDIR}
+DATE_SUBDIR="/tmp/gpg.$(/bin/date +%F)"
+/bin/mkdir -p ${DATE_SUBDIR}
 
-TEMP_DIR=$(mktemp -p ${DATE_SUBDIR} -d --suffix .gpghome)
+TEMP_DIR=$(/bin/mktemp -p ${DATE_SUBDIR} -d --suffix .gpghome)
 export GNUPGHOME=${TEMP_DIR}
 
 /bin/cp ${THIS_DIR}/../skel/* "${GNUPGHOME}/"
@@ -22,8 +22,8 @@ export GNUPGHOME=${TEMP_DIR}
 
 $GPG --fast-import "${ASCII_KEY_FILENAME}"
 
-LIST_KEYS_FN=$(mktemp -p ${DATE_SUBDIR} --suffix .list-keys.txt)
-LIST_PACKETS_FN=$(mktemp -p ${DATE_SUBDIR} --suffix .list-packets.txt)
+LIST_KEYS_FN=$(/bin/mktemp -p ${DATE_SUBDIR} --suffix .list-keys.txt)
+LIST_PACKETS_FN=$(/bin/mktemp -p ${DATE_SUBDIR} --suffix .list-packets.txt)
 
 $GPG --list-keys > ${LIST_KEYS_FN}
 $GPG --export-options export-minimal --export | $GPG --list-packets > ${LIST_PACKETS_FN}
@@ -31,4 +31,4 @@ $GPG --export-options export-minimal --export | $GPG --list-packets > ${LIST_PAC
 echo "LIST_KEYS: ${LIST_KEYS_FN}"
 echo "LIST_PACKETS: ${LIST_PACKETS_FN}"
 
-rm -rf ${TEMP_DIR}
+/bin/rm -rf ${TEMP_DIR}
