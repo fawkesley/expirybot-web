@@ -28,7 +28,13 @@ class GPGError(RuntimeError):
 
 def parse_public_key(pgp_key_filename):
     list_keys, list_packets = run_dump_key(pgp_key_filename)
-    return parse_list_keys(list_keys)
+
+    parsed = {}
+
+    parsed.update(parse_list_keys(list_keys))
+    parsed.update(parse_list_packets(list_packets))
+
+    return parsed
 
 
 def run_dump_key(pgp_key_filename):
@@ -88,6 +94,42 @@ def parse_list_keys(stdout):
     result.update(_parse_pub_line(stdout))
 
     return result
+
+
+def parse_list_packets(list_packets):
+    return {
+        'openpgp_versions': parse_openpgp_versions(list_packets),
+        'cipher_preferences': parse_cipher_preferences(list_packets),
+        'digest_preferences': parse_digest_preferences(list_packets),
+    }
+
+
+def parse_openpgp_versions(list_packets):
+    versions = set()
+
+    for line in list_packets.split('\n'):
+        if line.lstrip().startswith('version'):
+            versions.add(int(line.lstrip()[8]))
+
+    return list(sorted(versions))
+
+
+def parse_cipher_preferences(list_packets):
+    """
+    (pref-sym-algos: 9 8 7 3 2)
+    """
+    match = re.search('\(pref-sym-algos: (?P<algos>[ 0-9]+)\)', list_packets)
+    if match is not None:
+        return [int(c) for c in match.group('algos').split(' ')]
+
+
+def parse_digest_preferences(list_packets):
+    """
+    (pref-hash-algos: 8 2 9 10 11)
+    """
+    match = re.search('\(pref-hash-algos: (?P<algos>[ 0-9]+)\)', list_packets)
+    if match is not None:
+        return [int(c) for c in match.group('algos').split(' ')]
 
 
 def mkdir_p(directory):
