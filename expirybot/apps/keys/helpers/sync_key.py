@@ -8,7 +8,6 @@ from django.conf import settings
 from django.utils import timezone
 
 from expirybot.libs.gpg_wrapper import parse_public_key, GPGError
-from expirybot.apps.keys.models import PGPKey, Subkey, UID
 
 from .alerts import make_alerts
 from .exceptions import NoSuchKeyError
@@ -16,46 +15,73 @@ from .exceptions import NoSuchKeyError
 LOG = logging.getLogger(__name__)
 
 
-def sync_key(key):
+def sync_key(key, ascii_key=None):
+    """
+    Parse an ASCII-armored key, update the given `key` and save it back to the
+    database.
+
+    - `ascii_key` should be the OpenPGP ascii armored key, in binary. If not
+                  given, the latest key is fetched from the keyserver
+    """
     LOG.info('syncing {}'.format(key))
 
+    ascii_key_binary = ascii_key or download_ascii_armored_key(key.key_id)
+
+    assert isinstance(ascii_key_binary, bytes), type(ascii_key_binary)
+
+    try:
+        parsed = parse_ascii_armored_key(ascii_key_binary)
+    except GPGError as e:
+        LOG.exception(e)
+        return  # drop out of sync_key
+
+    # assert parsed['fingerprint'] == key.fingerprint
+
+    with transaction.atomic():
+        sync_key_from_parsed(key, parsed)
+        key.save()
+
+
+def download_ascii_armored_key(key_id):
+    """
+    Fetch the ASCII-armored key from the keyserver and return it as bytes.
+    """
+
     url = '{keyserver}/pks/lookup?op=get&options=mr&search={key_id}'.format(
-        keyserver=settings.KEYSERVER_URL, key_id=key.key_id)
+        keyserver=settings.KEYSERVER_URL, key_id=key_id)
 
     try:
         response = requests.get(url, timeout=5)
         response.raise_for_status()
     except requests.HTTPError:
         if response.status_code == 404:
-            raise NoSuchKeyError("Keyserver HTTP 404 for key {}".format(key))
+            raise NoSuchKeyError("Keyserver HTTP404 for key {}".format(key_id))
         else:
             raise
 
+    return response.content
+
+
+def parse_ascii_armored_key(ascii_key_binary):
     with tempfile.NamedTemporaryFile('wb') as f:
-        f.write(response.content)
+        f.write(ascii_key_binary)
         f.flush()
 
-        try:
-            parsed = parse_public_key(f.name)
-        except GPGError as e:
-            LOG.exception(e)
-            return
+        return parse_public_key(f.name)
 
-        assert parsed['fingerprint'] == key.fingerprint
 
-    with transaction.atomic():
-        sync_key_algorithm(key, parsed['algorithm'])
-        sync_key_length_bits(key, parsed['length_bits'])
-        sync_key_ecc_curve(key, parsed['ecc_curve'])
-        sync_key_uids(key, parsed['uids'])
-        sync_subkeys(key, translate_subkeys(parsed['subkeys']))
-        sync_created_date(key, parsed['created_date'])
-        sync_expiry_date(key, parsed['expiry_date'])
-        sync_capabilities(key, parsed['capabilities'])
-        sync_revoked(key, parsed['revoked'])
-        sync_alerts(key, make_alerts(key))
-        update_last_synced(key)
-        key.save()
+def sync_key_from_parsed(key, parsed):
+    sync_key_algorithm(key, parsed['algorithm'])
+    sync_key_length_bits(key, parsed['length_bits'])
+    sync_key_ecc_curve(key, parsed['ecc_curve'])
+    sync_key_uids(key, parsed['uids'])
+    sync_subkeys(key, translate_subkeys(parsed['subkeys']))
+    sync_created_date(key, parsed['created_date'])
+    sync_expiry_date(key, parsed['expiry_date'])
+    sync_capabilities(key, parsed['capabilities'])
+    sync_revoked(key, parsed['revoked'])
+    sync_alerts(key, make_alerts(key))
+    update_last_synced(key)
 
 
 def translate_subkeys(parser_subkeys):
@@ -77,7 +103,8 @@ def translate_subkeys(parser_subkeys):
 
 
 def sync_key_algorithm(key, algorithm):
-    allowed_algorithms = [x[0] for x in PGPKey.ALGORITHM_CHOICES]
+    from expirybot.apps.keys.models import CryptographicKey
+    allowed_algorithms = [x[0] for x in CryptographicKey.ALGORITHM_CHOICES]
 
     assert algorithm in allowed_algorithms, \
         'algorithm {} not in {}'.format(algorithm, allowed_algorithms)
@@ -102,6 +129,7 @@ def sync_key_ecc_curve(key, ecc_curve):
 
 
 def sync_key_uids(key, expected_uids):
+    from expirybot.apps.keys.models import UID
 
     current_uids = [u.uid_string for u in key.uids.all()]
 
@@ -117,6 +145,7 @@ def sync_key_uids(key, expected_uids):
 
 
 def sync_subkeys(key, expected_subkeys):
+    from expirybot.apps.keys.models import Subkey
 
     current_subkeys = [s.to_dict() for s in key.subkeys.all()]
 
