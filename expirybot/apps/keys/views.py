@@ -19,8 +19,6 @@ LOG = logging.getLogger(__name__)
 
 class PGPKeyDetailView(TemplateView):
     template_name = 'keys/pgp_key_detail.html'
-    model = PGPKey
-    context_object_name = 'key'
 
     def get(self, *args, **kwargs):
 
