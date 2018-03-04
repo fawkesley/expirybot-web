@@ -2,12 +2,15 @@ import datetime
 import logging
 
 from django.views.generic import TemplateView
+from django.views.generic import DetailView
 from django.http import HttpResponse
 
 
 from expirybot.apps.keys.models import PGPKey
 from expirybot.apps.keys.helpers import get_key, NoSuchKeyError
 from expirybot.apps.users.forms import MonitorEmailAddressForm
+
+from .models import KeyTestResult
 
 
 LOG = logging.getLogger(__name__)
@@ -46,3 +49,9 @@ class PGPKeyDetailView(TemplateView):
 
 class TestPGPKeyView(TemplateView):
     template_name = 'keys/test_pgp_key.html'
+
+
+class KeyTestResultView(DetailView):
+    template_name = 'keys/key_test_result.html'
+    model = KeyTestResult
+    context_object_name = 'result'
