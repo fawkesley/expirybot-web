@@ -1,17 +1,17 @@
 import datetime
 import logging
-import re
 
 from django.views.generic import TemplateView
 from django.views.generic import DetailView
+from django.views.generic.edit import FormView
 from django.http import HttpResponse
-from django.shortcuts import redirect
 from django.urls import reverse
 
-from expirybot.apps.keys.helpers import get_key, NoSuchKeyError, run_tests_task
+from expirybot.apps.keys.helpers import get_key, NoSuchKeyError
 from expirybot.apps.users.forms import MonitorEmailAddressForm
 
 from .models import KeyTestResult
+from .forms import PublicKeyForm
 
 
 LOG = logging.getLogger(__name__)
@@ -46,47 +46,24 @@ class PGPKeyDetailView(TemplateView):
         )
 
 
-class TestPGPKeyView(TemplateView):
+class TestPGPKeyView(FormView):
     template_name = 'keys/test_pgp_key.html'
+    form_class = PublicKeyForm
 
-    def post(self, request, *args, **kwargs):
-        ascii_key = request.POST['public-key'].strip()
+    def form_valid(self, form):
 
-        validate_key(ascii_key)  # blow up if invalid. OK for now.
+        self.form = form
 
-        test_result = KeyTestResult.objects.create()
+        return super(TestPGPKeyView, self).form_valid(form)
 
-        # TODO: convert into a background job to process ascii_key and update
-        #       test_result (calling set_test_result('test_id', <pass/fail>)
-
-        run_tests_task(ascii_key, test_result)
-
-        return redirect(reverse(
+    def get_success_url(self):
+        return reverse(
             'keys.key-test-result',
-            kwargs={'pk': test_result.uuid}
-        ))
+            kwargs={'pk': self.form.test_result.uuid}
+        )
 
 
 class KeyTestResultView(DetailView):
     template_name = 'keys/key_test_result.html'
     model = KeyTestResult
     context_object_name = 'result'
-
-
-def validate_key(ascii_key):
-
-    PUBLIC_KEY_HEADER = '-----BEGIN PGP PUBLIC KEY BLOCK-----'
-    PUBLIC_KEY_FOOTER = '-----END PGP PUBLIC KEY BLOCK-----'
-    PRIVATE_KEY_HEADER = '-----BEGIN PGP PRIVATE KEY BLOCK-----'
-
-    if PRIVATE_KEY_HEADER in ascii_key:
-        raise ValueError('Got private key!')
-
-    if not ascii_key.startswith(PUBLIC_KEY_HEADER):
-        raise ValueError("Missing PGP keader: {}".format(ascii_key))
-
-    if not ascii_key.endswith(PUBLIC_KEY_FOOTER):
-        raise ValueError('Missing PGP footer: {}'.format(ascii_key))
-
-    if len(re.findall(PUBLIC_KEY_HEADER, ascii_key)) > 1:
-        raise ValueError('Multiple PGP key headers found, expecting 1')

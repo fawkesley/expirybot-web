@@ -39,14 +39,14 @@ function hideSubmitButton() {
 }
 
 function attachListenerToTextArea() {
-  const textarea = document.getElementById('public-key');
+  const textarea = document.getElementById('id_public_key');
   console.log(textarea);
 
   textarea.addEventListener('input', handleTextAreaChange);
 }
 
 function handleTextAreaChange(event) {
-  const textarea = document.getElementById('public-key'),
+  const textarea = document.getElementById('id_public_key'),
         content = textarea.value.trim();
 
   const PRIVATE_KEY_HEADER = '-----BEGIN PGP PRIVATE KEY BLOCK-----',
@@ -69,7 +69,7 @@ function handleTextAreaChange(event) {
 }
 
 function uploadPublicKey(public_key) {
-  const textarea = document.getElementById('public-key');
+  const textarea = document.getElementById('id_public_key');
   const form = document.getElementById('public-key-form');
 
   fillProgressBar();
@@ -106,18 +106,19 @@ function fillProgressBar() {
 function clearWarnings() {
 
   const form_group = document.getElementById('public-key-form-group'),
-        format_warning = document.getElementById('format-warning'),
-	private_key_warning = document.getElementById('private-key-warning');
+        help_blocks = document.getElementsByClassName('help-block');
 
   form_group.removeClass('has-warning');
   form_group.removeClass('has-error');
-  format_warning.addClass('hidden');
-  private_key_warning.addClass('hidden');
+
+  for(var i=0 ; i < help_blocks.length ; ++i) {
+    help_blocks[i].addClass('hidden');
+  }
 }
 
 function warnAboutFormat() {
   const form_group = document.getElementById('public-key-form-group');
-  const textarea = document.getElementById('public-key');
+  const textarea = document.getElementById('id_public_key');
   const format_warning = document.getElementById('format-warning');
 
   form_group.addClass('has-warning');
@@ -126,7 +127,7 @@ function warnAboutFormat() {
 
 function warnAboutPrivateKey() {
   const form_group = document.getElementById('public-key-form-group');
-  const textarea = document.getElementById('public-key');
+  const textarea = document.getElementById('id_public_key');
   const private_key_warning = document.getElementById('private-key-warning');
 
   form_group.addClass('has-error');
