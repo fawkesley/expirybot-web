@@ -1,0 +1,45 @@
+{% extends 'expirybot/base.html' %}
+{% load widget_tweaks %}
+{% load staticfiles %}
+
+{% block title_inner %}Test results for PGP key{% endblock %}
+
+{% block content %}
+
+  <div id="key-test-results" class="container">
+
+      <h1>Test results</h1>
+
+      <p>
+      {{ result.created_at }}
+      </p>
+
+      <table class="table table-striped">
+        <tbody>
+          {% for test in result.get_test_results %}
+            <tr>
+
+            {% if test.url %}
+              <td><a href="{{ test.url }}">{{ test.description }}</a></td>
+            {% else %}
+              <td>{{ test.description }}</td>
+            {% endif %}
+
+
+            {% if test.pass_fail_none is True %}
+              <td class="success"><i class="fa fa-check"></i> OK</td>
+            {% elif test.pass_fail_none is False %}
+              <td class="warning"><i class="fa fa-times"></i> FAIL</td>
+            {% else %}
+              <td><i class="fa fa-question"></i></td>
+            {% endif %}
+
+
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+  </div>
+
+{% endblock %}

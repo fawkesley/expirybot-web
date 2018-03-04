@@ -27,14 +27,27 @@ SYNC_EVERY = datetime.timedelta(days=7)
 class Command(BaseCommand):
     help = ('Updates keys from the keyserver')
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--force',
+            dest='force',
+            default=False,
+            action='store_true',
+        )
+
     def handle(self, *args, **options):
-        sync_keys()
+        self.stdout.write(str(options))
+        sync_keys(options['force'])
 
 
-def sync_keys():
+def sync_keys(force):
     new_fingerprints = get_new_fingerprints_from_search_results()
     keys_never_synced = get_keys_never_synced()
-    stale_keys = get_stale_keys()
+
+    if force:
+        stale_keys = get_stale_keys(timezone.now())
+    else:
+        stale_keys = get_stale_keys(timezone.now() - SYNC_EVERY)
 
     LOG.info("{} new fingerprints, {} keys never synced, {} stale keys".format(
         len(new_fingerprints), len(keys_never_synced), len(stale_keys)))
@@ -72,10 +85,9 @@ def get_keys_never_synced():
     return PGPKey.objects.filter(last_synced=None)
 
 
-def get_stale_keys():
-    one_day_ago = timezone.now() - SYNC_EVERY
+def get_stale_keys(keys_older_than):
 
     return PGPKey.objects.filter(
         last_synced__isnull=False,
-        last_synced__lt=one_day_ago
+        last_synced__lt=keys_older_than
     ).order_by('last_synced')  # ascending: oldest first

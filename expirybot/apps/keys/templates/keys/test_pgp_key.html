@@ -1,0 +1,70 @@
+{% extends 'expirybot/base.html' %}
+{% load widget_tweaks %}
+{% load staticfiles %}
+
+{% block title_inner %}PGP key {{ key.human_fingerprint }}{% endblock %}
+
+{% block content %}
+
+  <div id="test-pgp-key" class="container">
+
+      <h1>Test your PGP key for issues</h1>
+
+      <form id="public-key-form" method="post">
+        {% csrf_token %}
+
+        <label for="public-key">
+          Copy &amp; paste your public key starting with <code>-----BEGIN PGP PUBLIC KEY BLOCK-----</code>
+
+        </label>
+        <div id="public-key-form-group" class="form-group">
+          <textarea id="public-key" name="public-key" class="form-control" rows="10" autofocus></textarea>
+
+	  <div id="format-warning" class="hidden help-block">
+            <p>
+	      That doesn't appear to be a PGP key — it should look like:<br>
+	      <code>-----BEGIN PGP PUBLIC KEY BLOCK-----<br><br>
+	      [lots of random characters]<br><br>
+	      -----END PGP PUBLIC KEY BLOCK-----</code>
+            </p>
+
+            <p>If you use GnuPG, type:</p>
+	      <code>
+	      gpg --armor --export [key id or email]
+	      </code>
+            </p>
+          </div>
+
+          <div id="private-key-warning" class="hidden help-block">
+            <p class="lead">😮 That contains a private key!</p>
+
+            <p>
+            It's very important to keep your private key secret since it allows someone else to read your encrypted files and sign things as you.
+            </p>
+
+            <p>
+            The key hasn't been uploaded, but you'll have to take our word for it.
+            </p>
+
+            <p>
+            <b>If you're serious about the security of this key, you should treat it as compromised and create a new one.</b>
+            </p>
+
+          </div>
+        </div>
+
+        <button id="submit-button" class="btn btn-primary" type="submit">Test my key</button>
+      </form>
+
+<div id="progress-wrapper" class="hidden progress">
+  <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+  </div>
+</div>
+
+    <p>
+      We don't store keys or push them to the public keyservers. Test results are deleted within 24 hours.
+    </p>
+  </div>
+
+  <script src="{% static 'javascripts/post-public-key.js' %}"></script>
+{% endblock %}

@@ -6105,6 +6105,12 @@ a.list-group-item-danger.active:hover, a.list-group-item-danger.active:focus {
   #pgp-key-detail input[type="email"] {
     width: 400px; } }
 
+#key-test-results .table a {
+  text-decoration: none;
+  color: inherit; }
+  #key-test-results .table a:hover {
+    text-decoration: underline; }
+
 footer {
   margin-top: 30px;
   background-color: #2C3E50;
