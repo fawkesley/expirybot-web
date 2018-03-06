@@ -8,20 +8,20 @@
 
     <div class="container">
       <div class="jumbotron text-center col-lg-10 col-lg-offset-1">
-        <h1>Expirybot makes it<br> easier to use&nbsp;PGP</h1>
+        <h1>Test, fix and monitor your PGP&nbsp;keys</h1>
+        <h2>Expirybot makes it easier to keep using PGP</h2>
+        <br>
 
-        <h2><i>OpenPGP Ain't Dead</i></h2>
-
-        <p class="lead">
-          Journalists, human rights defenders, lawyers, developers and proactive citizens rely on this technology to keep us all safe.
-        </p>
-
+        <a class="btn btn-primary btn-lg" href="{% url 'users.monitor-email-address' %}">Start monitoring</a></p>
 
       </div>
     </div>
 
     <div class="container">
       <div class="col-lg-10 col-lg-offset-1">
+        <p class="lead">
+          Journalists, human rights defenders, lawyers, developers and proactive citizens rely on open source cryptography to keep us all safe.
+        </p>
         <!--
         <h2>A mission to secure all the things</h2>
 
@@ -32,7 +32,8 @@
         -->
           <h2>Start using Expirybot</h2>
           <p class="lead">
-            <a href="{% url 'users.monitor-email-address' %}">Find out when a PGP key is added to the public keyservers with your email address</a>
+          <a href="{% url 'keys.test-pgp-key' %}"><b>Test</b> — show me how my key compares to best practice</a><br>
+          <a href="{% url 'users.monitor-email-address' %}"><b>Monitor</b> — tell me when a PGP key is uploaded my email</a>
           </p>
       </div>
 
