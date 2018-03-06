@@ -13,7 +13,7 @@ export GNUPGHOME="${FAKE_HOME}/.gnupg"
 /bin/mkdir -p "${GNUPGHOME}"
 /bin/chmod 700 "${GNUPGHOME}"
 
-/bin/cp "${THIS_DIR}/gpg.conf" "${GNUPGHOME}/gpg.conf"
+/bin/cp "${THIS_DIR}/skel/gpg.conf" "${GNUPGHOME}/gpg.conf"
 
 
 exec $GPG \
