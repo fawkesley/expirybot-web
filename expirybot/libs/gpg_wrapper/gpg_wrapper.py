@@ -244,16 +244,14 @@ def parse_algo_with_bits(gpg_algorithm):
 
     match = re.match('^(?P<algo>(rsa|dsa|elg))(?P<bits>\d+)', gpg_algorithm)
 
-    if match:
-        algo = {
-            'rsa': 'RSA',
-            'dsa': 'DSA',
-            'elg': 'ELGAMAL',
-        }.get(match.group('algo'), None)
+    if not match:
+        raise ValueError('Unrecognised algo line: `{}`'.format(gpg_algorithm))
 
-    if algo is None:
-        raise ValueError('Unrecognised algorithm line `{}`'.format(
-            gpg_algorithm))
+    algo = {
+        'rsa': 'RSA',
+        'dsa': 'DSA',
+        'elg': 'ELGAMAL',
+    }[match.group('algo')]
 
     return {
         'algorithm': algo,
