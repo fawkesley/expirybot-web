@@ -349,10 +349,12 @@ def _parse_uid_lines(list_keys_output):
     """
     `uid                   [ revoked] Someone (comment) <a@example.com>`
     `uid                   [ expired] Someone <b@example.com}`
+    `uid                   [ unknown] Someone [thisisvalid] <a@example.com>`
+
     """
 
     for line in list_keys_output.split('\n'):
-        match = re.match('^uid\s+\[(?P<status>.*)\] (?P<uid>.*)$', line)
+        match = re.match('^uid\s+\[(?P<status>.*?)\] (?P<uid>.*)$', line)
         if match is not None:
             status = match.group('status').strip()
             if status not in ('unknown', 'revoked', 'expired', 'ultimate'):
