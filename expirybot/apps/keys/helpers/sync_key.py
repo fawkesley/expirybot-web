@@ -44,7 +44,7 @@ def sync_key(key, ascii_key=None):
 
     except GPGFatalProblemWithKey as e:
         LOG.exception(e)
-        record_broken_key(key.fingerprint)
+        record_broken_key(key.fingerprint, repr(e))
         raise KeyParsingError
 
     with transaction.atomic():
@@ -73,14 +73,17 @@ def should_ignore_broken_key(fingerprint):
     return result
 
 
-def record_broken_key(fingerprint):
+def record_broken_key(fingerprint, error_message):
     from expirybot.apps.keys.models import BrokenKey
 
     one_week = timezone.now() + datetime.timedelta(days=7)
 
     BrokenKey.objects.update_or_create(
         fingerprint=fingerprint,
-        defaults={'next_retry_sync': one_week}
+        defaults={
+            'next_retry_sync': one_week,
+            'error_message': error_message,
+        }
     )
 
 

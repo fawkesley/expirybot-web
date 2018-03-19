@@ -119,7 +119,10 @@ class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
 class BrokenKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
     list_display = (
         '__str__',
+        'error_message',
         'next_retry_sync',
     )
+
+    readonly_fields = ('error_message',)
 
     readonly_fields_on_change = ('fingerprint',)

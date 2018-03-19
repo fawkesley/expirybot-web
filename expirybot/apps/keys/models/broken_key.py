@@ -17,5 +17,11 @@ class BrokenKey(models.Model, FingerprintFormatMixin):
 
     next_retry_sync = models.DateTimeField()
 
+    error_message = models.TextField(
+        null=False,
+        blank=True,
+        default=''
+    )
+
     def __str__(self):
         return self.zero_x_fingerprint
