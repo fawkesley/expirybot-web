@@ -27,7 +27,7 @@ def get_key(fingerprint, max_staleness=None):
         key = PGPKey.objects.get(fingerprint=fingerprint)
 
     except PGPKey.DoesNotExist:
-        _create_key(fingerprint)
+        key = _create_key(fingerprint)
 
     else:
         if never_synced(key) or is_stale(key):
@@ -41,3 +41,4 @@ def _create_key(fingerprint):
 
     key = PGPKey(fingerprint=fingerprint)  # don't auto-save
     sync_key(key)
+    return key
