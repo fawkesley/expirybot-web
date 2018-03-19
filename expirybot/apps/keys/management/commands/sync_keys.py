@@ -8,6 +8,7 @@ from expirybot.apps.keys.helpers import get_key, sync_key
 from expirybot.apps.keys.models import PGPKey
 
 from expirybot.apps.users.models import SearchResultForKeysByEmail
+from expirybot.apps.status.models import EventLatestOccurrence
 
 LOG = logging.getLogger(__name__)
 
@@ -61,6 +62,7 @@ def sync_keys(force):
     for key in stale_keys:
         sync_key(key)
 
+    EventLatestOccurrence.record_event('sync-keys-succeeded')
     LOG.info("sync_keys finished.")
 
 

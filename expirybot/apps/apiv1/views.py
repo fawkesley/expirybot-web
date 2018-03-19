@@ -11,6 +11,7 @@ from expirybot.libs.uid_parser import roughly_validate_email
 from expirybot.apps.blacklist.utils import (
     allow_send_email, make_authenticated_unsubscribe_url
 )
+from expirybot.apps.status.models import EventLatestOccurrence
 
 import logging
 LOG = logging.getLogger(__file__)
@@ -62,6 +63,8 @@ class GetUnsubscribeLinkView(APIView):
                     email_address))
                 raise InvalidQueryError('Invalid email address `{}`'.format(
                     email_address))
+
+        EventLatestOccurrence.record_event('api-call-unsubscribe-url')
 
         if not allow_send_email(email_address):
             return Response({'allow_email': False})

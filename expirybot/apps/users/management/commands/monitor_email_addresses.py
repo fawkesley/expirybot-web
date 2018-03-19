@@ -16,6 +16,8 @@ from expirybot.apps.users.email_helpers import (
 )
 
 from expirybot.apps.blacklist.models import EmailAddress
+from expirybot.apps.status.models import EventLatestOccurrence
+
 
 LOG = logging.getLogger(__name__)
 
@@ -60,6 +62,8 @@ def monitor_email_addresses():
 
     for email_address in emails_old_check:
         check_email_address(email_address)
+
+    EventLatestOccurrence.record_event('monitor-email-addresses-succeeded')
 
 
 def check_email_address(email_address):

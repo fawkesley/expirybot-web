@@ -10,6 +10,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from expirybot.apps.blacklist.models import BlacklistedDomain
+from expirybot.apps.status.models import EventLatestOccurrence
 
 LOG = logging.getLogger(__name__)
 
@@ -36,6 +37,8 @@ class Command(BaseCommand):
 def sync_mailgun_suppressions():
     for domain, reason_text in get_no_mx_domains():
         blacklist_domain(domain, reason_text)
+
+    EventLatestOccurrence.record_event('sync-mailgun-no-mx-domains-succeeded')
 
 
 def get_no_mx_domains():

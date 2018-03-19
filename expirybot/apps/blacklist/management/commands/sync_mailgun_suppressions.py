@@ -9,6 +9,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from expirybot.apps.blacklist.models import EmailAddress
+from expirybot.apps.status.models import EventLatestOccurrence
 
 LOG = logging.getLogger(__name__)
 
@@ -32,6 +33,8 @@ def sync_mailgun_suppressions():
     for (email, bounce_datetime) in get_bounces():
         if record_bounce(email, bounce_datetime):
             delete_bounce_from_mailgun(email)
+
+    EventLatestOccurrence.record_event('sync-mailgun-suppressions-succeeded')
 
 
 def get_unsubscribes():
