@@ -13,7 +13,7 @@
       <div class="col-sm-12">
 
         <p>{{ num_keys }} keys</p>
-        <p>{{ num_broken_keys }} broken keys</p>
+        <p><a href="{% url 'admin:keys_brokenkey_changelist' %}">{{ num_broken_keys }} broken keys</a></p>
 
         <h2>Status tests</h2>
         <table class="table table-striped">
