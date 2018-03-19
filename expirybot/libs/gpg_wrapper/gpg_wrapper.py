@@ -19,7 +19,7 @@ LOG = logging.getLogger(__name__)
 GPG2_SANDBOXED = abspath(pjoin(dirname(__file__), 'gpg2_sandboxed'))
 DUMP_KEY = abspath(pjoin(dirname(__file__), 'script', 'dump_key'))
 
-PUB_SUB_PATTERN = r'^(pub|sub)\s+ (?P<algorithm>[A-Za-z0-9]+)\/0x(?P<long_id>[0-9A-F]{16}) (?P<created_date>\d{4}-\d{2}-\d{2}) \[(?P<capabilities>[AECS]+)\]( \[(?P<status>expires|expired|revoked): (?P<status_data>[^ ]+) *\])?$'  # noqa
+PUB_SUB_PATTERN = r'^(pub|sub)\s+ (?P<algorithm>[A-Za-z0-9]+)\/0x(?P<long_id>[0-9A-F]{16}) (?P<created_date>\d{4}-\d{2}-\d{2}) \[(?P<capabilities>[AECS]*)\]( \[(?P<status>expires|expired|revoked): (?P<status_data>[^ ]+) *\])?$'  # noqa
 
 
 class GPGError(RuntimeError):
@@ -233,8 +233,8 @@ def parse_algorithm_params(gpg_algorithm_text):
             return parse_algo_with_bits(gpg_algorithm_text)
         except ValueError:
             return {
-                'algorithm': None,
-                'ecc_curve': None,
+                'algorithm': '',  # blank means unknown
+                'ecc_curve': '',  # blank means unknown
                 'length_bits': None
             }
 
@@ -244,16 +244,14 @@ def parse_algo_with_bits(gpg_algorithm):
 
     match = re.match('^(?P<algo>(rsa|dsa|elg))(?P<bits>\d+)', gpg_algorithm)
 
-    if match:
-        algo = {
-            'rsa': 'RSA',
-            'dsa': 'DSA',
-            'elg': 'ELGAMAL',
-        }.get(match.group('algo'), None)
+    if not match:
+        raise ValueError('Unrecognised algo line: `{}`'.format(gpg_algorithm))
 
-    if algo is None:
-        raise ValueError('Unrecognised algorithm line `{}`'.format(
-            gpg_algorithm))
+    algo = {
+        'rsa': 'RSA',
+        'dsa': 'DSA',
+        'elg': 'ELGAMAL',
+    }[match.group('algo')]
 
     return {
         'algorithm': algo,
