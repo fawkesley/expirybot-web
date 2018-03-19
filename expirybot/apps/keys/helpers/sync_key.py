@@ -7,7 +7,9 @@ from django.db import transaction
 from django.conf import settings
 from django.utils import timezone
 
-from expirybot.libs.gpg_wrapper import parse_public_key, GPGError
+from expirybot.libs.gpg_wrapper import (
+    parse_public_key, GPGError, GPGFatalProblemWithKey
+)
 
 from .alerts import make_alerts
 from .exceptions import NoSuchKeyError, KeyParsingError
@@ -31,7 +33,7 @@ def sync_key(key, ascii_key=None):
 
     try:
         parsed = parse_ascii_armored_key(ascii_key_binary)
-    except GPGError as e:
+    except (GPGError, GPGFatalProblemWithKey) as e:
         LOG.exception(e)
         raise KeyParsingError
 
