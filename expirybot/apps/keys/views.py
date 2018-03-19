@@ -7,7 +7,9 @@ from django.views.generic.edit import FormView
 from django.http import HttpResponse
 from django.urls import reverse
 
-from expirybot.apps.keys.helpers import get_key, NoSuchKeyError
+from expirybot.apps.keys.helpers import (
+    get_key, NoSuchKeyError, KeyParsingError
+)
 from expirybot.apps.users.forms import MonitorEmailAddressForm
 
 from .models import KeyTestResult
@@ -28,7 +30,7 @@ class PGPKeyDetailView(TemplateView):
         try:
             pgp_key = get_key(fingerprint, max_staleness=two_minutes)
 
-        except NoSuchKeyError:
+        except (NoSuchKeyError, KeyParsingError):
             return HttpResponse(status=404)  # TODO - improve this UX
 
         alerts = pgp_key.alerts

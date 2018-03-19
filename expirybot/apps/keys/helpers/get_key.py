@@ -10,6 +10,8 @@ def get_key(fingerprint, max_staleness=None):
     """
     Return a reasonably up-to-date key, where max_staleness is a timedelta.
     If the fingerprint was invalid, the key won't be saved.
+
+    This can raise NoSuchKeyError and KeyParsingError
     """
 
     from expirybot.apps.keys.models import PGPKey

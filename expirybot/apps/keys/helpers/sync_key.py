@@ -10,7 +10,7 @@ from django.utils import timezone
 from expirybot.libs.gpg_wrapper import parse_public_key, GPGError
 
 from .alerts import make_alerts
-from .exceptions import NoSuchKeyError
+from .exceptions import NoSuchKeyError, KeyParsingError
 
 LOG = logging.getLogger(__name__)
 
@@ -33,9 +33,7 @@ def sync_key(key, ascii_key=None):
         parsed = parse_ascii_armored_key(ascii_key_binary)
     except GPGError as e:
         LOG.exception(e)
-        return  # drop out of sync_key
-
-    # assert parsed['fingerprint'] == key.fingerprint
+        raise KeyParsingError
 
     with transaction.atomic():
         sync_key_from_parsed(key, parsed)
