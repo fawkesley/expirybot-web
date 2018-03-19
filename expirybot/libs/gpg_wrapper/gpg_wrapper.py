@@ -233,8 +233,8 @@ def parse_algorithm_params(gpg_algorithm_text):
             return parse_algo_with_bits(gpg_algorithm_text)
         except ValueError:
             return {
-                'algorithm': None,
-                'ecc_curve': None,
+                'algorithm': '',  # blank means unknown
+                'ecc_curve': '',  # blank means unknown
                 'length_bits': None
             }
 
