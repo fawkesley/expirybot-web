@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from .cryptographic_key import CryptographicKey
-from .mixins import ExpiryCalculationMixin
+from .mixins import ExpiryCalculationMixin, FingerprintFormatMixin
 
 
 def validate_fingerprint(string):
@@ -20,7 +20,7 @@ def validate_fingerprint(string):
             string))
 
 
-class PGPKey(CryptographicKey, ExpiryCalculationMixin):
+class PGPKey(CryptographicKey, ExpiryCalculationMixin, FingerprintFormatMixin):
 
     fingerprint = models.CharField(
         help_text=(
@@ -41,30 +41,8 @@ class PGPKey(CryptographicKey, ExpiryCalculationMixin):
 
     revoked = models.BooleanField(default=False)
 
-    @property
-    def human_fingerprint(self):
-        if len(self.fingerprint) == 40:
-            return '{} {} {} {} {}  {} {} {} {} {}'.format(  # nbsp
-                self.fingerprint[0:4],
-                self.fingerprint[4:8],
-                self.fingerprint[8:12],
-                self.fingerprint[12:16],
-                self.fingerprint[16:20],
-                self.fingerprint[20:24],
-                self.fingerprint[24:28],
-                self.fingerprint[28:32],
-                self.fingerprint[32:36],
-                self.fingerprint[36:40]
-            )
-        else:
-            return self.fingerprint
-
     def __str__(self):
         return self.zero_x_fingerprint
-
-    @property
-    def zero_x_fingerprint(self):
-        return '0x{}'.format(self.fingerprint)
 
     @property
     def key_id(self):

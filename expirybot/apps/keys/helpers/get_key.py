@@ -1,7 +1,6 @@
 import datetime
 
 from django.utils import timezone
-from django.db import transaction
 
 from .sync_key import sync_key
 
@@ -10,6 +9,8 @@ def get_key(fingerprint, max_staleness=None):
     """
     Return a reasonably up-to-date key, where max_staleness is a timedelta.
     If the fingerprint was invalid, the key won't be saved.
+
+    This can raise NoSuchKeyError and KeyParsingError
     """
 
     from expirybot.apps.keys.models import PGPKey
@@ -22,10 +23,21 @@ def get_key(fingerprint, max_staleness=None):
     def is_stale(key):
         return (timezone.now() - key.last_synced) > max_staleness
 
-    with transaction.atomic():
-        key, new = PGPKey.objects.get_or_create(fingerprint=fingerprint)
+    try:
+        key = PGPKey.objects.get(fingerprint=fingerprint)
 
-        if new or never_synced(key) or is_stale(key):
+    except PGPKey.DoesNotExist:
+        _create_key(fingerprint)
+
+    else:
+        if never_synced(key) or is_stale(key):
             sync_key(key)
 
     return key
+
+
+def _create_key(fingerprint):
+    from expirybot.apps.keys.models import PGPKey
+
+    key = PGPKey(fingerprint=fingerprint)  # don't auto-save
+    sync_key(key)

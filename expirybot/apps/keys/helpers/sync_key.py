@@ -1,3 +1,4 @@
+import datetime
 import logging
 import tempfile
 
@@ -7,10 +8,12 @@ from django.db import transaction
 from django.conf import settings
 from django.utils import timezone
 
-from expirybot.libs.gpg_wrapper import parse_public_key, GPGError
+from expirybot.libs.gpg_wrapper import (
+    parse_public_key, GPGError, GPGFatalProblemWithKey
+)
 
 from .alerts import make_alerts
-from .exceptions import NoSuchKeyError
+from .exceptions import NoSuchKeyError, KeyParsingError
 
 LOG = logging.getLogger(__name__)
 
@@ -23,6 +26,9 @@ def sync_key(key, ascii_key=None):
     - `ascii_key` should be the OpenPGP ascii armored key, in binary. If not
                   given, the latest key is fetched from the keyserver
     """
+    if should_ignore_broken_key(key.fingerprint):
+        raise KeyParsingError('Key marked as broken, not syncing.')
+
     LOG.info('syncing {}'.format(key))
 
     ascii_key_binary = ascii_key or download_ascii_armored_key(key.key_id)
@@ -31,15 +37,51 @@ def sync_key(key, ascii_key=None):
 
     try:
         parsed = parse_ascii_armored_key(ascii_key_binary)
+
     except GPGError as e:
         LOG.exception(e)
-        return  # drop out of sync_key
+        raise KeyParsingError
 
-    # assert parsed['fingerprint'] == key.fingerprint
+    except GPGFatalProblemWithKey as e:
+        LOG.exception(e)
+        record_broken_key(key.fingerprint)
+        raise KeyParsingError
 
     with transaction.atomic():
         sync_key_from_parsed(key, parsed)
         key.save()
+
+
+def should_ignore_broken_key(fingerprint):
+    from expirybot.apps.keys.models import BrokenKey
+
+    try:
+        key = BrokenKey.objects.get(fingerprint=fingerprint)
+
+    except BrokenKey.DoesNotExist:
+        result = False
+
+    else:
+        now = timezone.now()
+        result = now < key.next_retry_sync
+
+        if result:
+            LOG.info('Key {} marked as broken, ignoring until {}'.format(
+                fingerprint, key.next_retry_sync)
+            )
+
+    return result
+
+
+def record_broken_key(fingerprint):
+    from expirybot.apps.keys.models import BrokenKey
+
+    one_week = timezone.now() + datetime.timedelta(days=7)
+
+    BrokenKey.objects.update_or_create(
+        fingerprint=fingerprint,
+        defaults={'next_retry_sync': one_week}
+    )
 
 
 def download_ascii_armored_key(key_id):

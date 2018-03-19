@@ -26,6 +26,10 @@ class GPGError(RuntimeError):
     pass
 
 
+class GPGFatalProblemWithKey(RuntimeError):
+    pass
+
+
 def parse_public_key(pgp_key_filename):
     list_keys, list_packets = run_dump_key(pgp_key_filename)
 
@@ -174,11 +178,7 @@ def stdout_for_subprocess(cmd_parts, stdin=None):
             p.returncode, stdout, stderr))
     else:
         if p.returncode != 0:
-            raise GPGError(
-                'failed with code {} stdout: {} stderr: {}'.format(
-                    p.returncode, stdout, stderr
-                )
-            )
+            raise_gpg_error(p.returncode, stdout, stderr)
 
     if stdout is None:
         raise GPGError('Got back empty stdout')
@@ -190,6 +190,20 @@ def stdout_for_subprocess(cmd_parts, stdin=None):
     LOG.debug(stderr.decode('utf-8'))
 
     return stdout.decode('utf-8')
+
+
+def raise_gpg_error(returncode, stdout, stderr):
+    if 'no valid user IDs' in stderr.decode('utf-8'):
+        cls = GPGFatalProblemWithKey  # fundamental problem with key
+
+    else:
+        cls = GPGError  # may be a temporary gpg fault
+
+    raise cls(
+        'failed with code {} stdout: {} stderr: {}'.format(
+            returncode, stdout, stderr
+        )
+    )
 
 
 def _parse_fingerprint_line(list_keys_output):
