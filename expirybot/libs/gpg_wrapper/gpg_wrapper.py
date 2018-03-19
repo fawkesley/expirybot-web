@@ -19,7 +19,7 @@ LOG = logging.getLogger(__name__)
 GPG2_SANDBOXED = abspath(pjoin(dirname(__file__), 'gpg2_sandboxed'))
 DUMP_KEY = abspath(pjoin(dirname(__file__), 'script', 'dump_key'))
 
-PUB_SUB_PATTERN = r'^(pub|sub)\s+ (?P<algorithm>[A-Za-z0-9]+)\/0x(?P<long_id>[0-9A-F]{16}) (?P<created_date>\d{4}-\d{2}-\d{2}) \[(?P<capabilities>[AECS]+)\]( \[(?P<status>expires|expired|revoked): (?P<status_data>[^ ]+) *\])?$'  # noqa
+PUB_SUB_PATTERN = r'^(pub|sub)\s+ (?P<algorithm>[A-Za-z0-9]+)\/0x(?P<long_id>[0-9A-F]{16}) (?P<created_date>\d{4}-\d{2}-\d{2}) \[(?P<capabilities>[AECS]*)\]( \[(?P<status>expires|expired|revoked): (?P<status_data>[^ ]+) *\])?$'  # noqa
 
 
 class GPGError(RuntimeError):
