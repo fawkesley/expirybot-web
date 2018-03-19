@@ -31,4 +31,6 @@ $GPG --export-options export-minimal --export | $GPG --list-packets > ${LIST_PAC
 echo "LIST_KEYS: ${LIST_KEYS_FN}"
 echo "LIST_PACKETS: ${LIST_PACKETS_FN}"
 
+/usr/bin/gpgconf --kill gpg-agent
+
 /bin/rm -rf ${TEMP_DIR}
