@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from expirybot.apps.keys.models import KeyTestResult
+from expirybot.apps.status.models import EventLatestOccurrence
 
 LOG = logging.getLogger(__name__)
 
@@ -29,3 +30,4 @@ def delete_old_test_results(now=None):
     to_delete.delete()
 
     LOG.info("Deleted {} old test results".format(num_deleted))
+    EventLatestOccurrence.record_event('delete-old-test-results-succeeded')

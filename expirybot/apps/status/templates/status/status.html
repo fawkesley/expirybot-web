@@ -14,6 +14,20 @@
 
         <p>{{ num_keys }} keys</p>
 
+        <h2>Status tests</h2>
+        <table class="table table-striped">
+          <tbody>
+            {% for test in tests %}
+
+              <tr class="{% if not test.pass %}danger{% endif %}">
+                <td>{{ test.slug }}</td>
+                <td>{{ test.name }}</td>
+                <td>{{ test.pass }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
       </div>
     </div>
 
