@@ -10,18 +10,20 @@ from .models import EventLatestOccurrence
 class StatusView(TemplateView):
     template_name = 'status/status.html'
 
-    def get_context_data(self, *args, **kwargs):
-        ctx = super().get_context_data(*args, **kwargs)
-
+    def get(self, request):
         num_keys = PGPKey.objects.all().count()
         num_broken_keys = BrokenKey.objects.all().count()
 
-        ctx.update({
+        test_results = run_tests()
+
+        all_pass = all(x['pass'] for x in test_results)
+        status = 200 if all_pass else 500
+
+        return self.render_to_response({
             'num_keys': num_keys,
             'num_broken_keys': num_broken_keys,
             'tests': run_tests(),
-        })
-        return ctx
+        }, status=status)
 
 
 def run_tests():
