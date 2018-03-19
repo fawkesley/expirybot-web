@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.views.generic import TemplateView
 from django.utils import timezone
 
-from expirybot.apps.keys.models import PGPKey
+from expirybot.apps.keys.models import BrokenKey, PGPKey
 from .models import EventLatestOccurrence
 
 
@@ -14,9 +14,11 @@ class StatusView(TemplateView):
         ctx = super().get_context_data(*args, **kwargs)
 
         num_keys = PGPKey.objects.all().count()
+        num_broken_keys = BrokenKey.objects.all().count()
 
         ctx.update({
             'num_keys': num_keys,
+            'num_broken_keys': num_broken_keys,
             'tests': run_tests(),
         })
         return ctx
