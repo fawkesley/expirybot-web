@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'expirybot.apps.keys',
     'expirybot.apps.apiv1',
     'expirybot.apps.users',
+    'expirybot.apps.status',
 
     'django_extensions',
     'rest_framework',
