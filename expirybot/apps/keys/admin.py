@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.shortcuts import reverse
 
-from .models import PGPKey, Subkey, UID
+from .models import BrokenKey, PGPKey, Subkey, UID
 
 
 class ReadonlyFieldsOnChangeMixin():
@@ -113,3 +113,13 @@ class PGPKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
 
     def num_subkeys(self, model):
         return model.subkeys.count()
+
+
+@admin.register(BrokenKey)
+class BrokenKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
+    list_display = (
+        '__str__',
+        'next_retry_sync',
+    )
+
+    readonly_fields_on_change = ('fingerprint',)

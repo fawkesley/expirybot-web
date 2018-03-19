@@ -1,3 +1,4 @@
+from .broken_key import BrokenKey
 from .cryptographic_key import CryptographicKey
 from .custom_json_encoder import CustomJSONEncoder
 from .key_test_result import KeyTestResult
