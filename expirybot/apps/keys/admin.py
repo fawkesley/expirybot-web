@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.shortcuts import reverse
 
-from .models import BrokenKey, PGPKey, Subkey, UID
+from .models import BrokenKey, KeyUpdate, PGPKey, Subkey, UID
 
 
 class ReadonlyFieldsOnChangeMixin():
@@ -126,3 +126,30 @@ class BrokenKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
     readonly_fields = ('error_message',)
 
     readonly_fields_on_change = ('fingerprint',)
+
+
+@admin.register(KeyUpdate)
+class KeyUpdateAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
+    list_display = (
+        '__str__',
+        'sks_hash',
+        'updated_at',
+    )
+
+    list_filter = (
+        'updated_at',
+    )
+
+    search_fields = (
+        'fingerprint',
+        'sks_hash',
+    )
+
+    readonly_fields = (
+        'fingerprint',
+        'sks_hash',
+        'updated_at',
+    )
+
+    def has_add_permission(self, request):
+        return False
