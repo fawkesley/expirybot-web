@@ -1,7 +1,5 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 
-from .cryptographic_key import CryptographicKey
 from .mixins import FingerprintFormatMixin
 
 
