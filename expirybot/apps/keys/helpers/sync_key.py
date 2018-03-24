@@ -185,7 +185,7 @@ def sync_key_uids(key, expected_uids):
             key.uids.all().delete()
 
             for uid_string in expected_uids:
-                LOG.info(uid_string)
+                LOG.debug(uid_string)
                 UID.objects.create(key=key, uid_string=uid_string)
 
 
