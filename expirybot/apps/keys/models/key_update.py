@@ -15,6 +15,8 @@ class KeyUpdate(models.Model, FingerprintFormatMixin):
              "Can create key KeyUpdate records."),
         )
 
+        ordering = ('-updated_at',)
+
     sks_hash = models.CharField(
         primary_key=True,
         max_length=32
@@ -35,4 +37,4 @@ class KeyUpdate(models.Model, FingerprintFormatMixin):
     )
 
     def __str__(self):
-        return self.zero_x_fingerprint
+        return 'KeyUpdate(hash={})'.format(self.sks_hash)

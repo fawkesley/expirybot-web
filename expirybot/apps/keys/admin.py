@@ -129,10 +129,10 @@ class BrokenKeyAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
 
 
 @admin.register(KeyUpdate)
-class KeyUpdateAdmin(ReadonlyFieldsOnChangeMixin, admin.ModelAdmin):
+class KeyUpdateAdmin(admin.ModelAdmin):
     list_display = (
-        '__str__',
         'sks_hash',
+        'fingerprint',
         'updated_at',
     )
 
