@@ -29,6 +29,28 @@
           </tbody>
         </table>
 
+        <h2>Daily histogram</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Date </th>
+              <th>Key updates</th>
+              <th colspan="2">Updates recorded</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for row in daily_histogram %}
+              <tr>
+                  <td>{{ row.date|date:"Y-m-d" }}</td>
+                  <td>{{ row.num_updates }}</td>
+                  <td>{{ row.num_full }}</td>
+                  <td>{{ row.percent_full }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
       </div>
     </div>
 

@@ -1,9 +1,10 @@
+import datetime
 from datetime import timedelta
 
 from django.views.generic import TemplateView
 from django.utils import timezone
 
-from expirybot.apps.keys.models import BrokenKey, PGPKey
+from expirybot.apps.keys.models import BrokenKey, KeyUpdate, PGPKey
 from .models import EventLatestOccurrence
 
 
@@ -23,7 +24,42 @@ class StatusView(TemplateView):
             'num_keys': num_keys,
             'num_broken_keys': num_broken_keys,
             'tests': run_tests(),
+            'daily_histogram': make_daily_histogram(),
         }, status=status)
+
+
+def make_daily_histogram():
+    days = []
+
+    for date in last_30_days():
+        day_key_updates = KeyUpdate.objects.filter(updated_at__date=date)
+
+        num_updates = day_key_updates.count()
+        num_full = day_key_updates.filter(fingerprint__isnull=False).count()
+
+        if num_updates:
+            percent_full = '{:.1f}%'.format(
+                100 * (num_full / num_updates)
+            )
+        else:
+            percent_full = '-'
+
+        days.append({
+            'date': date,
+            'num_updates': num_updates,
+            'num_full': num_full,
+            'percent_full': percent_full,
+        })
+
+    return days
+
+
+def last_30_days():
+    today_midday = datetime.datetime.now().replace(hour=12, minute=0)
+
+    for i in range(30):
+        day = (today_midday - datetime.timedelta(hours=i * 24)).date()
+        yield day
 
 
 def run_tests():
