@@ -86,6 +86,7 @@ class TestGetUnsubscribeLinkView(APISimpleTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        cls.api_user.delete()
         EmailAddress.objects.all().delete()
         BlacklistedDomain.objects.all().delete()
 

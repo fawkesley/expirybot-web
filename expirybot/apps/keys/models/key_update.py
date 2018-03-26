@@ -9,6 +9,12 @@ class KeyUpdate(models.Model, FingerprintFormatMixin):
     in the database.
     """
 
+    class Meta:
+        permissions = (
+            ("add_key_update",
+             "Can create key KeyUpdate records."),
+        )
+
     sks_hash = models.CharField(
         primary_key=True,
         max_length=32
