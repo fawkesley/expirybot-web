@@ -7,120 +7,10 @@
 
   <div id="user-settings" class="container">
 
-    <h1>Settings for {{ user.email }}</h1>
+    <h1>Expirybot settings</h1>
 
     <div class="row">
 
-      <div class="col-sm-12">
-
-        <section id="keys-requiring-proof">
-
-            <h2>Keys requiring proof <span class="badge">{{ user.profile.possible_pgp_keys|length|default:"" }}</span></h2>
-
-            {% if user.profile.possible_pgp_keys %}
-                <div class="alert alert-info">
-                  <a href="#" class="close" data-dismiss="alert">&times;</a>
-                  <p>
-                    Activate these keys by proving that you can access the private key.
-                  </p>
-                </div>
-
-              <ul class="possible-pgp-keys">
-                {% for key in user.profile.possible_pgp_keys %}
-                <li>
-                  <div class="row">
-                    <div class="col-sm-10">
-                      <h3 class="h5"><a target="_new" href="{% url 'keys.key-detail' pk=key.fingerprint %}">{{ key.human_fingerprint }}</a></h3>
-
-
-                      <ul class="uids">
-                        {% for uid in key.uids %}
-                        <li>{{ uid }}</li>
-                        {% endfor %}
-                      </ul>
-                    </div>
-
-                    <div class="col-sm-2">
-                      <div class="text-right">
-                        <a class="btn btn-default" href="{% url 'users.prove-key-ownership' pk=key.fingerprint %}">Prove</a>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                {% endfor %}
-              </ul>
-
-            {% else %}
-
-              <p>
-                PGP keys with your email address will appear here.
-              </p>
-
-              <p>
-                To add a PGP key, add the email address to fetch the key from the public keyservers.
-              </p>
-
-            {% endif %}
-
-        </section>
-
-      </div>
-      <div class="col-sm-6">
-
-        <section>
-
-          <h2>PGP keys</h2>
-
-            {% if user.profile.owned_pgp_keys|length %}
-              <p class="">You've proven you can access the private key for these keys.</p>
-
-              <ul class="my-pgp-keys">
-                {% for key in user.profile.owned_pgp_keys %}
-                  <li>
-                        <h3 class="h5">{{ key.human_fingerprint }}</h3>
-
-                        <ul class="uids">
-                          {% for uid in key.uids %}
-                          <li>{{ uid }}</li>
-                          {% endfor %}
-                        </ul>
-
-                  </li>
-                {% endfor %}
-              </ul>
-
-            {% else %}
-              <p class="lead">You haven't proven that you control any PGP keys yet.</p>
-            {% endif %}
-
-        </section>
-      </div>
-
-
-      <div class="col-sm-6">
-
-        <section class="email-addresses">
-          <h2>Email addresses</h2>
-
-          <p class="">
-            You've proven that you can access emails sent to these email addresses.
-          </p>
-
-          <ul>
-            {% for email_address in user.profile.owned_email_addresses %}
-            <li>{{ email_address }}</li>
-            {% empty %}
-              <p>You haven't added any email addresses yet.</p>
-            {% endfor %}
-          </ul>
-          <p><a href="{% url 'users.monitor-email-address' %}">Add an email address</a></p>
-        </section>
-
-      </div>
-
-    </div>
-
-    <div class="row">
       <div class="col-sm-6">
 
         <section>
@@ -155,59 +45,35 @@
               {% endwith %}
             </section>
 
-
-            <h2>Coming soon</h2>
-            <p class="lead">
-              These features are in active development but aren't available yet.
-            </p>
-
-            <section class="cipher-preferences">
-              {% with form.notify_cipher_preferences as field %}
-                {% include 'partials/settings_checkbox.html' %}
-              {% endwith %}
-            </section>
-
-            <section class="short-id-usage">
-              {% with form.notify_short_id_usage as field %}
-                {% include 'partials/settings_checkbox.html' %}
-              {% endwith %}
-            </section>
-
-            <section class="ical">
-              {% with form.enable_ical as field %}
-                {% include 'partials/settings_checkbox.html' %}
-              {% endwith %}
-            </section>
-
-
-            <button class="btn btn-default btn-lg" type="submit">Save</button>
+            <button class="btn btn-primary btn-lg" type="submit">Save</button>
 
           </form>
 
-          <!--
-            <form>
-
-            {% for field in form %}
-
-            <div class="form-group {% if field.errors %}has-error{% endif %}">
-              <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-
-              {{ field|add_class:"form-control" }}
-
-              {% if field.errors %}
-              <span class="help-block">
-                {{ field.errors }}
-                {{ field.help_text|safe }}
-              </span>
-              {% endif %}
-            </div>
-
-            {% endfor %}
-          </form>
-          -->
         </section>
 
       </div>
+
+      <div class="col-sm-6">
+
+        <section class="email-addresses">
+          <h2>Email addresses</h2>
+
+          <p class="">
+            You've proven that you can access emails sent to these email addresses.
+          </p>
+
+          <ul>
+            {% for email_address in user.profile.owned_email_addresses %}
+            <li>{{ email_address }}</li>
+            {% empty %}
+              <p>You haven't added any email addresses yet.</p>
+            {% endfor %}
+          </ul>
+          <p><a href="{% url 'users.monitor-email-address' %}">Add an email address</a></p>
+        </section>
+
+      </div>
+
     </div>
 
 
