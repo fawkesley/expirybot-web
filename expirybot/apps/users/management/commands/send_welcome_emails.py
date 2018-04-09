@@ -28,7 +28,10 @@ class Command(BaseCommand):
 
 def send_welcome_emails():
 
+    twenty_four_hours_ago = timezone.now() - datetime.timedelta(hours=24)
+
     new_user_profiles = UserProfile.objects.filter(
+        created_at__lte=twenty_four_hours_ago,
         user__username__startswith='auto-',
         user__email__isnull=False,
         welcome_email_sent_datetime=None,
