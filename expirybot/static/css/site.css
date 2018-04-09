@@ -6060,33 +6060,22 @@ a.list-group-item-danger.active:hover, a.list-group-item-danger.active:focus {
 #prove-key-ownership textarea {
   min-height: 100%; }
 
-#user-settings {
-  padding-bottom: 50px; }
-  #user-settings section.email-addresses ul {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    font-size: 20px; }
-  #user-settings ul.possible-pgp-keys, #user-settings ul.my-pgp-keys {
+#user-settings section.email-addresses ul {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  font-size: 20px; }
+#user-settings ul.possible-pgp-keys, #user-settings ul.my-pgp-keys {
+  padding-left: 0; }
+  #user-settings ul.possible-pgp-keys li, #user-settings ul.my-pgp-keys li {
+    list-style-type: none; }
+  #user-settings ul.possible-pgp-keys > li, #user-settings ul.my-pgp-keys > li {
+    padding: 10px;
+    background: whitesmoke;
+    margin-bottom: 5px; }
+  #user-settings ul.possible-pgp-keys ul.uids, #user-settings ul.my-pgp-keys ul.uids {
     padding-left: 0; }
-    #user-settings ul.possible-pgp-keys li, #user-settings ul.my-pgp-keys li {
-      list-style-type: none; }
-    #user-settings ul.possible-pgp-keys > li, #user-settings ul.my-pgp-keys > li {
-      padding: 10px;
-      background: whitesmoke;
-      margin-bottom: 5px; }
-    #user-settings ul.possible-pgp-keys ul.uids, #user-settings ul.my-pgp-keys ul.uids {
-      padding-left: 0; }
-  #user-settings .checkbox input {
-    width: 24px;
-    height: 24px; }
-  #user-settings .checkbox label {
-    font-size: 24px; }
-    #user-settings .checkbox label span {
-      padding-left: 20px; }
-  #user-settings .settings-content {
-    padding-left: 40px; }
-  #user-settings button {
-    margin-top: 20px; }
+#user-settings button {
+  margin-top: 20px; }
 
 #pgp-key-detail #alert-container {
   padding-left: 0;

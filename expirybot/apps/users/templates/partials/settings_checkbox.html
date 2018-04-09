@@ -1,12 +1,10 @@
 {% load widget_tweaks %}
-<div class="container">
-  <div class="row">
 
 <div class="checkbox {% if field.errors %}has-error{% endif %}">
   <label for="{{ field.id_for_label }}">
-    {{ field|add_class:"col-sm-1" }}
+    {{ field }}
 
-    <span>{{ field.label }}</span>
+    {{ field.label }}
 
   </label>
 
