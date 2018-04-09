@@ -39,7 +39,6 @@ def send_initial_email_monitoring_email(email_address, fingerprints):
         {
             'fingerprints': fingerprints
         },
-        cc_admin=True,
     )
 
 
@@ -61,7 +60,6 @@ def send_login_email(email_address, login_url):
         {
             "login_url": login_url,
         },
-        cc_admin=True,
     )
 
 
