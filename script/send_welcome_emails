@@ -1,0 +1,8 @@
+#!/bin/sh -eux
+
+THIS_SCRIPT=$0
+REPO_DIR=$(dirname ${THIS_SCRIPT})/..
+
+. ${REPO_DIR}/script/_setup_environment
+
+exec timeout 10m ${REPO_DIR}/manage.py send_welcome_emails
