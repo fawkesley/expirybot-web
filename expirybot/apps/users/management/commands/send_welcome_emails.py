@@ -32,7 +32,7 @@ def send_welcome_emails():
         user__username__startswith='auto-',
         user__email__isnull=False,
         welcome_email_sent_datetime=None,
-    )
+        ).order_by('-created_at')
 
     LOG.info('Emailing {} new users'.format(new_user_profiles.count()))
 
