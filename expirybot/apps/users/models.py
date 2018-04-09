@@ -15,6 +15,10 @@ LOG = logging.getLogger(__name__)
 
 
 class UserProfile(models.Model):
+    ALLOWED_ONE_CLICK_SETTINGS = set([
+        'receive_occasional_feedback_requests',
+    ])
+
     user = models.OneToOneField(
         User,
         related_name='profile',
