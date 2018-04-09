@@ -129,12 +129,17 @@
             {% csrf_token %}
             {{ form.non_field_errors }}
 
+            <section class="feedback-requests">
+              {% with form.receive_occasional_feedback_requests as field %}
+                {% include 'partials/settings_checkbox.html' %}
+              {% endwith %}
+            </section>
+
             <section class="product-updates">
               {% with form.notify_product_updates as field %}
                 {% include 'partials/settings_checkbox.html' %}
               {% endwith %}
             </section>
-
 
             <section class="notify-email-addresses">
 
