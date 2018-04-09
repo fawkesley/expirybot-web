@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template import loader
 
@@ -75,8 +76,9 @@ def send_email(email_address, template_fn, context, cc_admin=False):
 
     context.update({
         "email_address": email_address,
-        "unsubscribe_url": 'https://www.expirybot.com{}'.format(
-            make_authenticated_unsubscribe_url(email_address),
+        "unsubscribe_url": '{base_url}{path}'.format(
+            base_url=settings.EXPIRYBOT_BASE_URL,
+            path=make_authenticated_unsubscribe_url(email_address),
         )
     })
 
