@@ -95,7 +95,7 @@ class ExtraAttrsMixin(object):
             field.widget.attrs.update(attrs)
 
 
-class UserSettingsForm(ExtraAttrsMixin, forms.ModelForm):
+class UserSettingsForm(forms.ModelForm):
     class Meta:
         model = UserProfile
 
@@ -125,46 +125,4 @@ class UserSettingsForm(ExtraAttrsMixin, forms.ModelForm):
             'notify_expiry': (
                 'Email me just before my keys expire'
             ),
-
-            'notify_cipher_preferences': (
-                'Notify me when my cipher preferences are considered insecure'
-            ),
-
-            'notify_short_id_usage': (
-                'Notify me about keyserver searches using my short ID'
-            ),
-
-            'enable_ical': (
-                'Create a calendar feed (ical) for my key expiry dates'
-            ),
         }
-
-    extra_attrs = {
-        'notify_cipher_preferences': {
-            'disabled': '',
-        },
-        'notify_short_id_usage': {
-            'disabled': '',
-        },
-        'enable_ical': {
-            'disabled': '',
-        },
-    }
-
-    def clean_notify_cipher_preferences(self):  # disable updating this field
-        if self.instance:
-            return self.instance.notify_cipher_preferences
-        else:
-            return self.fields['sku']
-
-    def clean_notify_short_id_usage(self):  # disable updating this field
-        if self.instance:
-            return self.instance.notify_short_id_usage
-        else:
-            return self.fields['sku']
-
-    def clean_enable_ical(self):  # disable updating this field
-        if self.instance:
-            return self.instance.enable_ical
-        else:
-            return self.fields['sku']

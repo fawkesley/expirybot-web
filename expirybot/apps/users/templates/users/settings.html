@@ -155,31 +155,6 @@
               {% endwith %}
             </section>
 
-
-            <h2>Coming soon</h2>
-            <p class="lead">
-              These features are in active development but aren't available yet.
-            </p>
-
-            <section class="cipher-preferences">
-              {% with form.notify_cipher_preferences as field %}
-                {% include 'partials/settings_checkbox.html' %}
-              {% endwith %}
-            </section>
-
-            <section class="short-id-usage">
-              {% with form.notify_short_id_usage as field %}
-                {% include 'partials/settings_checkbox.html' %}
-              {% endwith %}
-            </section>
-
-            <section class="ical">
-              {% with form.enable_ical as field %}
-                {% include 'partials/settings_checkbox.html' %}
-              {% endwith %}
-            </section>
-
-
             <button class="btn btn-default btn-lg" type="submit">Save</button>
 
           </form>
