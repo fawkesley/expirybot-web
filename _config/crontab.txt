@@ -30,3 +30,5 @@ MAILTO="paul@paulfurley.com"
 */5 * * * * ~/app/script/run-one ~/app/script/sync_keys
 
 @hourly ~/app/script/run-one ~/app/script/delete_old_test_results
+
+20 9,10,11,12,13,14,15,16,17,18 * * * ~/app/script/run-one ~/app/script/send_welcome_emails
