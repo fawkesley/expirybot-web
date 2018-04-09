@@ -32,6 +32,17 @@ class UserProfile(models.Model):
         editable=False,
     )
 
+    receive_occasional_feedback_requests = models.BooleanField(
+        help_text="Receive occasional emails asking for feedback on ideas.",
+        default=False
+    )
+
+    welcome_email_sent_datetime = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None
+    )
+
     notify_product_updates = models.BooleanField(default=True)
 
     notify_email_addresses = models.BooleanField(default=True)

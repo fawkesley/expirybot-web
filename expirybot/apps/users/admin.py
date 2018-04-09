@@ -55,7 +55,8 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_display = (
         '__str__',
         'created_at',
-        'updated_at',
+        'welcome_email_sent_datetime',
+        'receive_occasional_feedback_requests',
         'notify_product_updates',
         'notify_email_addresses',
     )
@@ -63,6 +64,8 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_filter = (
         'created_at',
         'updated_at',
+        'welcome_email_sent_datetime',
+        'receive_occasional_feedback_requests',
         'notify_product_updates',
         'notify_email_addresses',
     )
