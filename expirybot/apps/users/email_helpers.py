@@ -21,6 +21,17 @@ def send_validation_email(email_address, validation_url):
     )
 
 
+def send_welcome_email(email_address, enable_feedback_url):
+    send_email(
+        email_address,
+        'welcome',
+        {
+            "enable_feedback_url": enable_feedback_url,
+        },
+        cc_admin=True,
+    )
+
+
 def send_initial_email_monitoring_email(email_address, fingerprints):
     send_email(
         email_address,

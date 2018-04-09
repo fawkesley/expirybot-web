@@ -1,0 +1,19 @@
+I'd like to introduce myself since you recently signed up to my PGP monitoring service, www.expirybot.com. I'm Paul — hello!
+
+I'm working on tools to fight surveillance and censorship because the future depends on our freedom to speak and collaborate together.
+
+In order to guide my work, it would be incredibly helpful if I could occasionally ask you for feedback by email. Is that OK?
+
+If you're happy to receive very occasional emails from me, please click below:
+
+{{ enable_feedback_url }}
+
+If not, no problem, I haven't signed you up to anything.
+
+Thanks,
+Paul
+
+paul@paulfurley.com
+Twitter: https://twitter.com/paul_furley
+Signal: +447791891343
+PGP: 0xA999B7498D1A8DC473E53C92309F635DAD1B5517
