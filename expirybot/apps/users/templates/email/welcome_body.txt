@@ -1,6 +1,6 @@
-I'd like to introduce myself since you recently signed up to my PGP monitoring service, www.expirybot.com. I'm Paul — hello!
+I'm Paul and I'd like to introduce myself since you recently signed up to my PGP monitoring service, www.expirybot.com.
 
-I'm working on tools to fight surveillance and censorship because the future depends on our freedom to speak and collaborate together.
+I'm trying to help people who struggle under oppressive surveillance and censorship. Expirybot is one small way I can make those people's lives easier.
 
 In order to guide my work, it would be incredibly helpful if I could occasionally ask you for feedback by email. Is that OK?
 
