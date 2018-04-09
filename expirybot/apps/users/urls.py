@@ -5,7 +5,7 @@ from .views import (
     AddEmailAddressView, AddEmailConfirmSendView, AdminListUsers,
     EmailSentView, LoginEmailSentView, LoginGetEmailAddressView,
     LoginFromEmailLinkView, LoginWithContextView, LogoutView,
-    MonitorEmailAddressView, ProveKeyOwnershipView,
+    MonitorEmailAddressView, OneClickConfigView, ProveKeyOwnershipView,
     ProveKeyOwnershipFromEmailLinkView, UserSettingsView
 )
 
@@ -43,6 +43,12 @@ urlpatterns = [
         r'^u/login/(?P<json_web_token>' + JWT_PATTERN + ')/$',
         LoginFromEmailLinkView.as_view(),
         name='users.login-from-email-link'
+    ),
+
+    url(
+        r'^cfg/(?P<json_web_token>' + JWT_PATTERN + ')/$',
+        OneClickConfigView.as_view(),
+        name='users.one-click-config'
     ),
 
     url(

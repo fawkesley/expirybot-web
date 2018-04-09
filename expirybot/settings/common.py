@@ -145,6 +145,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+EXPIRYBOT_BASE_URL = 'https://www.expirybot.com'
+
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
 

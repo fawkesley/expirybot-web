@@ -1,9 +1,16 @@
+import datetime
 import logging
 import random
 import re
 
+import jwt
+
+from django.conf import settings
 from django.db import transaction
+from django.urls import reverse
+from django.utils import timezone
 from expirybot.apps.blacklist.models import EmailAddress
+from expirybot.apps.users.models import UserProfile
 
 LOG = logging.getLogger(__name__)
 
@@ -58,4 +65,34 @@ def _make_auto_username(email_address):
     return 'auto-{email}-{rnd}'.format(
         email=_sanitised_email(email_address),
         rnd=_eight_random_characters()
+    )
+
+
+def make_authenticated_one_click_config_url(user_profile, key, value):
+    """
+    Make a URL which, when clicked, will set the given UserProfile.key to the
+    given value.
+    """
+    def make_json_web_token(user_profile):
+        data = {
+            'exp': timezone.now() + datetime.timedelta(days=90),
+            'a': 'one-click-config',
+            'u': str(user_profile.uuid),
+            'k': key,
+            'v': value,
+        }
+
+        result = jwt.encode(data, settings.SECRET_KEY)
+        return result
+
+    assert key in UserProfile.ALLOWED_ONE_CLICK_SETTINGS
+
+    return '{base_url}{path}'.format(
+        base_url=settings.EXPIRYBOT_BASE_URL,
+        path=reverse(
+            'users.one-click-config',
+            kwargs={
+                'json_web_token': make_json_web_token(user_profile)
+            }
+        )
     )

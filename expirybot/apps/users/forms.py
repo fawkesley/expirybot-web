@@ -100,6 +100,7 @@ class UserSettingsForm(ExtraAttrsMixin, forms.ModelForm):
         model = UserProfile
 
         fields = (
+            'receive_occasional_feedback_requests',
             'notify_product_updates',
             'notify_email_addresses',
             'notify_expiry',
@@ -109,6 +110,10 @@ class UserSettingsForm(ExtraAttrsMixin, forms.ModelForm):
         )
 
         labels = {
+            'receive_occasional_feedback_requests': (
+                'Receive occasional emails asking for feedback on ideas'
+            ),
+
             'notify_product_updates': (
                 'Receive occasional emails announcing new features'
             ),

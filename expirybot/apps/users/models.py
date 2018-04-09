@@ -15,6 +15,10 @@ LOG = logging.getLogger(__name__)
 
 
 class UserProfile(models.Model):
+    ALLOWED_ONE_CLICK_SETTINGS = set([
+        'receive_occasional_feedback_requests',
+    ])
+
     user = models.OneToOneField(
         User,
         related_name='profile',
@@ -30,6 +34,17 @@ class UserProfile(models.Model):
         null=False,
         default=uuid.uuid4,
         editable=False,
+    )
+
+    receive_occasional_feedback_requests = models.BooleanField(
+        help_text="Receive occasional emails asking for feedback on ideas.",
+        default=False
+    )
+
+    welcome_email_sent_datetime = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None
     )
 
     notify_product_updates = models.BooleanField(default=True)
