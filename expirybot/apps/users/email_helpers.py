@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template import loader
+from django.urls import reverse
 
 from expirybot.apps.blacklist.utils import (
     allow_send_email, make_authenticated_unsubscribe_url
@@ -88,6 +89,10 @@ def send_email(email_address, template_fn, context, cc_admin=False):
         "unsubscribe_url": '{base_url}{path}'.format(
             base_url=settings.EXPIRYBOT_BASE_URL,
             path=make_authenticated_unsubscribe_url(email_address),
+        ),
+        "settings_url": '{base_url}{path}'.format(
+            base_url=settings.EXPIRYBOT_BASE_URL,
+            path=reverse('users.settings'),
         )
     })
 
