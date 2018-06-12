@@ -3,6 +3,8 @@
 {% for fingerprint in fingerprints_added %}https://keyserver.paulfurley.com/pks/lookup?op=vindex&search=0x{{ fingerprint }}
 {% endfor %}
 
-Stop *all* emails from Expirybot:
+You received this email because you signed up to monitor your email address for new keys.
 
-{{ unsubscribe_url }}
+To change your settings, visit the link below:
+
+{{ settings_url }}
