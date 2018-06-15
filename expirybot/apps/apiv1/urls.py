@@ -1,6 +1,8 @@
 from django.conf.urls import url
 
-from .views import GetUnsubscribeLinkView, UpsertKeyUpdateView
+from .views import (
+    GetUnsubscribeLinkView, UpsertKeyUpdateView, MailgunWebhookBounce
+)
 
 urlpatterns = [
 
@@ -14,6 +16,12 @@ urlpatterns = [
         r'key-update-messages/$',
         UpsertKeyUpdateView.as_view(),
         name='apiv1.keys.upsert-key-update'
+    ),
+
+    url(
+        r'mailgun-webhook/bounce/$',
+        MailgunWebhookBounce.as_view(),
+        name='apiv1.mailgun-webhook.bounce'
     ),
 
 ]
