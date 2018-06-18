@@ -22,6 +22,7 @@ export GNUPGHOME=${TEMP_DIR}
 
 $GPG --fast-import "${ASCII_KEY_FILENAME}"
 
+# NOTE: keep in sync with script/delete_old_test_results
 LIST_KEYS_FN=$(/bin/mktemp -p ${DATE_SUBDIR} --suffix .list-keys.txt)
 LIST_PACKETS_FN=$(/bin/mktemp -p ${DATE_SUBDIR} --suffix .list-packets.txt)
 
