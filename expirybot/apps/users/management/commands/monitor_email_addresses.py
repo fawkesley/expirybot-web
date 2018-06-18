@@ -139,7 +139,7 @@ def get_set_of_fingerprints(email_address):
             'options': 'mr',
             'search': email_address,
         },
-        timeout=5
+        timeout=20
     )
 
     try:
