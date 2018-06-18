@@ -33,9 +33,6 @@ def delete_unconfirmed_users(now=None):
         ', '.join(u.username for u in to_delete))
     )
 
-    LOG.info('NOT deleting yet')
-
-    # TODO: enable this
-    # to_delete.delete()
-    # LOG.info("Deleted {} old users".format(num_deleted))
-    # EventLatestOccurrence.record_event('delete-unconfirmed-users-succeeded')
+    to_delete.delete()
+    LOG.info("Deleted {} old users".format(num_deleted))
+    EventLatestOccurrence.record_event('delete-unconfirmed-users-succeeded')
