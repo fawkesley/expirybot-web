@@ -191,6 +191,7 @@ REST_FRAMEWORK = {
 }
 
 MAILGUN_API_KEY = os.environ.get('MAILGUN_API_KEY')
+MAILGUN_DOMAIN = 'keyserver.paulfurley.com'
 
 
 # Email settings
