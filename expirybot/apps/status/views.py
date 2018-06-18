@@ -77,12 +77,6 @@ def run_tests():
             ),
         },
         {
-            'slug': 'sync-keys-ran-recently',
-            'pass': _check_event_occurred_within(
-                'sync-keys-succeeded', timedelta(hours=1)
-            ),
-        },
-        {
             'slug': 'sync-mailgun-suppressions-ran-recently',
             'pass': _check_event_occurred_within(
                 'sync-mailgun-suppressions-succeeded', timedelta(hours=2)
