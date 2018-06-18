@@ -45,14 +45,13 @@ def validate_mailgun_post(api_key, token, timestamp, signature):
 
 class MailgunWebhookBounce(APIView):
     def post(self, request, *args, **kwargs):
+        LOG.info('Mailgun POST: {}'.format(request.POST))
         self._validate_mailgun_signature(request.POST)
         email = self._validate_recipient_email(request.POST)
         bounce_datetime = self._parse_timestamp(request.POST)
 
         if record_bounce(email, bounce_datetime):
             delete_bounce_from_mailgun(email)
-
-        LOG.debug('Mailgun POST: {}'.format(request.POST))
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
