@@ -3,8 +3,9 @@
 THIS_SCRIPT=$0
 REPO_DIR=$(dirname ${THIS_SCRIPT})/..
 
-find /tmp -user $USER -name '*list-keys.txt' -mtime +1 -delete
-find /tmp -user $USER -name '*list-packets.txt' -mtime +1 -delete
+TMP_DIR="/tmp/gpg_dump_key"
+
+find ${TMP_DIR} -user $USER -mtime +1 -delete
 
 . ${REPO_DIR}/script/_setup_environment
 

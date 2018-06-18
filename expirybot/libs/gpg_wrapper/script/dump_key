@@ -11,10 +11,10 @@ ASCII_KEY_FILENAME=$1
 
 GPG="/usr/bin/gpg2 --batch --no-tty"
 
-DATE_SUBDIR="/tmp/gpg.$(/bin/date +%F)"
-/bin/mkdir -p ${DATE_SUBDIR}
+TMP_BASEDIR="/tmp/gpg_dump_key"
+/bin/mkdir -p ${TMP_BASEDIR}
 
-TEMP_DIR=$(/bin/mktemp -p ${DATE_SUBDIR} -d --suffix .gpghome)
+TEMP_DIR=$(/bin/mktemp -p ${TMP_BASEDIR} -d --suffix .gpghome)
 export GNUPGHOME=${TEMP_DIR}
 
 /bin/cp ${THIS_DIR}/../skel/* "${GNUPGHOME}/"
@@ -23,8 +23,8 @@ export GNUPGHOME=${TEMP_DIR}
 $GPG --fast-import "${ASCII_KEY_FILENAME}"
 
 # NOTE: keep in sync with script/delete_old_test_results
-LIST_KEYS_FN=$(/bin/mktemp -p ${DATE_SUBDIR} --suffix .list-keys.txt)
-LIST_PACKETS_FN=$(/bin/mktemp -p ${DATE_SUBDIR} --suffix .list-packets.txt)
+LIST_KEYS_FN=$(/bin/mktemp -p ${TMP_BASEDIR} --suffix .list-keys.txt)
+LIST_PACKETS_FN=$(/bin/mktemp -p ${TMP_BASEDIR} --suffix .list-packets.txt)
 
 $GPG --list-keys > ${LIST_KEYS_FN}
 $GPG --export-options export-minimal --export | $GPG --list-packets > ${LIST_PACKETS_FN}
