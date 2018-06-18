@@ -27,7 +27,9 @@ MAILTO="paul@paulfurley.com"
 
 * * * * * ~/app/script/run-one ~/app/script/monitor_email_addresses
 
-*/5 * * * * ~/app/script/run-one ~/app/script/sync_keys
+# Disabled because it's not really necessary to do this routinely, and it
+# was causing a lot of errors.
+# */5 * * * * ~/app/script/run-one ~/app/script/sync_keys
 
 @hourly ~/app/script/run-one ~/app/script/delete_old_test_results
 
