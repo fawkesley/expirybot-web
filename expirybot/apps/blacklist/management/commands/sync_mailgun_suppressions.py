@@ -13,7 +13,6 @@ from expirybot.apps.status.models import EventLatestOccurrence
 
 LOG = logging.getLogger(__name__)
 
-mailgun_domain = 'keyserver.paulfurley.com'
 
 
 class Command(BaseCommand):
@@ -55,7 +54,7 @@ def get_suppression(type_):
         raise RuntimeError('Bad Mailgun API key: {}'.format(api_key))
 
     url = 'https://api.mailgun.net/v3/{domain}/{type_}?limit=1000'.format(
-        domain=mailgun_domain, type_=type_
+        domain=settings.MAILGUN_DOMAIN, type_=type_
     )
 
     urls_processed = set()
