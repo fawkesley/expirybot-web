@@ -32,3 +32,5 @@ MAILTO="paul@paulfurley.com"
 @hourly ~/app/script/run-one ~/app/script/delete_old_test_results
 
 20 12 * * * ~/app/script/run-one ~/app/script/send_welcome_emails
+
+@daily ~/app/script/run-one ~/app/script/delete_unconfirmed_users

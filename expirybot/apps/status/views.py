@@ -94,6 +94,12 @@ def run_tests():
                 'delete-old-test-results-succeeded', timedelta(hours=2)
             ),
         },
+        {
+            'slug': 'delete-unconfirmed-users-succeeded-recently',
+            'pass': _check_event_occurred_within(
+                'delete-unconfirmed-users-succeeded', timedelta(hours=26)
+            ),
+        },
     ]
 
 
