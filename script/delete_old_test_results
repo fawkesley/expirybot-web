@@ -5,7 +5,7 @@ REPO_DIR=$(dirname ${THIS_SCRIPT})/..
 
 TMP_DIR="/tmp/gpg_dump_key"
 
-find ${TMP_DIR} -user $USER -mtime +1 -delete
+find ${TMP_DIR} -user $(whoami) -mtime +1 -delete
 
 . ${REPO_DIR}/script/_setup_environment
 
