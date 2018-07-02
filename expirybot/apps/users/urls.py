@@ -2,10 +2,11 @@ from django.conf.urls import url
 from django.contrib.admin.views.decorators import staff_member_required
 
 from .views import (
-    AddEmailAddressView, AddEmailConfirmSendView, AdminListUsers,
-    EmailSentView, LoginEmailSentView, LoginGetEmailAddressView,
-    LoginFromEmailLinkView, LoginWithContextView, LogoutView,
-    MonitorEmailAddressView, OneClickConfigView, ProveKeyOwnershipView,
+    AddEmailAddressView, AddEmailConfirmSendView,
+    AdminFeedbackEmailAddressesView, AdminListUsers, EmailSentView,
+    LoginEmailSentView, LoginGetEmailAddressView, LoginFromEmailLinkView,
+    LoginWithContextView, LogoutView, MonitorEmailAddressView,
+    OneClickConfigView, ProveKeyOwnershipView,
     ProveKeyOwnershipFromEmailLinkView, UserSettingsView
 )
 
@@ -19,6 +20,12 @@ urlpatterns = [
         r'^admin/list-users/$',
         staff_member_required(AdminListUsers.as_view()),
         name='admin-list-users'
+    ),
+
+    url(
+        r'^admin/feedback-email-addresses/$',
+        staff_member_required(AdminFeedbackEmailAddressesView.as_view()),
+        name='admin-feedback-email-addresses'
     ),
 
     url(

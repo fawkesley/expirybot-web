@@ -1,0 +1,33 @@
+{% extends 'expirybot/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+
+  <div id="admin-feedback-email-addresses" class="container">
+
+    <h1>People who've agreed to receive occasional feedback requests</h1>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>email_address</th>
+          <th>feedback_opt_out</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.email_address }}</td>
+          <td>{{ user.opt_out_url }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+
+
+  </div>
+{% endblock %}
