@@ -24,6 +24,10 @@ LOG = logging.getLogger(__name__)
 SEARCH_PERIOD = datetime.timedelta(hours=1)
 
 
+class FailedToGetFingerprintsError(RuntimeError):
+    pass
+
+
 class Command(BaseCommand):
     help = ('Monitors whether PGP keys have been added for a given email.')
 
@@ -69,7 +73,11 @@ def monitor_email_addresses():
 def check_email_address(email_address):
     LOG.info("Checking keys for {}".format(email_address))
 
-    fingerprints_now = get_set_of_fingerprints(email_address.email_address)
+    try:
+        fingerprints_now = get_set_of_fingerprints(email_address.email_address)
+    except FailedToGetFingerprintsError as e:
+        LOG.exception(e)
+        return
 
     try:
         latest = SearchResultForKeysByEmail.objects.get(
@@ -132,15 +140,20 @@ def compare_and_save_search_result(email_address, fingerprints_before,
 def get_set_of_fingerprints(email_address):
     assert isinstance(email_address, str)
 
-    response = requests.get(
-        '{}/pks/lookup'.format(settings.KEYSERVER_URL),
-        params={
-            'op': 'vindex',
-            'options': 'mr',
-            'search': email_address,
-        },
-        timeout=20
-    )
+    try:
+        response = requests.get(
+            '{}/pks/lookup'.format(settings.KEYSERVER_URL),
+            params={
+                'op': 'vindex',
+                'options': 'mr',
+                'search': email_address,
+            },
+            timeout=30
+        )
+    except requests.ReadTimeout:
+        raise FailedToGetFingerprintsError(
+            "timeout requesting keys for {}".format(email_address)
+        )
 
     try:
         response.raise_for_status()
