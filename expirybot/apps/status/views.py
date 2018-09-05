@@ -24,7 +24,8 @@ class StatusView(TemplateView):
             'num_keys': num_keys,
             'num_broken_keys': num_broken_keys,
             'tests': run_tests(),
-            'daily_histogram': make_daily_histogram(),
+            # 'daily_histogram': make_daily_histogram(),
+            'daily_histogram': [],
         }, status=status)
 
 
