@@ -150,7 +150,7 @@ class SearchResultForKeysByEmail(models.Model):
     """
     Stores the result of searching the keyservers for an email address.
     """
-    datetime = models.DateTimeField(auto_now_add=True)
+    datetime = models.DateTimeField()
 
     email_address = models.OneToOneField(
         EmailAddress,

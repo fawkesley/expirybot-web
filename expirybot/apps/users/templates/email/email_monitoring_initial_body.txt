@@ -1,8 +1,9 @@
 Expirybot is now monitoring the public PGP keyservers for your email address.
 
-Currently there are {{ fingerprints|length }} keys:
+Currently there {{ fingerprints|length|pluralize:"is,are" }} {{ fingerprints|length }} {{ fingerprints|length|pluralize:"key,keys" }}:
 
-https://keyserver.paulfurley.com/pks/lookup?op=vindex&search={{ email_address }}
+{% for fingerprint in fingerprints %} - https://www.expirybot.com/key/0x{{ fingerprint }}/
+{% endfor %}
 
 You received this email because you signed up to monitor your email address for new keys.
 
