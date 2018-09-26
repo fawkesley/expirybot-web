@@ -150,7 +150,7 @@ def get_set_of_fingerprints(email_address):
             '{}/pks/lookup'.format(settings.KEYSERVER_URL),
             params={
                 'op': 'vindex',
-                'options': 'mr',
+                'option': 'json',
                 'search': email_address,
             },
             timeout=30
@@ -163,23 +163,20 @@ def get_set_of_fingerprints(email_address):
     try:
         response.raise_for_status()
     except requests.HTTPError:
-        if response.status_code == 404 and 'No keys found' in response.text:
+        if response.status_code == 404 and 'Not Found' in response.text:
             return set()
         raise
 
-    return set(parse_vindex_for_fingerprints(response.text))
+    return set(parse_json_vindex_for_fingerprints(response.json()))
 
 
-def parse_vindex_for_fingerprints(string):
+def parse_json_vindex_for_fingerprints(json_data):
     fingerprints = []
 
-    for line in string.split('\n'):
-        if line.startswith('pub:'):
-            (_, fingerprint, _, _, _, _, flags) = line.split(':')
-            assert validate_fingerprint(fingerprint), fingerprint
-
-            if flags != 'r':  # revoked
-                fingerprints.append(fingerprint)
+    for item in json_data:
+        fingerprint = item['fingerprint'].upper()
+        if validate_fingerprint(fingerprint) and not is_revoked(item):
+            fingerprints.append(fingerprint)
 
     return fingerprints
 
@@ -187,5 +184,11 @@ def parse_vindex_for_fingerprints(string):
 def validate_fingerprint(fingerprint):
     return (
         re.match('^[A-F0-9]{40}$', fingerprint)
-        or re.match('^[A-F0-9]{16}$', fingerprint)
     )
+
+
+def is_revoked(json_item):
+    for signature in json_item.get('signatures', []):
+        if signature.get('revocation', False) is True:
+            return True
+    return False
