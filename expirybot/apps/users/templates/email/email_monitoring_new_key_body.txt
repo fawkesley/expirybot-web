@@ -1,6 +1,6 @@
 {{ fingerprints_added|length }} new PGP {{ fingerprints_added|length|pluralize:"key has,keys have" }} been added to the public keyservers with your email address:
 
-{% for fingerprint in fingerprints_added %}https://keyserver.paulfurley.com/pks/lookup?op=vindex&search=0x{{ fingerprint }}
+{% for fingerprint in fingerprints_added %} - https://www.expirybot.com/key/0x{{ fingerprint }}/
 {% endfor %}
 
 You received this email because you signed up to monitor your email address for new keys.
