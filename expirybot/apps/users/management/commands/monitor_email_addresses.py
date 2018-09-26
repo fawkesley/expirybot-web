@@ -88,7 +88,12 @@ def check_email_address(email_address):
         save_initial_search_result(email_address, fingerprints_now)
 
     else:
-        fingerprints_before = set(latest.key_fingerprints)
+        fingerprints_before = set(
+            filter(
+                validate_fingerprint,
+                latest.key_fingerprints
+            )
+        )
 
         compare_and_save_search_result(
             email_address, fingerprints_before, fingerprints_now, latest
