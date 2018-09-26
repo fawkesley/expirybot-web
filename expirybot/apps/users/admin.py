@@ -21,6 +21,10 @@ class SearchResultForKeysByEmailAdmin(admin.ModelAdmin):
         'key_fingerprints',
     )
 
+    readonly_fields = (
+        'email_address',
+    )
+
     def num_fingerprints(self, instance):
         return len(instance.key_fingerprints)
 
