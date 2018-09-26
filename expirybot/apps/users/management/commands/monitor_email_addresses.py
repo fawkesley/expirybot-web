@@ -107,6 +107,7 @@ def save_initial_search_result(email_address, fingerprints):
 
     with transaction.atomic():
         SearchResultForKeysByEmail.objects.create(
+            datetime=timezone.now(),
             email_address=email_address,
             key_fingerprints=list(fingerprints),
         )
@@ -127,12 +128,9 @@ def compare_and_save_search_result(email_address, fingerprints_before,
         LOG.info('keys added: {}'.format(keys_added))
 
     with transaction.atomic():
-        latest_search_result.delete()
-
-        SearchResultForKeysByEmail.objects.create(
-            email_address=email_address,
-            key_fingerprints=list(fingerprints_now)
-        )
+        latest_search_result.datetime = timezone.now()
+        latest_search_result.key_fingerprints = list(fingerprints_now)
+        latest_search_result.save()
 
         if keys_added:
             # Do this last to rollback transaction on fail
