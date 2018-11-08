@@ -1,3 +1,5 @@
+import urllib
+
 import jwt
 import datetime
 import logging
@@ -53,7 +55,7 @@ def record_bounce(email, bounce_datetime):
 
 def delete_bounce_from_mailgun(email):
     url = 'https://api.mailgun.net/v3/{domain}/bounces/{email}'.format(
-        domain=settings.MAILGUN_DOMAIN, email=email
+        domain=settings.MAILGUN_DOMAIN, email=urllib.parse.quote(email)
     )
 
     response = requests.delete(url, auth=('api', settings.MAILGUN_API_KEY))
