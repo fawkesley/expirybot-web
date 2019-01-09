@@ -38,20 +38,6 @@
 
       {% endif %}
 
-        <div class="text-center alert alert-gray" role="alert">
-          <h2 class="h3">Monitor for new keys with your email address</h2>
-
-          <form class="form-inline" method="post" action="{% url 'users.monitor-email-address' %}">
-            {% csrf_token %}
-
-            {% with form.email_address as field %}
-            <div class="form-group form-group">
-              {{ field|add_class:"form-control"|attr:"placeholder:e.g. your.name@example.com" }}
-              <input class="btn btn-primary" type="submit" value="Notify me" />
-            </div>
-            {% endwith %}
-          </form>
-        </div>
     </section>
 
     <section class="container":>
