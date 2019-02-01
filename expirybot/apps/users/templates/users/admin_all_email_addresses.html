@@ -1,0 +1,39 @@
+{% extends 'expirybot/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+
+  <div id="admin-all-email-addresses" class="container">
+
+    <h1>All subscribers</h1>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>username</th>
+          <th>email_address</th>
+          <th>primary_email_address</th>
+          <th>feedback_consent</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for user_profile in user_profiles %}
+        {% for email_address in user_profile.owned_email_addresses %}
+        <tr>
+          <td>{{ user_profile.user.username }}</td>
+          <td>{{ email_address }}</td>
+          <td>{{ user_profile.user.email }}</td>
+          <td>{{ user_profile.receive_occasional_feedback_requests }}</td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+      </tbody>
+
+    </table>
+
+
+  </div>
+{% endblock %}

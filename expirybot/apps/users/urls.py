@@ -3,6 +3,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 from .views import (
     AddEmailAddressView, AddEmailConfirmSendView,
+    AdminAllEmailAddressesView,
     AdminFeedbackEmailAddressesView, AdminListUsers, EmailSentView,
     LoginEmailSentView, LoginGetEmailAddressView, LoginFromEmailLinkView,
     LoginWithContextView, LogoutView, MonitorEmailAddressView,
@@ -20,6 +21,12 @@ urlpatterns = [
         r'^admin/list-users/$',
         staff_member_required(AdminListUsers.as_view()),
         name='admin-list-users'
+    ),
+
+    url(
+        r'^admin/all-email-addresses/$',
+        staff_member_required(AdminAllEmailAddressesView.as_view()),
+        name='admin-all-email-addresses'
     ),
 
     url(
