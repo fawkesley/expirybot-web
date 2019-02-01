@@ -13,6 +13,7 @@
       <thead>
         <tr>
           <th>username</th>
+          <th>joined_at</th>
           <th>email_address</th>
           <th>primary_email_address</th>
           <th>feedback_consent</th>
@@ -24,6 +25,7 @@
         {% for email_address in user_profile.owned_email_addresses %}
         <tr>
           <td>{{ user_profile.user.username }}</td>
+          <td>{{ user_profile.created_at|date:"Y-m-d" }}</td>
           <td>{{ email_address }}</td>
           <td>{{ user_profile.user.email }}</td>
           <td>{{ user_profile.receive_occasional_feedback_requests }}</td>
